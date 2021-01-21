@@ -1,0 +1,15 @@
+<resources>
+
+    <string-array name="pref_home_screen_entries">
+        <item>Journal</item>
+        <item>Statistics</item>
+        <item>Foods</item>
+    </string-array>
+
+    <string-array name="pref_home_screen_entry_values">
+        <item>journalFragment</item>
+        <item>statisticsFragment</item>
+        <item>foodFragment</item>
+    </string-array>
+
+</resources>
