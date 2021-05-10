@@ -9,7 +9,12 @@
         android:id="@+id/foodFragment"
         android:name="com.wilde.caloriecounter2.FoodFragment"
         android:label="Food"
-        tools:layout="@layout/fragment_food" />
+        tools:layout="@layout/fragment_food" >
+        <argument
+            android:name="foodId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
     <fragment
         android:id="@+id/journalFragment"
         android:name="com.wilde.caloriecounter2.JournalFragment"
@@ -24,4 +29,18 @@
         android:name="com.wilde.caloriecounter2.StatisticsFragment"
         android:label="Statistics"
         tools:layout="@layout/fragment_statistics" />
+    <fragment
+        android:id="@+id/weightFragment"
+        android:name="com.wilde.caloriecounter2.WeightFragment"
+        android:label="weight_fragment"
+        tools:layout="@layout/fragment_weight" />
+    <fragment
+        android:id="@+id/foodListFragment"
+        android:name="com.wilde.caloriecounter2.FoodListFragment"
+        android:label="food_list_fragment"
+        tools:layout="@layout/food_list_fragment" >
+        <action
+            android:id="@+id/action_foodListFragment_to_foodFragment"
+            app:destination="@id/foodFragment" />
+    </fragment>
 </navigation>

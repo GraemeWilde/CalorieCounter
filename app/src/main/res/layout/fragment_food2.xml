@@ -13,15 +13,27 @@
 
 
         <androidx.constraintlayout.helper.widget.Flow
-            android:id="@+id/flow2"
-            android:layout_width="307dp"
-            android:layout_height="523dp"
-            android:orientation="horizontal"
-            app:constraint_referenced_ids="foodNameTextView,foodNameEditTextNumber,productBrandsTextView,productBrandsEditTextNumber,productCodeTextView,productCodeEditTextNumber,productQuantityTextView,productQuantityEditTextNumber,servingSizeTextView,servingSizeEditTextNumber,caloriesTextView,caloriesEditTextNumber,fatTextView,fatEditTextNumber,saturatedFatTextView,saturatedFatEditTextNumber,transFatTextView,transFatEditTextNumber,cholesterolTextView,cholesterolEditTextNumber,sodiumTextView,sodiumEditTextNumber,carbohydrateTextView,carbohydrateEditTextNumber,fibreTextView,fibreEditTextNumber,sugarsTextView,sugarsEditTextNumber,proteinsTextView,proteinsEditTextNumber"
-            app:flow_maxElementsWrap="4"
+            android:id="@+id/flow3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="foodNameTextView,foodNameEditTextNumber,productBrandsTextView,productBrandsEditTextNumber,productCodeTextView,productCodeEditTextNumber"
+            app:flow_maxElementsWrap="2"
             app:flow_wrapMode="aligned"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:constraint_referenced_ids="productQuantityTextView,productQuantityEditTextNumber,servingSizeTextView,servingSizeEditTextNumber,caloriesTextView,caloriesEditTextNumber,fatTextView,fatEditTextNumber,saturatedFatTextView,saturatedFatEditTextNumber,transFatTextView,transFatEditTextNumber,cholesterolTextView,cholesterolEditTextNumber,sodiumTextView,sodiumEditTextNumber,carbohydrateTextView,carbohydrateEditTextNumber,fibreTextView,fibreEditTextNumber,sugarsTextView,sugarsEditTextNumber,proteinsTextView,proteinsEditTextNumber"
+            app:flow_maxElementsWrap="4"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/flow3" />
 
         <TextView
             android:id="@+id/foodNameTextView"
@@ -152,9 +164,7 @@
         <EditText
             android:id="@+id/fibreEditTextNumber"
             style="@style/food_text_box"
-            app:layout_constraintWidth_percent=".2"
-            tools:layout_editor_absoluteX="385dp"
-            tools:layout_editor_absoluteY="382dp" />
+            tools:layout_editor_absoluteX="385dp" />
 
         <TextView
             android:id="@+id/sugarsTextView"
@@ -166,9 +176,7 @@
         <EditText
             android:id="@+id/sugarsEditTextNumber"
             style="@style/food_text_box"
-            app:layout_constraintWidth_percent=".2"
-            tools:layout_editor_absoluteX="385dp"
-            tools:layout_editor_absoluteY="382dp" />
+            tools:layout_editor_absoluteX="385dp" />
 
         <TextView
             android:id="@+id/proteinsTextView"

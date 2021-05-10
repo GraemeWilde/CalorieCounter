@@ -13,10 +13,12 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
+import dagger.hilt.android.AndroidEntryPoint
 
 private const val LOGGER_TAG = "Main Activity"
 private const val DEFAULT_HOME_SCREEN = R.id.journalFragment
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // Set up side drawer for navigation
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
-        val appBarConfiguration = AppBarConfiguration(setOf(R.id.journalFragment, R.id.foodFragment, R.id.statisticsFragment), drawerLayout)
+        val appBarConfiguration = AppBarConfiguration(setOf(R.id.journalFragment, R.id.foodListFragment, R.id.statisticsFragment), drawerLayout)
 
         // Set up toolbar as action bar and also with nav controller for hamburger menu
         // functionality

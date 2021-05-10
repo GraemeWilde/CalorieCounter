@@ -24,7 +24,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             val homeFragment = homeScreenField.get(null) as Int
 
             // Not sure if this is actually necessary
-            findNavController().graph.startDestination = homeFragment
+            //findNavController().graph.startDestination = homeFragment
 
             Log.d(LOGGER_TAG, "Preference homeScreen: $homeFragment")
         }
