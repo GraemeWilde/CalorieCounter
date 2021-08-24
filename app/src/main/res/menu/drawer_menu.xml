@@ -6,9 +6,11 @@
     <item android:id="@id/foodFragment"
         android:title="@string/food_fragment"/>
     <item android:id="@id/foodListFragment"
-        android:title="Food List"/>
+        android:title="@string/food_list_fragment"/>
+    <item android:id="@id/foodSearchFragment"
+        android:title="@string/food_search_fragment"/>
     <item android:id="@id/statisticsFragment"
-        android:title="Statistics"/>
+        android:title="@string/statistics_fragment"/>
     <item android:id="@id/weightFragment"
         android:title="Weight"/>
 </menu>

@@ -1,18 +1,23 @@
 package com.wilde.caloriecounter2
 
+import android.app.SearchManager
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.*
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
+import com.wilde.caloriecounter2.viewmodels.FoodSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val LOGGER_TAG = "Main Activity"
@@ -121,5 +126,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         findNavController(R.id.nav_host_fragment).navigate(item.itemId, null)
         findViewById<DrawerLayout>(R.id.drawer_layout).close()
         return true
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        if (!(intent != null && handleIntent(intent))) {
+            super.onNewIntent(intent)
+        }
+    }
+
+    private fun handleIntent(intent: Intent): Boolean {
+        if (intent.action == Intent.ACTION_SEARCH) {
+
+            val query = intent.getStringExtra(SearchManager.QUERY)
+            if (query != null) {
+                if (findNavController(R.id.nav_host_fragment).currentDestination?.id != R.id.foodSearchFragment) {
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.foodSearchFragment)
+                }
+                ViewModelProvider(this).get(FoodSearchViewModel::class.java).search(query)
+            }
+            return true
+            /*} else {
+                val bundle = bundleOf("search" to intent)
+                //findNavController(R.id.nav_host_fragment).currentDestination
+                findNavController(R.id.nav_host_fragment).navigate(R.id.foodSearchFragment, bundle)
+                return true
+            }*/
+        }
+        return false
     }
 }

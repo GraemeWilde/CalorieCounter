@@ -15,19 +15,28 @@
     <dimen name="product_bubble_padding_bottom">1dp</dimen>
     <dimen name="product_bubble_border_radius">10dp</dimen>
 
-    <color name="product_text_color">#DDDDDD</color>
+    <color name="product_other_color">#999999</color>
+    <color name="product_text_color">#EEEEEE</color>
     <color name="product_name_color">#333333</color>
     <color name="product_brand_color">#663333</color>
     <color name="product_quantity_color">#333366</color>
 
+
+
     <style name="food_label">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">45dp</item>
+        <!--<item name="android:layout_height">45dp</item>-->
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">15dp</item>
+        <item name="android:paddingBottom">15dp</item>
+        <!--<item name="android:layout_height">wrap_content</item>-->
         <!--<item name="android:layout_marginStart">@dimen/margin_edge</item>-->
         <item name="android:maxLines">1</item>
         <item name="layout_constraintHorizontal_bias">0.0</item>
         <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
         <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_rowWeight">1</item>
 
         <!--<item name="layout_constraintWidth_percent">0.1</item>-->
 
@@ -35,15 +44,19 @@
     <style name="food_text_box">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="layout_columnWeight">1</item>
         <!--<item name="layout_constraintWidth_min">50dp</item>-->
         <item name="minWidth">50dp</item>
         <!--<item name="minWidth">50dp</item>-->
         <item name="layout_constrainedWidth">true</item>
+        <item name="android:textColor">@color/product_text_color</item>
+        <item name="android:background">@drawable/product_other_background</item>
 
         <!--<item name="android:layout_marginStart">@dimen/margin_between_horizontal</item>
         <item name="android:layout_marginTop">@dimen/margin_between_vertical</item>
         <item name="android:layout_marginEnd">@dimen/margin_edge</item>-->
         <item name="android:inputType">numberDecimal</item>
+        <item name="android:layout_rowWeight">1</item>
         <!--<item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="layout_constraintStart_toStartOf">@id/barrier</item>-->
     </style>

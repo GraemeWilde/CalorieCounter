@@ -9,7 +9,7 @@
         android:id="@+id/foodFragment"
         android:name="com.wilde.caloriecounter2.FoodFragment"
         android:label="Food"
-        tools:layout="@layout/fragment_food" >
+        tools:layout="@layout/food_fragment" >
         <argument
             android:name="foodId"
             app:argType="integer"
@@ -23,11 +23,11 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.wilde.caloriecounter2.SettingsFragment"
-        android:label="Settings" />
+        android:label="@string/settings" />
     <fragment
         android:id="@+id/statisticsFragment"
         android:name="com.wilde.caloriecounter2.StatisticsFragment"
-        android:label="Statistics"
+        android:label="@string/statistics_fragment"
         tools:layout="@layout/fragment_statistics" />
     <fragment
         android:id="@+id/weightFragment"
@@ -37,10 +37,19 @@
     <fragment
         android:id="@+id/foodListFragment"
         android:name="com.wilde.caloriecounter2.FoodListFragment"
-        android:label="food_list_fragment"
-        tools:layout="@layout/food_list_fragment" >
+        android:label="@string/food_list_fragment"
+        tools:layout="@layout/food_list_fragment">
         <action
-            android:id="@+id/action_foodListFragment_to_foodFragment"
+            android:id="@+id/action_foodListFragment_to_foodSearchFragment"
+            app:destination="@id/foodSearchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/foodSearchFragment"
+        android:name="com.wilde.caloriecounter2.FoodSearchFragment"
+        android:label="@string/food_search_fragment"
+        tools:layout="@layout/food_search_fragment" >
+        <action
+            android:id="@+id/action_foodSearchFragment_to_foodFragment"
             app:destination="@id/foodFragment" />
     </fragment>
 </navigation>

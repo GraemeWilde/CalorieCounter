@@ -1,0 +1,231 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "6219eefad7d1de837ba30b07e25bb6a7",
+    "entities": [
+      {
+        "tableName": "weight",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` INTEGER NOT NULL, `weight` REAL NOT NULL, PRIMARY KEY(`date`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weight",
+            "columnName": "weight",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "date"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "products",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `brands` TEXT NOT NULL, `product_name` TEXT NOT NULL, `off_id` TEXT NOT NULL, `product_code` TEXT NOT NULL, `quantity` TEXT, `per_serving_serving_size` REAL, `per_serving_calories` REAL, `per_serving_fat` REAL, `per_serving_saturated_fat` REAL, `per_serving_trans_fat` REAL, `per_serving_cholesterol` REAL, `per_serving_sodium` REAL, `per_serving_carbohydrates` REAL, `per_serving_fibre` REAL, `per_serving_sugars` REAL, `per_serving_proteins` REAL, `per_100g_serving_size` REAL, `per_100g_calories` REAL, `per_100g_fat` REAL, `per_100g_saturated_fat` REAL, `per_100g_trans_fat` REAL, `per_100g_cholesterol` REAL, `per_100g_sodium` REAL, `per_100g_carbohydrates` REAL, `per_100g_fibre` REAL, `per_100g_sugars` REAL, `per_100g_proteins` REAL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brands",
+            "columnName": "brands",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productName",
+            "columnName": "product_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "offId",
+            "columnName": "off_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productCode",
+            "columnName": "product_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quantity",
+            "columnName": "quantity",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.servingSize",
+            "columnName": "per_serving_serving_size",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.calories",
+            "columnName": "per_serving_calories",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.fat",
+            "columnName": "per_serving_fat",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.saturatedFat",
+            "columnName": "per_serving_saturated_fat",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.transFat",
+            "columnName": "per_serving_trans_fat",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.cholesterol",
+            "columnName": "per_serving_cholesterol",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.sodium",
+            "columnName": "per_serving_sodium",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.carbohydrates",
+            "columnName": "per_serving_carbohydrates",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.fibre",
+            "columnName": "per_serving_fibre",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.sugars",
+            "columnName": "per_serving_sugars",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.perServing.proteins",
+            "columnName": "per_serving_proteins",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.servingSize",
+            "columnName": "per_100g_serving_size",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.calories",
+            "columnName": "per_100g_calories",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.fat",
+            "columnName": "per_100g_fat",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.saturatedFat",
+            "columnName": "per_100g_saturated_fat",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.transFat",
+            "columnName": "per_100g_trans_fat",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.cholesterol",
+            "columnName": "per_100g_cholesterol",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.sodium",
+            "columnName": "per_100g_sodium",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.carbohydrates",
+            "columnName": "per_100g_carbohydrates",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.fibre",
+            "columnName": "per_100g_fibre",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.sugars",
+            "columnName": "per_100g_sugars",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nutriments.per100g.proteins",
+            "columnName": "per_100g_proteins",
+            "affinity": "REAL",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_products_product_code",
+            "unique": true,
+            "columnNames": [
+              "product_code"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_products_product_code` ON `${TABLE_NAME}` (`product_code`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6219eefad7d1de837ba30b07e25bb6a7')"
+    ]
+  }
+}

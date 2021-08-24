@@ -5,10 +5,10 @@
         android:title="@string/food_fragment" />
     <item android:id="@+id/journalFragment"
         android:title="@string/journal_fragment" />-->
-    <item android:id="@+id/settingsFragment"
-        android:title="@string/action_settings"
-        android:icon="@drawable/settings_black_24dp"
-        android:menuCategory="secondary"
-        app:showAsAction="ifRoom"
-        />
+    <item
+        android:id="@+id/saveFood"
+        android:icon="@drawable/baseline_save_24"
+        android:title="@string/action_save"
+        android:menuCategory="alternative"
+        app:showAsAction="always" />
 </menu>

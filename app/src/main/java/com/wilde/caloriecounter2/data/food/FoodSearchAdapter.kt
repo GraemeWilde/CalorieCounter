@@ -1,21 +1,19 @@
 package com.wilde.caloriecounter2.data.food
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isGone
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.wilde.caloriecounter2.R
 
-class FoodListAdapter internal constructor(
+class FoodSearchAdapter internal constructor(
     //private val onClickCallback: View.OnClickListener? = null,
     private val onClickCallback: ((product: Product) -> Unit)? = null
-) : ListAdapter<Product, FoodListAdapter.ProductViewHolder>(ProductDiffCallback()) {
+) : ListAdapter<Product, FoodSearchAdapter.ProductViewHolder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         return ProductViewHolder.create(parent)
@@ -42,8 +40,11 @@ class FoodListAdapter internal constructor(
             productQuantityTextView.text = product.quantity
 
             if (product.productName.isNullOrEmpty()) productNameTextView.visibility = View.GONE
+            else productNameTextView.visibility = View.VISIBLE
             if (product.brands.isNullOrEmpty()) productBrandTextView.visibility = View.GONE
+            else productBrandTextView.visibility = View.VISIBLE
             if (product.quantity.isNullOrEmpty()) productQuantityTextView.visibility = View.GONE
+            else productQuantityTextView.visibility = View.VISIBLE
 
             if (onClick != null) {
                 container.setOnClickListener {

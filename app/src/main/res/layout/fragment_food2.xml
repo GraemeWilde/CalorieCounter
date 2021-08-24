@@ -196,7 +196,7 @@
             style="@style/food_text_box" />
 
         <Button
-            android:id="@+id/button_save"
+            android:id="@+id/save_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"

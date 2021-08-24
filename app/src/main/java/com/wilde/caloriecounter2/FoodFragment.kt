@@ -32,6 +32,13 @@ class FoodFragment : Fragment() {
 
     val args: FoodFragmentArgs by navArgs()
 
+    private class saveButton : View.OnClickListener {
+        override fun onClick(v: View?) {
+
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,13 +48,56 @@ class FoodFragment : Fragment() {
         product = arguments?.get("product")?.let {
             it as Product
         }
-        return inflater.inflate(R.layout.fragment_food, container, false)
+
+        val layout = inflater.inflate(R.layout.food_fragment, container, false)
+
+        val saveButton = layout.findViewById<Button>(R.id.save_button)
+
+        saveButton.setOnClickListener(FoodFragment.saveButton())
+
+        val foodName = layout.findViewById<EditText>(R.id.foodNameEditTextNumber)
+        val productCode = layout.findViewById<EditText>(R.id.productCodeEditTextNumber)
+        val productQuantity = layout.findViewById<EditText>(R.id.productQuantityEditTextNumber)
+        val productBrands = layout.findViewById<EditText>(R.id.productBrandsEditTextNumber)
+
+        val servingSize = layout.findViewById<EditText>(R.id.servingSizeEditTextNumber)
+        val calories = layout.findViewById<EditText>(R.id.caloriesEditTextNumber)
+        val fat = layout.findViewById<EditText>(R.id.fatEditTextNumber)
+        val saturatedFat = layout.findViewById<EditText>(R.id.saturatedFatEditTextNumber)
+        val transFat = layout.findViewById<EditText>(R.id.transFatEditTextNumber)
+        val cholesterol = layout.findViewById<EditText>(R.id.cholesterolEditTextNumber)
+        val sodium = layout.findViewById<EditText>(R.id.sodiumEditTextNumber)
+        val carbohydrate = layout.findViewById<EditText>(R.id.carbohydrateEditTextNumber)
+        val fibre = layout.findViewById<EditText>(R.id.fibreEditTextNumber)
+        val sugars = layout.findViewById<EditText>(R.id.sugarsEditTextNumber)
+        val proteins = layout.findViewById<EditText>(R.id.proteinsEditTextNumber)
+
+        foodName.setText(product?.productName)
+        productCode.setText(product?.productCode)
+        productQuantity.setText(product?.quantity)
+        productBrands.setText(product?.brands)
+
+        product?.nutriments?.perServing?.let {
+            servingSize.setText(it.servingSize?.toString() ?: "")
+            calories.setText(it.calories?.toString() ?: "")
+            fat.setText(it.fat?.toString() ?: "")
+            saturatedFat.setText(it.saturatedFat?.toString() ?: "")
+            transFat.setText(it.transFat?.toString()?: "")
+            cholesterol.setText(it.cholesterol?.toString()?: "")
+            sodium.setText(it.sodium?.toString()?: "")
+            carbohydrate.setText(it.carbohydrates?.toString()?: "")
+            fibre.setText(it.fibre?.toString()?: "")
+            sugars.setText(it.sugars?.toString()?: "")
+            proteins.setText(it.proteins?.toString()?: "")
+        }
+
+        return layout
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val button: Button = view.findViewById(R.id.button_save)
+        val button: Button = view.findViewById(R.id.save_button)
 
         button.setOnClickListener(View.OnClickListener {
 
@@ -55,7 +105,9 @@ class FoodFragment : Fragment() {
 
         Log.d("Food Fragment", "onViewCreated")
 
-        requireView().findViewById<EditText>(R.id.foodNameEditTextNumber)
+        //requireView().findViewById<EditText>(R.id.foodNameEditTextNumber).edit
+
+        /*requireView().findViewById<EditText>(R.id.foodNameEditTextNumber)
             .setText(product?.productName)
         requireView().findViewById<EditText>(R.id.productCodeEditTextNumber)
             .setText(product?.productCode)
@@ -73,16 +125,16 @@ class FoodFragment : Fragment() {
             requireView().findViewById<EditText>(R.id.fibreEditTextNumber).setText(it.fibre?.toString()?: "")
             requireView().findViewById<EditText>(R.id.sugarsEditTextNumber).setText(it.sugars?.toString()?: "")
             requireView().findViewById<EditText>(R.id.proteinsEditTextNumber).setText(it.proteins?.toString()?: "")
-        }
+        }*/
 
-        view.post(Runnable
+        /*view.post(Runnable
         {
             val pw = view.findViewById<TextView>(R.id.proteinsTextView).width.toString()
             val sw = view.findViewById<TextView>(R.id.sugarsTextView).width.toString()
 
             view.findViewById<EditText>(R.id.proteinsEditTextNumber).setText(pw)
             view.findViewById<EditText>(R.id.sugarsEditTextNumber).setText(sw)
-        })
+        })*/
     }
 
     override fun onStart() {

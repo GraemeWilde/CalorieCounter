@@ -15,6 +15,10 @@ class FoodViewModel @Inject internal constructor(
 ): ViewModel() {
     val food: Product? = null //TODO("Need to make repository")
 
+    fun save(food: Product) {
+
+    }
+
     fun insert(food: Product) {
         viewModelScope.launch {
             foodRepository.insert(food)
