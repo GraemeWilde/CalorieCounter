@@ -1,12 +1,16 @@
 package com.wilde.caloriecounter2.data.food
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
+import com.wilde.caloriecounter2.data.food.entities.Product
 
 @Dao
 interface FoodDao {
     @Query("SELECT * FROM products")
     suspend fun getAll(): List<Product>
+
+    @Query("SELECT * FROM products")
+    fun getAllLive(): LiveData<List<Product>>
 
     @Query("SELECT * FROM products WHERE id = :id")
     suspend fun getByID(id: Int): Product?
@@ -15,7 +19,7 @@ interface FoodDao {
     suspend fun getByOffId(offId: String): Product?
 
     @Insert
-    suspend fun insertFoods(vararg foods: Product)
+    suspend fun insertFoods(vararg foods: Product): List<Long>
 
     @Update
     suspend fun updateFoods(vararg foods: Product): Int

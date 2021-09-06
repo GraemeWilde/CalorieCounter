@@ -7,36 +7,34 @@
 
     <fragment
         android:id="@+id/foodFragment"
-        android:name="com.wilde.caloriecounter2.FoodFragment"
+        android:name="com.wilde.caloriecounter2.fragments.FoodFragment"
         android:label="Food"
         tools:layout="@layout/food_fragment" >
         <argument
             android:name="foodId"
             app:argType="integer"
             android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_foodFragment_to_foodListFragment"
+            app:popUpTo="@id/foodListFragment" />
     </fragment>
     <fragment
         android:id="@+id/journalFragment"
-        android:name="com.wilde.caloriecounter2.JournalFragment"
+        android:name="com.wilde.caloriecounter2.fragments.JournalFragment"
         android:label="Journal"
         tools:layout="@layout/fragment_journal" />
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.wilde.caloriecounter2.SettingsFragment"
+        android:name="com.wilde.caloriecounter2.fragments.SettingsFragment"
         android:label="@string/settings" />
     <fragment
         android:id="@+id/statisticsFragment"
-        android:name="com.wilde.caloriecounter2.StatisticsFragment"
+        android:name="com.wilde.caloriecounter2.fragments.StatisticsFragment"
         android:label="@string/statistics_fragment"
         tools:layout="@layout/fragment_statistics" />
     <fragment
-        android:id="@+id/weightFragment"
-        android:name="com.wilde.caloriecounter2.WeightFragment"
-        android:label="weight_fragment"
-        tools:layout="@layout/fragment_weight" />
-    <fragment
         android:id="@+id/foodListFragment"
-        android:name="com.wilde.caloriecounter2.FoodListFragment"
+        android:name="com.wilde.caloriecounter2.fragments.FoodListFragment"
         android:label="@string/food_list_fragment"
         tools:layout="@layout/food_list_fragment">
         <action
@@ -45,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/foodSearchFragment"
-        android:name="com.wilde.caloriecounter2.FoodSearchFragment"
+        android:name="com.wilde.caloriecounter2.fragments.FoodSearchFragment"
         android:label="@string/food_search_fragment"
         tools:layout="@layout/food_search_fragment" >
         <action

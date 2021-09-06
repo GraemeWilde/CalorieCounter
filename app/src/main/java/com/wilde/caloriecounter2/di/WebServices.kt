@@ -4,7 +4,7 @@ import com.squareup.moshi.JsonQualifier
 import com.squareup.moshi.Moshi
 import com.wilde.caloriecounter2.BuildConfig
 import com.wilde.caloriecounter2.data.food.FoodWebService
-import com.wilde.caloriecounter2.data.food.ProductAdapter
+import com.wilde.caloriecounter2.data.food.response.ProductAdapter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

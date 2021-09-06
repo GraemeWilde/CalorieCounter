@@ -1,32 +1,20 @@
-package com.wilde.caloriecounter2
+package com.wilde.caloriecounter2.fragments
 
-import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
-import android.content.Intent
-import android.graphics.drawable.Drawable
-import android.opengl.Visibility
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.ImageSpan
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.ScrollView
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.wilde.caloriecounter2.R
 import com.wilde.caloriecounter2.data.food.FoodSearchAdapter
+import com.wilde.caloriecounter2.databinding.FoodSearchFragmentBinding
 import com.wilde.caloriecounter2.viewmodels.FoodSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,6 +26,9 @@ class FoodSearchFragment : Fragment() {
     companion object {
         fun newInstance() = FoodSearchFragment()
     }
+
+    private var _binding: FoodSearchFragmentBinding? = null
+    private val binding get() = _binding!!
 
     private val foodSearchViewModel: FoodSearchViewModel by activityViewModels()
 
@@ -52,7 +43,6 @@ class FoodSearchFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.food_search_menu, menu)
         /*menu.findItem(R.id.searchInternet).setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -112,19 +102,19 @@ class FoodSearchFragment : Fragment() {
 
         }*/
 
-        val layout = inflater.inflate(R.layout.food_search_fragment, container, false)
+        //val layout = inflater.inflate(R.layout.food_search_fragment, container, false)
+        _binding = FoodSearchFragmentBinding.inflate(inflater, container, false)
 
-        val progressBar = layout.findViewById<ProgressBar>(R.id.progressBar)
-        val scrollView = layout.findViewById<ScrollView>(R.id.searchScrollView)
+
 
         foodSearchViewModel.searching.observe(viewLifecycleOwner, Observer {
             if (it == true) {
-                progressBar.visibility = View.VISIBLE
-                scrollView.visibility = View.GONE
+                binding.progressBar.visibility = View.VISIBLE
+                binding.searchScrollView.visibility = View.GONE
 
             } else {
-                progressBar.visibility = View.GONE
-                scrollView.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.GONE
+                binding.searchScrollView.visibility = View.VISIBLE
             }
         })
 
@@ -177,7 +167,7 @@ class FoodSearchFragment : Fragment() {
         })
             //.setOnQueryTextListener(SearchView.OnQueryTextListener)*/
 
-        return layout
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -191,7 +181,7 @@ class FoodSearchFragment : Fragment() {
             Log.d("Product:", it.toString())
         }*/
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.food_list)
+        val recyclerView = binding.foodListRecyclerView//view.findViewById<RecyclerView>(R.id.food_list)
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this.context)
@@ -202,5 +192,10 @@ class FoodSearchFragment : Fragment() {
             /*else
                 adapter.currentList.remo*/
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

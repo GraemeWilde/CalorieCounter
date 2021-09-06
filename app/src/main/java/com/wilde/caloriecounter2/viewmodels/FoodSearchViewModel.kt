@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wilde.caloriecounter2.data.food.FoodRepository
-import com.wilde.caloriecounter2.data.food.FoodResponse
-import com.wilde.caloriecounter2.data.food.Product
+import com.wilde.caloriecounter2.data.food.response.FoodResponse
+import com.wilde.caloriecounter2.data.food.entities.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

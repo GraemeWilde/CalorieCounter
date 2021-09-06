@@ -11,6 +11,4 @@
         android:title="@string/food_search_fragment"/>
     <item android:id="@id/statisticsFragment"
         android:title="@string/statistics_fragment"/>
-    <item android:id="@id/weightFragment"
-        android:title="Weight"/>
 </menu>

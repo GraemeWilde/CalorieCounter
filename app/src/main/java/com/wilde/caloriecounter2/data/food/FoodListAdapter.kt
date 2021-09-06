@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.wilde.caloriecounter2.R
+import com.wilde.caloriecounter2.data.food.entities.Product
 
 class FoodSearchAdapter internal constructor(
     //private val onClickCallback: View.OnClickListener? = null,

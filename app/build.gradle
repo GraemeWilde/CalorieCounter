@@ -7,17 +7,18 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
     buildFeatures {
         dataBinding true
+        viewBinding true
     }
 
     defaultConfig {
         applicationId "com.wilde.caloriecounter2"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "0.1"
 
@@ -108,6 +109,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
+    debugImplementation 'com.github.amitshekhariitbhu:Android-Debug-Database:1.0.6'
 
 }

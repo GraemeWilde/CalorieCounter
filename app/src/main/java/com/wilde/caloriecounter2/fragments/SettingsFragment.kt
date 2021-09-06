@@ -1,11 +1,10 @@
-package com.wilde.caloriecounter2
+package com.wilde.caloriecounter2.fragments
 
-import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceFragmentCompat
+import com.wilde.caloriecounter2.R
 
 private const val LOGGER_TAG = "Settings Fragment"
 

@@ -1,10 +1,11 @@
-package com.wilde.caloriecounter2
+package com.wilde.caloriecounter2.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.wilde.caloriecounter2.R
 
 /**
  * A simple [Fragment] subclass.

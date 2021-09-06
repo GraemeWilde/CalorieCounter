@@ -1,8 +1,8 @@
 package com.wilde.caloriecounter2.data.food
 
-import kotlinx.coroutines.flow.Flow
-import retrofit2.Call
-import retrofit2.Response
+import androidx.lifecycle.LiveData
+import com.wilde.caloriecounter2.data.food.entities.Product
+import com.wilde.caloriecounter2.data.food.response.FoodResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,6 +15,10 @@ class FoodRepository @Inject constructor(
         return foodDao.getByID(id)
     }
 
+    fun getAllLive(): LiveData<List<Product>> {
+        return foodDao.getAllLive()
+    }
+
     suspend fun getAll(): List<Product> {
         return foodDao.getAll()
     }
@@ -23,7 +27,7 @@ class FoodRepository @Inject constructor(
         return foodDao.getByOffId(offId)
     }
 
-    suspend fun insert(food: Product) {
+    suspend fun insert(food: Product): List<Long> {
         return foodDao.insertFoods(food)
     }
 
