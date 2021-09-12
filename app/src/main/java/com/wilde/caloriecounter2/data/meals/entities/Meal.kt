@@ -1,13 +1,15 @@
 package com.wilde.caloriecounter2.data.meals.entities
 
-import androidx.room.Embedded
-import androidx.room.Relation
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+@Entity(tableName = "meals")
 data class Meal(
-    @Embedded val mealParent: MealParent,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id"
-    )
-    val mealComponents: List<MealComponent>
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Int = 0,
+
+    @ColumnInfo(name = "name")
+    val name: String,
 )

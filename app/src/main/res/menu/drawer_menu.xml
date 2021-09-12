@@ -2,13 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@id/journalFragment"
-        android:title="@string/journal_fragment"/>
+        android:title="@string/journal_fragment"
+        />
     <item android:id="@id/foodFragment"
-        android:title="@string/food_fragment"/>
+        android:title="@string/food_fragment"
+        />
     <item android:id="@id/foodListFragment"
-        android:title="@string/food_list_fragment"/>
+        android:title="@string/food_list_fragment"
+        />
+    <item android:id="@id/mealListFragment"
+        android:title="@string/meal_list_fragment"
+        />
     <item android:id="@id/foodSearchFragment"
-        android:title="@string/food_search_fragment"/>
+        android:title="@string/food_search_fragment"
+        />
     <item android:id="@id/statisticsFragment"
-        android:title="@string/statistics_fragment"/>
+        android:title="@string/statistics_fragment"
+        />
 </menu>

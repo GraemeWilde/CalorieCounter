@@ -13,7 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.wilde.caloriecounter2.R
-import com.wilde.caloriecounter2.data.food.FoodSearchAdapter
+import com.wilde.caloriecounter2.data.food.FoodListAdapter
 import com.wilde.caloriecounter2.databinding.FoodSearchFragmentBinding
 import com.wilde.caloriecounter2.viewmodels.FoodSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,7 +32,7 @@ class FoodSearchFragment : Fragment() {
 
     private val foodSearchViewModel: FoodSearchViewModel by activityViewModels()
 
-    private val adapter = FoodSearchAdapter {
+    private val adapter = FoodListAdapter {
         Log.d("Product:", it.toString())
         val bundle = bundleOf("product" to it)
         //val bundle = Bundle().putSerializable("product", it)

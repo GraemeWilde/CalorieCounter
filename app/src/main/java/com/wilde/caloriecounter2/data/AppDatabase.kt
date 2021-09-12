@@ -20,7 +20,7 @@ private const val LOGGER_TAG = "AppDatabase"
 private const val DATABASE_NAME = "calorie_counter_"
 
 @Database(
-    entities = [Weight::class, Product::class, MealParent::class, MealComponent::class],
+    entities = [Weight::class, Product::class, Meal::class, MealComponent::class],
     version = 1,
     exportSchema = true
 )
@@ -69,18 +69,28 @@ abstract class AppDatabase : RoomDatabase() {
                                         )
                                     )
                                     inst.mealDAO().insertMeals(
-                                        Meal(
-                                            MealParent(
+                                        MealAndComponent(
+                                            Meal(
                                                 name = "Egg Whites Muffin"
                                             ),
                                             listOf(
+                                                //MealComponent(
                                                 MealComponent(
                                                     foodId = foodsIds[0].toInt(),
                                                     quantity = Quantity(
                                                         1f,
                                                         QuantityType.Ratio
                                                     )
+                                                ),
+                                                MealComponent(
+                                                    foodId = foodsIds[1].toInt(),
+                                                    quantity = Quantity(
+                                                        1f,
+                                                        QuantityType.Ratio
+                                                    )
                                                 )
+                                                    /*Product()
+                                                )*/
                                             )
                                         )
                                     )

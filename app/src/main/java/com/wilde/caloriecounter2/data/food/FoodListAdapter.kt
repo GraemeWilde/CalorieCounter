@@ -10,28 +10,37 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.wilde.caloriecounter2.R
 import com.wilde.caloriecounter2.data.food.entities.Product
+import com.wilde.caloriecounter2.databinding.FoodListItemBinding
 
-class FoodSearchAdapter internal constructor(
+class FoodListAdapter internal constructor(
     //private val onClickCallback: View.OnClickListener? = null,
     private val onClickCallback: ((product: Product) -> Unit)? = null
-) : ListAdapter<Product, FoodSearchAdapter.ProductViewHolder>(ProductDiffCallback()) {
+) : ListAdapter<Product, FoodListAdapter.ProductViewHolder>(ProductDiffCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        return ProductViewHolder.create(parent)
+    private class ProductDiffCallback : DiffUtil.ItemCallback<Product>() {
+        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+            // Are same item if they have the same id, and the id isn't 0, or if they have the same
+            // offId
+            return if (newItem.id == oldItem.id && newItem.id != 0) {
+                true
+            } else {
+                newItem.offId == oldItem.offId
+            }
+        }
+
+        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem == newItem
+        }
     }
 
-    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val current = getItem(position)
-        holder.bind(current, onClickCallback)
-    }
 
-    class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ProductViewHolder(itemView: View, binding: FoodListItemBinding) : RecyclerView.ViewHolder(itemView) {
         private var product: Product? = null
 
-        private val container: ConstraintLayout = itemView.findViewById(R.id.foodItemContainer)
-        private val productNameTextView: TextView = itemView.findViewById(R.id.productNameTextView)
-        private val productBrandTextView: TextView = itemView.findViewById(R.id.productBrandTextView)
-        private val productQuantityTextView: TextView = itemView.findViewById(R.id.productQuantityTextView)
+        private val container: View = binding.root
+        private val productNameTextView: TextView = binding.productNameTextView
+        private val productBrandTextView: TextView = binding.productBrandTextView
+        private val productQuantityTextView: TextView = binding.productQuantityTextView
 
         fun bind(product: Product, onClick: ((product: Product) -> Unit)? = null) {
             //this.product = product
@@ -58,24 +67,23 @@ class FoodSearchAdapter internal constructor(
 
         companion object {
             fun create(parent: ViewGroup): ProductViewHolder {
-                val view: View = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.food_list_item, parent, false)
-                return ProductViewHolder(view)
+                /*val view: View = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.food_list_item, parent, false)*/
+
+                val binding: FoodListItemBinding = FoodListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                val view: View = binding.root
+                return ProductViewHolder(view, binding)
             }
         }
     }
-}
 
-private class ProductDiffCallback : DiffUtil.ItemCallback<Product>() {
-    override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
-        return if (newItem.id == oldItem.id && newItem.id != 0) {
-            true
-        } else {
-            newItem.offId == oldItem.offId
-        }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
+        return ProductViewHolder.create(parent)
     }
 
-    override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
-        return oldItem == newItem
+    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+        val current = getItem(position)
+        holder.bind(current, onClickCallback)
     }
 }

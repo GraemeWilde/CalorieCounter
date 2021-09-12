@@ -2,13 +2,13 @@ package com.wilde.caloriecounter2.data.meals.entities
 
 import androidx.room.*
 
-@Entity(tableName = "mealComponents",
+@Entity(tableName = "meal_components",
     indices = [
         Index(value = ["meal_id"])
     ],
     foreignKeys = [
         ForeignKey(
-            entity = MealParent::class,
+            entity = Meal::class,
             parentColumns = ["id"],
             childColumns = ["meal_id"],
             onDelete = ForeignKey.CASCADE

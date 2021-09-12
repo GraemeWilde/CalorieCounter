@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "62f80a72642ec1db42ad3b982c643c9b",
+    "identityHash": "0abc7a5ac855c1c07568f409df8e6565",
     "entities": [
       {
         "tableName": "weight",
@@ -239,7 +239,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "mealComponents",
+        "tableName": "meal_components",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `meal_id` INTEGER NOT NULL, `food_id` INTEGER NOT NULL, `measurement` REAL NOT NULL, `quantity_type` INTEGER NOT NULL, FOREIGN KEY(`meal_id`) REFERENCES `meals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
@@ -281,12 +281,12 @@
         },
         "indices": [
           {
-            "name": "index_mealComponents_meal_id",
+            "name": "index_meal_components_meal_id",
             "unique": false,
             "columnNames": [
               "meal_id"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_mealComponents_meal_id` ON `${TABLE_NAME}` (`meal_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_meal_components_meal_id` ON `${TABLE_NAME}` (`meal_id`)"
           }
         ],
         "foreignKeys": [
@@ -307,7 +307,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '62f80a72642ec1db42ad3b982c643c9b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0abc7a5ac855c1c07568f409df8e6565')"
     ]
   }
 }

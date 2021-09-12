@@ -13,6 +13,7 @@ android {
     buildFeatures {
         dataBinding true
         viewBinding true
+        //compose true
     }
 
     defaultConfig {
@@ -51,6 +52,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    /*composeOptions {
+        kotlinCompilerExtensionVersion "$compose_version"
+    }*/
 }
 
 dependencies {
@@ -109,6 +113,13 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    debugImplementation 'com.github.amitshekhariitbhu:Android-Debug-Database:1.0.6'
+    debugImplementation 'com.github.amitshekhariitbhu.Android-Debug-Database:debug-db:1.0.6'
+
+
+    // Compose
+    /*implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation "androidx.compose.foundation:foundation:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"*/
 
 }

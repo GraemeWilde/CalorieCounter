@@ -1,4 +1,4 @@
-package com.wilde.caloriecounter2.viewmodels
+package com.wilde.caloriecounter2
 
 import androidx.lifecycle.ViewModel
 

@@ -46,7 +46,7 @@ class FoodFragment : Fragment(), SavingDialogCallback {
         pd
     }
 
-    private inner class saveButton : View.OnClickListener {
+    private inner class SaveButton : View.OnClickListener {
         override fun onClick(v: View?) {
             Log.d("Food Fragment", "foodChanged: $foodChanged")
 
@@ -142,7 +142,7 @@ class FoodFragment : Fragment(), SavingDialogCallback {
         val sugars = layout.findViewById<EditText>(R.id.sugarsEditTextNumber)
         val proteins = layout.findViewById<EditText>(R.id.proteinsEditTextNumber)*/
 
-        binding.saveButton.setOnClickListener(this.saveButton())
+        binding.saveButton.setOnClickListener(this.SaveButton())
 
         binding.foodNameEditTextNumber.setText(product?.productName)
         binding.productCodeEditTextNumber.setText(product?.productCode)

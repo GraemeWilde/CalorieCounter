@@ -11,6 +11,7 @@
     <string name="statistics_fragment">Statistics</string>
     <string name="food_search_fragment">Food Search</string>
     <string name="food_list_fragment">Food List</string>
+    <string name="meal_list_fragment">Meal List</string>
 
     <string name="search">    Search</string>
 

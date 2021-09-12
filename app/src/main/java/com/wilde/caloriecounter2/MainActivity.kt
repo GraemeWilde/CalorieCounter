@@ -57,7 +57,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // Set up side drawer for navigation
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
-        val appBarConfiguration = AppBarConfiguration(setOf(R.id.journalFragment, R.id.foodListFragment, R.id.statisticsFragment), drawerLayout)
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.journalFragment,
+                R.id.foodListFragment,
+                R.id.mealListFragment,
+                R.id.statisticsFragment,
+            ),
+            drawerLayout
+        )
 
         // Set up toolbar as action bar and also with nav controller for hamburger menu
         // functionality
