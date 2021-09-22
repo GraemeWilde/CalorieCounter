@@ -26,5 +26,5 @@ data class MealComponent(
     val foodId: Int = 0,
 
     @Embedded
-    val quantity: Quantity
+    var quantity: Quantity
 )

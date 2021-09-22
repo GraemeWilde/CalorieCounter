@@ -14,14 +14,14 @@ interface MealDao {
 
     @Transaction
     @Query("SELECT * FROM meals")
-    fun getMeals(): LiveData<List<MealAndComponent>>
+    fun getMeals(): LiveData<List<MealAndComponents>>
 
     /*@Transaction
     @Query("SELECT * FROM meals WHERE id = :id")
     suspend fun getMeal(id: Int): Meal?
 
     */
-    suspend fun insertMeals(vararg mealAndComponents: MealAndComponent) {
+    suspend fun insertMeals(vararg mealAndComponents: MealAndComponents) {
         mealAndComponents.forEach { meal ->
             insertMeal(meal.meal, meal.mealComponents)
         }

@@ -61,7 +61,7 @@
     </fragment>
     <fragment
         android:id="@+id/mealFragment"
-        android:name="com.wilde.caloriecounter2.MealFragment"
+        android:name="com.wilde.caloriecounter2.fragments.MealFragment"
         android:label="meal_fragment"
         tools:layout="@layout/meal_fragment" />
 </navigation>

@@ -31,6 +31,8 @@
             android:padding="20dp"
             app:columnCount="4">
 
+
+
             <TextView
                 style="@style/food_label"
                 android:text="@string/product_name" />

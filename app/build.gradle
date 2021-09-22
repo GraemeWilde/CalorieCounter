@@ -13,7 +13,7 @@ android {
     buildFeatures {
         dataBinding true
         viewBinding true
-        //compose true
+        compose true
     }
 
     defaultConfig {
@@ -52,9 +52,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    /*composeOptions {
+    composeOptions {
         kotlinCompilerExtensionVersion "$compose_version"
-    }*/
+    }
 }
 
 dependencies {
@@ -117,9 +117,16 @@ dependencies {
 
 
     // Compose
-    /*implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.compose.foundation:foundation:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"*/
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+
+    // Compose Theme from MDC Theme
+    implementation "com.google.android.material:compose-theme-adapter:1.0.2"
+
+    // Compose Extended Icons
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
 
 }

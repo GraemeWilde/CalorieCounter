@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import java.io.Serializable
 
-data class MealAndComponent(
+data class MealAndComponents(
     @Embedded val meal: Meal,
     @Relation(
         parentColumn = "id",

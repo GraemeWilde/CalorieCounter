@@ -1,7 +1,7 @@
 package com.wilde.caloriecounter2.data.meals
 
 import androidx.lifecycle.LiveData
-import com.wilde.caloriecounter2.data.meals.entities.MealAndComponent
+import com.wilde.caloriecounter2.data.meals.entities.MealAndComponents
 import com.wilde.caloriecounter2.data.meals.entities.Meal
 import com.wilde.caloriecounter2.data.meals.entities.MealAndComponentsAndFoods
 import javax.inject.Inject
@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class MealRepository @Inject constructor(
     private val mealDao: MealDao
 ) {
-    fun getMeals(): LiveData<List<MealAndComponent>> {
+    fun getMeals(): LiveData<List<MealAndComponents>> {
         return mealDao.getMeals()
     }
 

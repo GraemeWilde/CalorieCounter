@@ -7,24 +7,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.wilde.caloriecounter2.R
 import com.wilde.caloriecounter2.data.meals.MealListAdapter
 import com.wilde.caloriecounter2.viewmodels.MealListViewModel
 import com.wilde.caloriecounter2.databinding.MealListFragmentBinding
+import com.wilde.caloriecounter2.viewmodels.MealViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MealListFragment : Fragment() {
 
     private val mealListViewModel: MealListViewModel by viewModels()
+    private val mealViewModel: MealViewModel by activityViewModels()
 
     private var _binding: MealListFragmentBinding? = null
     private val binding get() = _binding!!
 
     private val adapter = MealListAdapter { meal ->
         Log.d("Meal:", meal.toString())
-        val bundle = bundleOf("meal" to meal)
+        //val bundle = bundleOf("meal" to meal)
+        mealViewModel.openMeal(meal)
+        findNavController().navigate(R.id.action_mealListFragment_to_mealFragment)
     }
 
 

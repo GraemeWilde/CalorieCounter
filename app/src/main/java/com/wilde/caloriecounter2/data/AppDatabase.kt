@@ -69,7 +69,7 @@ abstract class AppDatabase : RoomDatabase() {
                                         )
                                     )
                                     inst.mealDAO().insertMeals(
-                                        MealAndComponent(
+                                        MealAndComponents(
                                             Meal(
                                                 name = "Egg Whites Muffin"
                                             ),

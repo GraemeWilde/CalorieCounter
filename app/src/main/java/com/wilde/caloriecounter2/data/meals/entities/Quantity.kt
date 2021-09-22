@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 
 data class Quantity(
     @ColumnInfo(name = "measurement")
-    val measurement: Float,
+    var measurement: Float,
 
     @ColumnInfo(name = "quantity_type")
-    val type: QuantityType
+    var type: QuantityType
 )

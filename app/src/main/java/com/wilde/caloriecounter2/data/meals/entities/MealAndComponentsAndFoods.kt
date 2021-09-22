@@ -12,5 +12,5 @@ data class MealAndComponentsAndFoods(
         entity = MealComponent::class,
         parentColumn = "id",
         entityColumn = "meal_id"
-    ) val mealComponentsAndFood: List<MealComponentAndFood>
+    ) val mealComponentsAndFoods: List<MealComponentAndFood>
 ) : Serializable
