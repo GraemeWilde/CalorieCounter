@@ -1,6 +1,10 @@
 package com.wilde.caloriecounter2.viewmodels
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wilde.caloriecounter2.data.food.entities.Product
@@ -9,7 +13,7 @@ import java.text.DecimalFormat
 
 class MealViewModel : ViewModel() {
 
-    class ObservableMealComponentAndFood (mealComponentAndFood: MealComponentAndFood) {
+    class ObservableMealComponentAndFood(mealComponentAndFood: MealComponentAndFood) {
 
         class ObservableQuantity(quantity: Quantity) {
             val type = MutableLiveData(quantity.type)
@@ -31,8 +35,10 @@ class MealViewModel : ViewModel() {
         }
 
         val id: MutableLiveData<Int> = MutableLiveData(mealComponentAndFood.mealComponent.id)
-        val mealId: MutableLiveData<Int> = MutableLiveData(mealComponentAndFood.mealComponent.mealId)
-        val foodId: MutableLiveData<Int> = MutableLiveData(mealComponentAndFood.mealComponent.foodId)
+        val mealId: MutableLiveData<Int> =
+            MutableLiveData(mealComponentAndFood.mealComponent.mealId)
+        val foodId: MutableLiveData<Int> =
+            MutableLiveData(mealComponentAndFood.mealComponent.foodId)
         val quantity = ObservableQuantity(mealComponentAndFood.mealComponent.quantity)
         val food: MutableLiveData<Product> = MutableLiveData(mealComponentAndFood.food)
     }
@@ -40,7 +46,11 @@ class MealViewModel : ViewModel() {
     val id = MutableLiveData<Int>()
     val name = MutableLiveData<String>()
 
-    var observableMealComponentsAndFoods: List<ObservableMealComponentAndFood> = emptyList()
+
+    var observableMealComponentsAndFoods: SnapshotStateList<ObservableMealComponentAndFood> = mutableStateListOf()
+
+    /*var observableMealComponentsAndFoods: MutableLiveData<MutableList<ObservableMealComponentAndFood>> =
+        MutableLiveData<MutableList<ObservableMealComponentAndFood>>(mutableListOf())*/
 
     fun openMeal(mealAndComponentsAndFoods: MealAndComponentsAndFoods) {
         id.value = mealAndComponentsAndFoods.meal.id
@@ -48,9 +58,14 @@ class MealViewModel : ViewModel() {
 
         observableMealComponentsAndFoods = mealAndComponentsAndFoods.mealComponentsAndFoods.map {
             ObservableMealComponentAndFood(it)
-        }
+        }.toMutableStateList()
     }
 
+    fun removeComponentAndFood(observableMealComponentAndFood: ObservableMealComponentAndFood) {
+        observableMealComponentsAndFoods.remove(observableMealComponentAndFood)
+        /*if (observableMealComponentsAndFoods.value?.remove(observableMealComponentAndFood) == true)
+            observableMealComponentsAndFoods.value = observableMealComponentsAndFoods.value*/
+    }
 
 
     fun toMealAndComponents(): MealAndComponents {
@@ -66,7 +81,7 @@ class MealViewModel : ViewModel() {
                     it.foodId.value!!,
                     Quantity(it.quantity.measurement.value!!, it.quantity.type.value!!)
                 )
-            }
+            } ?: emptyList()
         )
     }
 
