@@ -10,17 +10,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
@@ -37,12 +33,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.coroutineScope
+import androidx.fragment.app.viewModels
 import com.wilde.caloriecounter2.viewmodels.MealViewModel
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.entities.*
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import com.wilde.caloriecounter2.viewmodels.FoodListViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 private val primary = Color(0xFF9C0000)
 private val primaryLight = Color(0xFFD5442B)
@@ -67,6 +63,7 @@ private val lightColors = lightColors(
     onBackground = black
 )
 
+@AndroidEntryPoint
 class MealFragment : Fragment() {
 
     companion object {
@@ -74,6 +71,7 @@ class MealFragment : Fragment() {
     }
 
     private val mealViewModel: MealViewModel by activityViewModels()
+    private val foodListViewModel: FoodListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -121,12 +119,8 @@ class MealFragment : Fragment() {
     }
 
 
-    //fun enumDropDown(listValues: String, selectedIndex: Int, onSelectedChange: (index: Int) -> Unit) {
-
-
-    //@Preview
     @Composable
-    fun MealView(mealViewModel: MealViewModel = this.mealViewModel) {
+    fun MealView(mealViewModel: MealViewModel = this.mealViewModel, foodListViewModel: FoodListViewModel = this.foodListViewModel) {
         /*val (colors, typography, shapes) = createMdcTheme(
             LocalContext.current,
             LocalLayoutDirection.current
@@ -140,27 +134,50 @@ class MealFragment : Fragment() {
             typography = typography!!,
             shapes = shapes!!*/
         ) {
-            /*Surface(
-            ) {*/
-            //val scrollState by remember { Sc}
+            var selectingFood by remember { mutableStateOf(false) }
+
+            if (selectingFood)
+                FoodList() {
+                    mealViewModel.addComponentAndFood(it)
+                    //MealViewModel.ObservableMealComponentAndFood()
+                    selectingFood = false
+                }
+            else
+                MealViewMealsList(mealViewModel) {
+                    selectingFood = true
+                }
+        }
+    }
+
+    @Composable
+    fun MealViewMealsList(viewModel: MealViewModel, onAddComponent: () -> Unit) {
+        Box() {
             Column(
                 modifier = Modifier
                     .padding(8.dp)
             ) {
-                val mealName: String by mealViewModel.name.observeAsState("")
+                val mealName: String by viewModel.name.observeAsState(" ")
                 TextField(
                     label = { Text("Meal Name") },
                     value = mealName,
                     onValueChange = {
-                        mealViewModel.name.value = it
+                        viewModel.name.value = it
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )
 
                 val mealComponentsAndFoods =
-                    remember { mealViewModel.observableMealComponentsAndFoods }
+                    remember { viewModel.observableMealComponentsAndFoods }
 
-                ComponentsList(mealComponentsAndFoods, mealViewModel::removeComponentAndFood)
+                ComponentsList(mealComponentsAndFoods, viewModel::removeComponentAndFood)
+            }
+            FloatingActionButton(
+                onClick = onAddComponent,
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Filled.Add, null)
             }
         }
     }
@@ -170,220 +187,99 @@ class MealFragment : Fragment() {
         mealComponentsAndFoods: MutableList<MealViewModel.ObservableMealComponentAndFood>?,
         onRemoveComponent: (component: MealViewModel.ObservableMealComponentAndFood) -> Unit
     ) {
-        //val lazyListState = rememberLazyListState()
-        /*var itemSize by remember { mutableStateOf(0) }
-        var lColumnSize by remember { mutableStateOf(0) }*/
-
-        /*val scrollSize by remember {
-            derivedStateOf { itemSize * (mealComponentsAndFoods?.size ?: 0) }
-        }*/
-
-        /*val fullSize by remember {
-            derivedStateOf {
-                lifecycle.coroutineScope.launch {
-                    Log.d("scroll", "fullSize")
-                }
-                itemSize * (mealComponentsAndFoods?.size ?: 0) * 4
-            }
-        }
-
-        val scrollHeight by remember {
-            derivedStateOf {
-                lifecycle.coroutineScope.launch {
-                    Log.d("scroll", "scrollHeight")
-                }
-                if (fullSize > 0) lColumnSize.toFloat() / fullSize * lColumnSize else 0f
-            }
-        }
-
-        val offScreenAmount by remember {
-            derivedStateOf {
-                lifecycle.coroutineScope.launch {
-                    Log.d("scroll", "offScreenAmount")
-                }
-                fullSize - lColumnSize
-            }
-        }
-
-        val scrollMax by remember {
-            derivedStateOf {
-                lifecycle.coroutineScope.launch {
-                    Log.d("scroll", "scrollMax")
-                }
-                lColumnSize - scrollHeight
-            }
-        }
-
-        val scrollToCurrentItem by remember {
-            derivedStateOf {
-                lifecycle.coroutineScope.launch {
-                    Log.d("scroll", "scrollToCurrentItem")
-                }
-                (lazyListState.firstVisibleItemIndex * itemSize).toFloat()
-            }
-        }
-
-        val scrollPos by remember {
-            derivedStateOf {
-                lifecycle.coroutineScope.launch {
-                    Log.d("scroll", "scrollPos")
-                }
-                if (offScreenAmount > 0) (scrollToCurrentItem + lazyListState.firstVisibleItemScrollOffset) / offScreenAmount * scrollMax else 0f
-            }
-        }*/
-
-        /*val scroll by remember {
-            derivedStateOf {
-                object {
-
-                    private val size = itemSize * (mealComponentsAndFoods?.size ?: 0) * 4
-                    private val maxScroll = size - lColumnSize
-
-                    //(1 - (scrollState.maxValue / this.size.height)) * (this.size.height - scrollState.maxValue)
-                    val height: Float = if (size > 0) lColumnSize.toFloat() / size * lColumnSize else 0f
-                    val pos: Float = if (maxScroll > 0) (lazyListState.firstVisibleItemIndex * itemSize + lazyListState.firstVisibleItemScrollOffset).toFloat() / maxScroll * (lColumnSize - height) else 0f
-
-                    init {
-                        lifecycle.coroutineScope.launch {
-                            Log.d("Scroll", "$itemSize - $lColumnSize")
-                            Log.d("ScrollMax", "$maxScroll")
-                            Log.d(
-                                "ScrollPerc",
-                                "${(lazyListState.firstVisibleItemIndex * itemSize + lazyListState.firstVisibleItemScrollOffset).toFloat() / size}"
-                            )
-                            Log.d("ScrollPos", "$pos - $height")
-                        }
-                    }
-                }
-            }
-        }*/
-
-        /*with(LocalDensity.current) {
-            Log.d(
-                "listState",
-                "${lazyListState.firstVisibleItemIndex} - ${lazyListState.firstVisibleItemScrollOffset}"
-            )
-            Log.d("itemSize", "${itemSize}")
-            Log.d("lSize", "${lColumnSize}")
-        }*/
-
-
         val scrollState = rememberScrollState()
+        val lazyListState = rememberLazyListState()
 
         Column(
             Modifier
                 .verticalScroll(scrollState)
-                .scrollbarVertical(scrollState = scrollState)
-                /*.scrollbarVertical(
-                    fullSize = itemSize * (mealComponentsAndFoods?.size ?: 0) * 4,
-                    visibleSize = lColumnSize,
-                    itemSize = itemSize,
-                    itemCount = mealComponentsAndFoods?.size ?: 0,
-                    currentItem = lazyListState.firstVisibleItemIndex,
-                    currentItemOffset = lazyListState.firstVisibleItemScrollOffset,
-                    isScrollInProgress = lazyListState.isScrollInProgress
-                )*/
-                /*.scrollbarVertical(
-                    scrollbarOffset = scrollPos,
-                    scrollbarHeight = scrollHeight,
-                    isScrollInProgress = lazyListState.isScrollInProgress,
-                    //lazyListState = lazyListState
-                )*/
+                .scrollbarVertical(lazyListState)
             ,
-            //state = lazyListState,
-            //.verticalScroll(scrollState)
             //.scrollbarVertical(scrollState = scrollState)
         ) {
-            for (i in 1..4) {
-                mealComponentsAndFoods?.forEach { component ->
-                    Box {
-                        Card(
-                            border = BorderStroke(1.dp, Color(0x66000000)),
-                            elevation = 4.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                            /*.border(
-                                            1.dp,
-                                            Color(0x66000000),
-                                            shape = RoundedCornerShape(2.dp)
-                                        )*/
-                            //.padding(8.dp)
+            //
+            /*if (mealComponentsAndFoods != null) {
+                for (i in 0..6) {
+                    itemsIndexed(mealComponentsAndFoods.toList()) { index, component ->
+                        Box(
+                            *//*Modifier.onSizeChanged {
+                                Log.d("SizeChanged", "${i * 2 + index} - ${it.height.toString()}")
+                            }*//*
+                        ) {
+                            */
+            mealComponentsAndFoods?.forEach { component ->
+                Card(
+                    border = BorderStroke(1.dp, Color(0x66000000)),
+                    elevation = 4.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Column(
+                        Modifier.padding(8.dp)
+                    ) {
+                        Row(
+                            Modifier.height(IntrinsicSize.Min)
                         ) {
                             Column(
-                                Modifier.padding(8.dp)
+                                Modifier.weight(1f)
                             ) {
-                                Row(
-                                    Modifier.height(IntrinsicSize.Min)
-                                ) {
-                                    Column(
-                                        Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = component.food.value!!.productName,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(text = component.food.value!!.brands)
-                                    }
-                                    IconButton(
-                                        onClick = {
-                                            onRemoveComponent(component)
-                                        },
-                                        Modifier.then(
-                                            Modifier
-                                                .fillMaxHeight()
-                                                .aspectRatio(1f)
-                                                .size(24.dp)
-                                        )
-                                    ) {
-                                        Icon(
-                                            Icons.Filled.Delete,
-                                            null,
-                                            Modifier
-                                                //.padding(vertical = 4.dp)
-                                                .fillMaxHeight()
-                                                .aspectRatio(1f)
-                                        )
-                                    }
-                                    /*Icon(
-                                                    Icons.Filled.Delete,
-                                                    null,
-                                                    Modifier
-                                                        .padding(vertical = 4.dp)
-                                                        .fillMaxHeight()
-                                                        .aspectRatio(1f)
-                                                )*/
-                                }
-                                Row(
-                                    Modifier.padding(top = 4.dp)
-                                ) {
-                                    val measurementString by component.quantity.measurementString
-                                        .observeAsState("0")
-
-                                    TextField(
-                                        label = { Text("Measurement") },
-                                        value = measurementString,
-                                        onValueChange = component.quantity::measurementOnChange,
-                                        modifier = Modifier
-                                            .padding(end = 4.dp)
-                                            .weight(1f)
-                                    )
-
-                                    val quantityType by component.quantity.type.observeAsState()
-
-                                    EnumDropDown(
-                                        label = { Text("Measure Type") },
-                                        clazz = QuantityType::class.java,
-                                        selectedEnum = quantityType!!,
-                                        onSelectedChange = {
-                                            component.quantity.type.value = it
-                                        },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(start = 4.dp)
-                                    )
-                                }
+                                Text(
+                                    text = component.food.value!!.productName,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(text = component.food.value!!.brands)
                             }
+
+                            // Remove this ComponentAndFood button
+                            IconButton(
+                                onClick = {
+                                    onRemoveComponent(component)
+                                },
+                                Modifier.then(
+                                    Modifier
+                                        .fillMaxHeight()
+                                        .aspectRatio(1f)
+                                        .size(24.dp)
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Filled.Delete,
+                                    null,
+                                    Modifier
+                                        .fillMaxHeight()
+                                        .aspectRatio(1f)
+                                )
+                            }
+                        }
+                        Row(
+                            Modifier.padding(top = 4.dp)
+                        ) {
+                            val measurementString by component.quantity.measurementString
+                                .observeAsState("0")
+
+                            TextField(
+                                label = { Text("Measurement") },
+                                value = measurementString,
+                                onValueChange = component.quantity::measurementOnChange,
+                                modifier = Modifier
+                                    .padding(end = 4.dp)
+                                    .weight(1f)
+                            )
+
+                            val quantityType by component.quantity.type.observeAsState()
+
+                            EnumDropDown(
+                                label = { Text("Measure Type") },
+                                clazz = QuantityType::class.java,
+                                selectedEnum = quantityType!!,
+                                onSelectedChange = {
+                                    component.quantity.type.value = it
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 4.dp)
+                            )
                         }
                     }
                 }
@@ -392,10 +288,58 @@ class MealFragment : Fragment() {
     }
 
     fun Modifier.scrollbarVertical(
+        lazyListState: LazyListState,
+        color: Color = Color.Gray,
+        width: Dp = 6.dp,
+        maxAlpha: Float = 0.5f,
+        durationFadeOut: Int = 1500,
+        durationFadeIn: Int = 150,
+        delayFadeOut: Int = 1000
+    ): Modifier = composed {
+
+
+        val targetAlpha = if (lazyListState.isScrollInProgress) maxAlpha else 0f
+        val duration = if (lazyListState.isScrollInProgress) durationFadeIn else durationFadeOut
+
+        val alpha by animateFloatAsState(
+            targetValue = targetAlpha,
+            animationSpec = tween(
+                duration,
+                delayMillis = if (lazyListState.isScrollInProgress) 0 else delayFadeOut
+            ),
+        )
+
+        //lLS.layoutInfo.visibleItemsInfo.
+
+        drawWithContent {
+            drawContent()
+
+            if ((lazyListState.isScrollInProgress || alpha > 0f) && lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.index != null) {
+
+
+
+                Log.d("scrollHeight", this.size.height.toString())
+                Log.d("scrollVItems", lazyListState.layoutInfo.visibleItemsInfo.size.toString())
+                Log.d("scrollTotalItems", lazyListState.layoutInfo.totalItemsCount.toString())
+                Log.d("scrollLastIndex", "${lazyListState.layoutInfo.visibleItemsInfo.lastIndex}")
+                Log.d("scrollOffsets", "${lazyListState.layoutInfo.viewportStartOffset} - ${lazyListState.layoutInfo.viewportEndOffset}")
+                lazyListState
+
+                /*drawRoundRect(
+                    color = color,
+                    topLeft = Offset(this.size.width - width.toPx(), scrollbarOffset),
+                    size = Size(width.toPx(), scrollbarHeight),
+                    alpha = alpha,
+                    cornerRadius = CornerRadius(10f, 10f),
+                )*/
+            }
+        }
+    }
+
+    fun Modifier.scrollbarVertical(
         fullSize: Int,
         visibleSize: Int,
         itemSize: Int,
-        itemCount: Int,
         currentItem: Int,
         currentItemOffset: Int,
         isScrollInProgress: Boolean,
@@ -407,17 +351,55 @@ class MealFragment : Fragment() {
         delayFadeOut: Int = 1000
     ): Modifier = composed {
 
-        /*private val size = itemSize * (mealComponentsAndFoods?.size ?: 0) * 4
-        private val maxScroll = size - lColumnSize*/
-
-        //(1 - (scrollState.maxValue / this.size.height)) * (this.size.height - scrollState.maxValue)
-        /*val height: Float = if (size > 0) lColumnSize.toFloat() / size * lColumnSize else 0f
-        val pos: Float = if (maxScroll > 0) (lazyListState.firstVisibleItemIndex * itemSize + lazyListState.firstVisibleItemScrollOffset).toFloat() / maxScroll * (lColumnSize - height) else 0f*/
-
         val maxScroll = fullSize - visibleSize
-        val scrollbarHeight = if (fullSize > 0) visibleSize.toFloat() / fullSize * visibleSize else 0f
-        val scrollbarOffset = if (maxScroll > 0) (currentItem * itemSize + currentItemOffset).toFloat() / maxScroll * (visibleSize - scrollbarHeight) else 0f
+        val scrollbarHeight =
+            if (fullSize > 0) visibleSize.toFloat() / fullSize * visibleSize else 0f
+        val scrollbarOffset =
+            if (maxScroll > 0) (currentItem * itemSize + currentItemOffset).toFloat() / maxScroll * (visibleSize - scrollbarHeight) else 0f
 
+
+        val targetAlpha = if (isScrollInProgress) maxAlpha else 0f
+        val duration = if (isScrollInProgress) durationFadeIn else durationFadeOut
+
+        val alpha by animateFloatAsState(
+            targetValue = targetAlpha,
+            animationSpec = tween(
+                duration,
+                delayMillis = if (isScrollInProgress) 0 else delayFadeOut
+            ),
+        )
+
+        val lLS = rememberLazyListState()
+
+        //lLS.layoutInfo.visibleItemsInfo.
+
+        drawWithContent {
+            drawContent()
+
+            if (scrollbarHeight > 0) {
+                drawRoundRect(
+                    color = color,
+                    topLeft = Offset(this.size.width - width.toPx(), scrollbarOffset),
+                    size = Size(width.toPx(), scrollbarHeight),
+                    alpha = alpha,
+                    cornerRadius = CornerRadius(10f, 10f),
+                )
+            }
+        }
+    }
+
+
+    fun Modifier.scrollbarVertical(
+        scrollbarOffset: Float,
+        scrollbarHeight: Float,
+        isScrollInProgress: Boolean,
+        color: Color = Color.Gray,
+        width: Dp = 6.dp,
+        maxAlpha: Float = 0.5f,
+        durationFadeOut: Int = 1500,
+        durationFadeIn: Int = 150,
+        delayFadeOut: Int = 1000
+    ): Modifier = composed {
 
         val targetAlpha = if (isScrollInProgress) maxAlpha else 0f
         val duration = if (isScrollInProgress) durationFadeIn else durationFadeOut
@@ -445,59 +427,6 @@ class MealFragment : Fragment() {
         }
     }
 
-
-    @Composable
-    fun Modifier.scrollbarVertical(
-        scrollbarOffset: Float,
-        scrollbarHeight: Float,
-        isScrollInProgress: Boolean,
-        //lazyListState: LazyListState,
-        color: Color = Color.Gray,
-        width: Dp = 6.dp,
-        maxAlpha: Float = 0.5f,
-        durationFadeOut: Int = 1500,
-        durationFadeIn: Int = 150,
-        delayFadeOut: Int = 1000
-    ): Modifier {
-
-        val targetAlpha = if (isScrollInProgress) maxAlpha else 0f
-        val duration = if (isScrollInProgress) durationFadeIn else durationFadeOut
-
-        val alpha by animateFloatAsState(
-            targetValue = targetAlpha,
-            animationSpec = tween(
-                duration,
-                delayMillis = if (isScrollInProgress) 0 else delayFadeOut
-            ),
-        )
-
-        return drawWithContent {
-            drawContent()
-
-            //val size = this.size
-            //Log.d("Size", "${size.height.toDp()}")
-
-
-            /*val scrollbarHeight =
-                (1 - (scrollState.maxValue / this.size.height)) * (this.size.height - scrollState.maxValue)*/
-            /*val scrollbarOffset =
-                (this.size.height - scrollbarHeight) * (scrollState.value.toFloat() /
-                        scrollState.maxValue)*/
-
-            if (scrollbarHeight > 0) {
-                drawRoundRect(
-                    color = color,
-                    topLeft = Offset(this.size.width - width.toPx(), scrollbarOffset),
-                    size = Size(width.toPx(), scrollbarHeight),
-                    alpha = alpha,
-                    cornerRadius = CornerRadius(10f, 10f),
-                    //style =
-                )
-            }
-        }
-    }
-
-    @Composable
     fun Modifier.scrollbarVertical(
         scrollState: ScrollState,
         color: Color = Color.Gray,
@@ -506,7 +435,7 @@ class MealFragment : Fragment() {
         durationFadeOut: Int = 1500,
         durationFadeIn: Int = 150,
         delayFadeOut: Int = 1000
-    ): Modifier {
+    ): Modifier = composed {
 
         val targetAlpha = if (scrollState.isScrollInProgress) maxAlpha else 0f
         val duration = if (scrollState.isScrollInProgress) durationFadeIn else durationFadeOut
@@ -519,11 +448,10 @@ class MealFragment : Fragment() {
             ),
         )
 
-        return drawWithContent {
+        drawWithContent {
             drawContent()
 
             val size = this.size
-
 
             val scrollbarHeight =
                 (1 - (scrollState.maxValue / this.size.height)) * (this.size.height - scrollState.maxValue)
@@ -531,19 +459,12 @@ class MealFragment : Fragment() {
                 (this.size.height - scrollbarHeight) * (scrollState.value.toFloat() /
                         scrollState.maxValue)
 
-            /*drawRect(
-                color = Color.Blue,
-                topLeft = Offset(this.size.width - width.toPx(), scrollbarOffset),
-                size = Size(width.toPx(), scrollbarHeight),
-                alpha = 0.5f,
-            )*/
             drawRoundRect(
                 color = color,
                 topLeft = Offset(this.size.width - width.toPx(), scrollbarOffset),
                 size = Size(width.toPx(), scrollbarHeight),
                 alpha = alpha,
                 cornerRadius = CornerRadius(10f, 10f),
-                //style =
             )
         }
     }
@@ -593,10 +514,6 @@ class MealFragment : Fragment() {
         var dropDownWidth by remember { mutableStateOf(0) }
         //var dropDownSize by remember { mutableStateOf(Size.Zero) }
         //var dropDownPos by remember { mutableStateOf(Offset.Zero) }
-        val icon = if (expanded)
-            Icons.Filled.ArrowDropUp
-        else
-            Icons.Filled.ArrowDropDown
 
         Box(modifier = modifier) {
             TextField(
@@ -604,7 +521,14 @@ class MealFragment : Fragment() {
                 label = label,
                 onValueChange = { },
                 trailingIcon = {
-                    Icon(imageVector = icon, contentDescription = null)
+                    Icon(
+                        imageVector =
+                            if (expanded)
+                                Icons.Filled.ArrowDropUp
+                            else
+                                Icons.Filled.ArrowDropDown,
+                        contentDescription = null
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -613,11 +537,10 @@ class MealFragment : Fragment() {
                     }
                     .onSizeChanged {
                         dropDownWidth = it.width
-                    }
-                    /*.onGloballyPositioned {
-                        dropDownPos = it.positionInWindow()
-                    }*/
-                ,
+                    },
+                /*.onGloballyPositioned {
+                    dropDownPos = it.positionInWindow()
+                }*/
                 enabled = false,
                 colors = tfColors,
             )

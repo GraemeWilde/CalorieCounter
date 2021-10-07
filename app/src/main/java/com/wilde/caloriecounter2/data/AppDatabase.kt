@@ -66,6 +66,10 @@ abstract class AppDatabase : RoomDatabase() {
                                         Product(
                                             brands = "Test English Muffin Brand",
                                             productName = "English Muffins",
+                                        ),
+                                        Product(
+                                            brands = "Test food brand with a lot of text to debug how wrapping would work if there was a really long brand name",
+                                            productName = "Long food brand product",
                                         )
                                     )
                                     inst.mealDAO().insertMeals(
@@ -89,8 +93,8 @@ abstract class AppDatabase : RoomDatabase() {
                                                         QuantityType.Ratio
                                                     )
                                                 )
-                                                    /*Product()
-                                                )*/
+                                                /*Product()
+                                            )*/
                                             )
                                         )
                                     )

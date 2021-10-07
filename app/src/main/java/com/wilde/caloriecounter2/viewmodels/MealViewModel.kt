@@ -9,9 +9,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.entities.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.DecimalFormat
+import javax.inject.Inject
 
-class MealViewModel : ViewModel() {
+@HiltViewModel
+class MealViewModel @Inject internal constructor() : ViewModel() {
 
     class ObservableMealComponentAndFood(mealComponentAndFood: MealComponentAndFood) {
 
@@ -59,6 +62,24 @@ class MealViewModel : ViewModel() {
         observableMealComponentsAndFoods = mealAndComponentsAndFoods.mealComponentsAndFoods.map {
             ObservableMealComponentAndFood(it)
         }.toMutableStateList()
+    }
+
+    fun addComponentAndFood(food: Product) {
+        observableMealComponentsAndFoods.add(
+            ObservableMealComponentAndFood(
+                MealComponentAndFood(
+                    MealComponent(
+                        mealId = this.id.value!!,
+                        quantity = Quantity(0f, QuantityType.Ratio)
+                    ),
+                    food
+                )
+            )
+        )
+    }
+
+    fun addComponentAndFood(observableMealComponentAndFood: ObservableMealComponentAndFood) {
+        observableMealComponentsAndFoods.add(observableMealComponentAndFood)
     }
 
     fun removeComponentAndFood(observableMealComponentAndFood: ObservableMealComponentAndFood) {
