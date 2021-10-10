@@ -39,7 +39,7 @@ class ProductAdapter {
             product.offId,
             product.productCode,
             p100g?.servingSize,
-            product.quantity,
+            product.packageSize,
             nutriment
         )
     }

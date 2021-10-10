@@ -4,11 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.wilde.caloriecounter2.R
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.databinding.FoodListItemBinding
 
@@ -47,13 +45,13 @@ class FoodListAdapter internal constructor(
 
             productNameTextView.text = product.productName
             productBrandTextView.text = product.brands
-            productQuantityTextView.text = product.quantity
+            productQuantityTextView.text = product.packageSize
 
             if (product.productName.isNullOrEmpty()) productNameTextView.visibility = View.GONE
             else productNameTextView.visibility = View.VISIBLE
             if (product.brands.isNullOrEmpty()) productBrandTextView.visibility = View.GONE
             else productBrandTextView.visibility = View.VISIBLE
-            if (product.quantity.isNullOrEmpty()) productQuantityTextView.visibility = View.GONE
+            if (product.packageSize.isNullOrEmpty()) productQuantityTextView.visibility = View.GONE
             else productQuantityTextView.visibility = View.VISIBLE
 
             if (onClick != null) {

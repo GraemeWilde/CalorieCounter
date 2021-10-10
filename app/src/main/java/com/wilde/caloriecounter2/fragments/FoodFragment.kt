@@ -146,7 +146,7 @@ class FoodFragment : Fragment(), SavingDialogCallback {
 
         binding.foodNameEditTextNumber.setText(product?.productName)
         binding.productCodeEditTextNumber.setText(product?.productCode)
-        binding.productQuantityEditTextNumber.setText(product?.quantity)
+        binding.productQuantityEditTextNumber.setText(product?.packageSize)
         binding.productBrandsEditTextNumber.setText(product?.brands)
 
         product?.nutriments?.perServing?.let {

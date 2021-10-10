@@ -2,17 +2,17 @@ package com.wilde.caloriecounter2
 
 import android.app.SearchManager
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.*
+import androidx.navigation.NavOptions
+import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (findNavController(R.id.nav_host_fragment).currentDestination?.id != R.id.foodSearchFragment) {
                     findNavController(R.id.nav_host_fragment).navigate(R.id.foodSearchFragment)
                 }
-                ViewModelProvider(this).get(FoodSearchViewModel::class.java).search(query)
+                ViewModelProvider(this)[FoodSearchViewModel::class.java].search(query)
             }
             return true
             /*} else {

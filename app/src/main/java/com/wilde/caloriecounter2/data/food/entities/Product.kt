@@ -25,7 +25,7 @@ data class Product(
     val productCode: String = "",
 
     @ColumnInfo(name = "quantity")
-    val quantity: String? = null,
+    val packageSize: String? = null,
 
     /*@ColumnInfo(name = "serving_quantity")
     val servingQuantity: Int?,*/

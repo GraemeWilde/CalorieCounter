@@ -1,6 +1,5 @@
-package com.wilde.caloriecounter2.fragments
+package com.wilde.caloriecounter2.composables.screens
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,21 +10,17 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.wilde.caloriecounter2.composables.other.FlowRow
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.viewmodels.FoodListViewModel
-import java.lang.Integer.max
-import java.lang.Integer.min
 
 
 data class FoodListColors(
@@ -38,8 +33,8 @@ data class FoodListColors(
 
 
 @Composable
-fun FoodList(/*viewModel: FoodListViewModel,*/ foodListColors: FoodListColors = FoodListColors(), onSelect: ((selectedFood: Product) -> Unit)? = null) {
-    val viewModel = viewModel(FoodListViewModel::class.java)
+fun FoodList(viewModel: FoodListViewModel = viewModel(), foodListColors: FoodListColors = FoodListColors(), onSelect: ((selectedFood: Product) -> Unit)? = null) {
+    //val viewModel = viewModel(FoodListViewModel::class.java)
 
     val foods = viewModel.foods.observeAsState()
 
@@ -53,27 +48,36 @@ fun FoodListContent(foods: List<Product>?, foodListColors: FoodListColors = Food
     ) {
         if (foods != null) items(foods) { food ->
             Surface(
-                Modifier.padding(8.dp, 2.dp),
+                Modifier.padding(8.dp, 2.dp)
+                    .then(if (onSelect != null) Modifier.clickable {
+                        onSelect(food)
+                    } else
+                        Modifier)
+                ,
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(2.dp, foodListColors.foodBorderColor)
             ) {
                 Row(Modifier.padding(end = 3.dp, top = 4.dp, bottom = 4.dp)) {
-                    Icon(Icons.Filled.ChevronRight, null,
+                    Box(
                         Modifier
-
-                            //.padding(0.dp, 2.dp)
-                            //.size(20.dp)
+                            .padding(start = 5.dp)
+                            .size(12.dp, 20.dp)
                             .align(Alignment.CenterVertically)
-                    )
+                    ) {
+                        Icon(
+                            Icons.Filled.ChevronRight, null,
+                            Modifier.requiredSize(24.dp)
+                        )
+                    }
                     FlowRow(
                         Modifier
                             .fillMaxWidth()
-                            .then(
+                            /*.then(
                                 if (onSelect != null) Modifier.clickable {
                                     onSelect(food)
                                 } else
                                     Modifier
-                            )
+                            )*/
                             //.padding(0.dp, 1.dp)
                     ) {
                         TextBubble(
@@ -88,7 +92,7 @@ fun FoodListContent(foods: List<Product>?, foodListColors: FoodListColors = Food
                                 foodListColors.textColor
                             )
                         }
-                        food.quantity?.let {
+                        food.packageSize?.let {
                             TextBubble(
                                 it,
                                 foodListColors.productQuantityColor,
@@ -111,81 +115,5 @@ fun TextBubble(text: String, color: Color, contentColor: Color) {
         shape = RoundedCornerShape(21.dp/2),
     ) {
         Text(text, Modifier.padding(7.dp, 0.dp))
-    }
-}
-
-@Composable
-fun FlowRow(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Layout(content, modifier) { measurables, constraints ->
-        Log.d("Placeable", "FlowRow ${measurables.size}")
-
-        val measurableConstraints = constraints.copy(minWidth = 0, minHeight = 0)
-
-        val placeables = measurables.map { measurable ->
-            measurable.measure(measurableConstraints)
-        }
-        Log.d("Placeable", "Before layout")
-
-        var width = 0
-        var height = 0
-
-        run {
-            var xPosition = 0
-            var yPosition = 0
-            var lastY = 0
-
-            placeables.forEach { placeable ->
-                if (xPosition == 0) {
-                    //placeable.placeRelative(x = 0, y = yPosition)
-                    xPosition += placeable.width
-                    lastY = placeable.height
-                } else if (placeable.width + xPosition < constraints.maxWidth) {
-                    //placeable.placeRelative(xPosition, yPosition)
-                    xPosition += placeable.width
-                    lastY = placeable.height
-                } else {
-                    yPosition += lastY
-                    //placeable.placeRelative(0, yPosition)
-                    xPosition = placeable.width
-                    lastY = placeable.height
-                }
-
-                if (xPosition > width) width = xPosition
-            }
-            height = yPosition + lastY
-        }
-
-        width = min(max(width, constraints.minWidth), constraints.maxWidth)
-        height = min(max(height, constraints.minHeight), constraints.maxHeight)
-
-        layout(width, height) {
-            var xPosition = 0
-            var yPosition = 0
-            var lastY = 0
-
-            Log.d("Placeable", "layout")
-
-            placeables.forEach { placeable ->
-                if (xPosition == 0) {
-                    placeable.placeRelative(x = 0, y = yPosition)
-                    xPosition += placeable.width
-                    lastY = placeable.height
-                } else if (placeable.width + xPosition < constraints.maxWidth) {
-                    placeable.placeRelative(xPosition, yPosition)
-                    xPosition += placeable.width
-                    lastY = placeable.height
-                } else {
-                    yPosition += lastY
-                    placeable.placeRelative(0, yPosition)
-                    xPosition = placeable.width
-                    lastY = placeable.height
-                }
-            }
-
-
-        }
     }
 }
