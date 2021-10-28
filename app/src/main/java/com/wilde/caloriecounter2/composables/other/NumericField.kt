@@ -14,7 +14,7 @@ private fun String.checkNumeric(): Boolean {
 class NumericField(value: Float? = null) {
     private var _numeric: Float? = value
     val numeric: Float? get() = _numeric
-    private var _string = MutableStateFlow(value.toString())
+    private var _string = MutableStateFlow(value?.toString() ?: "")
     val string: StateFlow<String> get() = _string
 
 

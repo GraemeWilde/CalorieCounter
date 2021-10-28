@@ -28,7 +28,6 @@ class MealListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val adapter = MealListAdapter { meal ->
-        Log.d("Meal:", meal.toString())
         //val bundle = bundleOf("meal" to meal)
         mealViewModel.openMeal(meal)
         findNavController().navigate(R.id.action_mealListFragment_to_mealFragment)

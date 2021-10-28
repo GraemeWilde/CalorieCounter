@@ -1,6 +1,12 @@
 package com.wilde.caloriecounter2.composables.screens
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
@@ -8,14 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.insets.imePadding
 import com.wilde.caloriecounter2.viewmodels.FoodViewModel2
 
 @Preview
 @Composable
-fun FoodViewPreview() {
-    val foodViewModel = FoodViewModel2()
+fun FoodPreview() {
+    //val foodViewModel = FoodViewModel2()
     //foodViewModel.openProduct()
-    FoodView(foodViewModel = foodViewModel)
+    Food(/*foodViewModel = foodViewModel*/)
     //MutableStateFlow
 }
 
@@ -25,11 +32,13 @@ fun FoodView(foodViewModel: FoodViewModel2 = viewModel()) {
 }*/
 
 @Composable
-fun FoodView(foodViewModel: FoodViewModel2 = viewModel()) {
+fun Food(foodViewModel: FoodViewModel2 = viewModel()) {
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp)
+            .padding(12.dp)
+            .verticalScroll(rememberScrollState()),
+        Arrangement.spacedBy(12.dp)
     ) {
         FoodRow {
             val name by foodViewModel.product.name.collectAsState()
@@ -125,7 +134,11 @@ fun FoodView(foodViewModel: FoodViewModel2 = viewModel()) {
             FoodField(
                 label = { Text("Carbohydrates") },
                 value = carbohydrates,
-                onValueChange = { foodViewModel.product.nutriments.perServing.carbohydrates.update(it) },
+                onValueChange = {
+                    foodViewModel.product.nutriments.perServing.carbohydrates.update(
+                        it
+                    )
+                },
             )
             FoodField(
                 label = { Text("Fibre") },
@@ -159,7 +172,8 @@ fun FoodRow(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 3.dp)
+            .padding(horizontal = 0.dp),
+        Arrangement.spacedBy(12.dp)
     ) {
         content()
     }
@@ -172,10 +186,14 @@ fun RowScope.FoodField(
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
 ) {
-    TextField(value, onValueChange,
+    TextField(
+        value,
+        onValueChange,
         modifier
-            .padding(horizontal = 6.dp, vertical = 6.dp)
-            .weight(1f), label = label)
+            .padding(horizontal = 0.dp, vertical = 0.dp)
+            .weight(1f),
+        label = label
+    )
 }
 
 fun MyLayout(

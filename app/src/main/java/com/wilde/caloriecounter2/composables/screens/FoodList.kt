@@ -17,10 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import com.wilde.caloriecounter2.composables.other.FlowRow
 import com.wilde.caloriecounter2.data.food.entities.Product
+import com.wilde.caloriecounter2.viewmodels.FoodListInterface
 import com.wilde.caloriecounter2.viewmodels.FoodListViewModel
+import com.wilde.caloriecounter2.viewmodels.FoodListViewModelClass
 
 
 data class FoodListColors(
@@ -33,7 +36,11 @@ data class FoodListColors(
 
 
 @Composable
-fun FoodList(viewModel: FoodListViewModel = viewModel(), foodListColors: FoodListColors = FoodListColors(), onSelect: ((selectedFood: Product) -> Unit)? = null) {
+fun FoodList(
+    viewModel: FoodListViewModelClass = hiltViewModel<FoodListViewModel>(),
+    foodListColors: FoodListColors = FoodListColors(),
+    onSelect: ((selectedFood: Product) -> Unit)? = null
+) {
     //val viewModel = viewModel(FoodListViewModel::class.java)
 
     val foods = viewModel.foods.observeAsState()
@@ -42,18 +49,22 @@ fun FoodList(viewModel: FoodListViewModel = viewModel(), foodListColors: FoodLis
 }
 
 @Composable
-fun FoodListContent(foods: List<Product>?, foodListColors: FoodListColors = FoodListColors(), onSelect: ((selectedFood: Product) -> Unit)? = null) {
+fun FoodListContent(
+    foods: List<Product>?,
+    foodListColors: FoodListColors = FoodListColors(),
+    onSelect: ((selectedFood: Product) -> Unit)? = null
+) {
     LazyColumn(
         Modifier.fillMaxWidth()
     ) {
         if (foods != null) items(foods) { food ->
             Surface(
-                Modifier.padding(8.dp, 2.dp)
+                Modifier
+                    .padding(8.dp, 2.dp)
                     .then(if (onSelect != null) Modifier.clickable {
                         onSelect(food)
                     } else
-                        Modifier)
-                ,
+                        Modifier),
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(2.dp, foodListColors.foodBorderColor)
             ) {
@@ -72,13 +83,13 @@ fun FoodListContent(foods: List<Product>?, foodListColors: FoodListColors = Food
                     FlowRow(
                         Modifier
                             .fillMaxWidth()
-                            /*.then(
-                                if (onSelect != null) Modifier.clickable {
-                                    onSelect(food)
-                                } else
-                                    Modifier
-                            )*/
-                            //.padding(0.dp, 1.dp)
+                        /*.then(
+                            if (onSelect != null) Modifier.clickable {
+                                onSelect(food)
+                            } else
+                                Modifier
+                        )*/
+                        //.padding(0.dp, 1.dp)
                     ) {
                         TextBubble(
                             food.productName,
@@ -112,7 +123,7 @@ fun TextBubble(text: String, color: Color, contentColor: Color) {
         Modifier.padding(2.dp, 1.dp),
         color = color,
         contentColor = contentColor,
-        shape = RoundedCornerShape(21.dp/2),
+        shape = RoundedCornerShape(21.dp / 2),
     ) {
         Text(text, Modifier.padding(7.dp, 0.dp))
     }

@@ -35,7 +35,7 @@ class FoodFragment : Fragment(), SavingDialogCallback {
     private var _binding: FoodFragmentBinding? = null
     private var product: Product? = null
 
-    private val args: FoodFragmentArgs by navArgs()
+    //private val args: FoodFragmentArgs by navArgs()
 
     private var foodChanged: Boolean = false
 
@@ -48,8 +48,6 @@ class FoodFragment : Fragment(), SavingDialogCallback {
 
     private inner class SaveButton : View.OnClickListener {
         override fun onClick(v: View?) {
-            Log.d("Food Fragment", "foodChanged: $foodChanged")
-
             var id = 0
             if (product != null) {
                 if (!foodChanged) {
@@ -111,7 +109,6 @@ class FoodFragment : Fragment(), SavingDialogCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("Food Fragment", "onCreateView")
         product = arguments?.get("product")?.let {
             it as Product
         }
@@ -171,7 +168,6 @@ class FoodFragment : Fragment(), SavingDialogCallback {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 foodChanged = true
-                Log.d("Food Fragment", "All Watcher")
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -232,8 +228,6 @@ class FoodFragment : Fragment(), SavingDialogCallback {
 
         val navDrawer = requireActivity().findViewById<DrawerLayout>(R.id.drawer_layout)
 
-        Log.d("Food Fragment", "onStart")
-
         navDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
 
@@ -250,12 +244,10 @@ class FoodFragment : Fragment(), SavingDialogCallback {
     }
 
     override fun addNewResponse() {
-        Log.d("Food Fragment", "Prod" + viewModel.savingFood.toString())
         viewModel.save(viewModel.savingFood, FoodViewModel.Overwrite.NewRecord)
     }
 
     override fun updateOldResponse() {
-        Log.d("Food Fragment", "Prod" + viewModel.savingFood.toString())
         viewModel.save(viewModel.savingFood, FoodViewModel.Overwrite.Overwrite)
     }
 }

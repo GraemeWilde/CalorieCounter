@@ -11,16 +11,16 @@ import javax.inject.Inject
 @HiltViewModel
 class FoodListViewModel @Inject internal constructor(
     private val foodRepository: FoodRepository
-) : ViewModel() {
+) : FoodListViewModelClass() {
 
     private var mutableFoods: LiveData<List<Product>> = MutableLiveData<List<Product>>()
 
-    val foods: LiveData<List<Product>> by lazy {
+    override val foods: LiveData<List<Product>> by lazy {
         getFoodsList()
         mutableFoods
     }
 
-    fun getFoodsList() {
+    private fun getFoodsList() {
         mutableFoods = foodRepository.getAllLive()
     }
 }

@@ -1,6 +1,5 @@
 package com.wilde.caloriecounter2.composables.screens
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -23,29 +22,6 @@ import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.entities.*
 import com.wilde.caloriecounter2.viewmodels.MealViewModel
 
-
-private val primary = Color(0xFF9C0000)
-//private val primaryLight = Color(0xFFD5442B)
-private val primaryDark = Color(0xFF670000)
-
-private val black = Color(0xFFFFFFFF)
-private val white = Color(0xFF000000)
-
-private val darkColors = darkColors(
-    primary = primary,
-    primaryVariant = primaryDark,
-    onPrimary = white,
-    background = black,
-    onBackground = white
-)
-
-private val lightColors = lightColors(
-    primary = primary,
-    primaryVariant = primaryDark,
-    onPrimary = white,
-    background = white,
-    onBackground = black
-)
 
 
 @Preview(device = Devices.PIXEL_4, showSystemUi = true)
@@ -72,43 +48,36 @@ fun MealViewPreview() {
     )
     val viewModel = MealViewModel()
     viewModel.openMeal(meal)
-    MealView(viewModel)
+    Meal(viewModel)
 }
 
 
 @Composable
-fun MealView(mealViewModel: MealViewModel = viewModel()) {
+fun Meal(mealViewModel: MealViewModel = viewModel()) {
     /*val (colors, typography, shapes) = createMdcTheme(
         LocalContext.current,
         LocalLayoutDirection.current
     )*/
 
-    MaterialTheme(
-        colors = if (isSystemInDarkTheme()) darkColors else lightColors,
-        typography = Typography(),
-        shapes = Shapes()
-        /*colors = colors!!,
-        typography = typography!!,
-        shapes = shapes!!*/
-    ) {
-        var selectingFood by remember { mutableStateOf(false) }
+    var selectingFood by remember { mutableStateOf(false) }
 
-        if (selectingFood)
-            FoodList {
-                mealViewModel.addComponentAndFood(it)
-                //MealViewModel.ObservableMealComponentAndFood()
-                selectingFood = false
-            }
-        else
-            MealViewComponent(mealViewModel) {
-                selectingFood = true
-            }
-    }
+    if (selectingFood)
+        FoodList {
+            mealViewModel.addComponentAndFood(it)
+            //MealViewModel.ObservableMealComponentAndFood()
+            selectingFood = false
+        }
+    else
+        MealViewComponent(mealViewModel) {
+            selectingFood = true
+        }
 }
 
 @Composable
 fun MealViewComponent(viewModel: MealViewModel, onAddComponent: () -> Unit) {
-    Box {
+    Box(
+        Modifier.fillMaxHeight()
+    ) {
         Column(
             modifier = Modifier
                 .padding(8.dp)

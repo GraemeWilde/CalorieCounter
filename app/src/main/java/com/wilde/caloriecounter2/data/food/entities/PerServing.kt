@@ -1,8 +1,12 @@
 package com.wilde.caloriecounter2.data.food.entities
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
+import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
+@JsonClass(generateAdapter = true)
 data class PerServing(
     @ColumnInfo(name = "serving_size")
     val servingSize: Float?,
@@ -36,4 +40,4 @@ data class PerServing(
 
     @ColumnInfo(name = "proteins")
     val proteins: Float?,
-) : Serializable
+)

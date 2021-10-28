@@ -7,13 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.findNavController
-import com.wilde.caloriecounter2.R
 import com.wilde.caloriecounter2.composables.screens.FoodList
-import com.wilde.caloriecounter2.composables.screens.FoodView
+import com.wilde.caloriecounter2.composables.screens.Food
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.viewmodels.FoodViewModel2
 import dagger.hilt.android.AndroidEntryPoint
@@ -103,7 +100,7 @@ class FoodListFragment : Fragment() {
 
                     foodViewModel.openProduct(product!!)
 
-                    FoodView(foodViewModel)
+                    Food(foodViewModel)
                 }
             }
         }

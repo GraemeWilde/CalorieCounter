@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.wilde.caloriecounter2.composables.screens.MealView
+import com.wilde.caloriecounter2.composables.screens.Meal
 import com.wilde.caloriecounter2.viewmodels.MealViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,7 +35,7 @@ class MealFragment : Fragment() {
         //return inflater.inflate(R.layout.meal_fragment, container, false)
         return ComposeView(requireContext()).apply {
             setContent {
-                MealView(mealViewModel)
+                Meal(mealViewModel)
             }
         }
     }

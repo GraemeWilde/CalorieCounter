@@ -1,7 +1,9 @@
 package com.wilde.caloriecounter2.data.meals.entities
 
 import androidx.room.*
+import com.squareup.moshi.JsonClass
 
+@JsonClass( generateAdapter = true )
 @Entity(tableName = "meal_components",
     indices = [
         Index(value = ["meal_id"])

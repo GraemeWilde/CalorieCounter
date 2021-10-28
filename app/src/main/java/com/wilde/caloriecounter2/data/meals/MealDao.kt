@@ -31,13 +31,10 @@ interface MealDao {
     @Transaction
     suspend fun insertMeal(meal: Meal, mealComponent: List<MealComponent>) {
         val id = insertMealParents(meal)
-        Log.d("MealDAO", id[0].toInt().toString())
 
         val comps = mealComponent.map { component ->
             component.copy(mealId = id[0].toInt())
         }
-
-        Log.d("MealDAO", comps.toString())
 
         insertMealComponentsRefs(comps)
     }

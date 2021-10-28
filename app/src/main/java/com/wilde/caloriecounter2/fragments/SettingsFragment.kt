@@ -25,7 +25,6 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             // Not sure if this is actually necessary
             //findNavController().graph.startDestination = homeFragment
 
-            Log.d(LOGGER_TAG, "Preference homeScreen: $homeFragment")
         }
     }
 }

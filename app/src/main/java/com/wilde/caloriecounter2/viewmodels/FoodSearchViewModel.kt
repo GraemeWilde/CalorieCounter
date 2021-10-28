@@ -15,7 +15,7 @@ import javax.inject.Inject
 class FoodSearchViewModel @Inject internal constructor(
     private val foodRepository: FoodRepository,
     //private val savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : FoodListViewModelClass() {
 
     private var response: FoodResponse? = null
     private val mutableQueryText = MutableLiveData<String>()
@@ -24,7 +24,7 @@ class FoodSearchViewModel @Inject internal constructor(
     private val mutableSearching = MutableLiveData<Boolean>()
     val searching: LiveData<Boolean> get() = mutableSearching
 
-    val foods: MutableLiveData<List<Product>> by lazy {
+    override val foods: MutableLiveData<List<Product>> by lazy {
         MutableLiveData<List<Product>>()
     }
 

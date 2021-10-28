@@ -33,7 +33,6 @@ class FoodSearchFragment : Fragment() {
     private val foodSearchViewModel: FoodSearchViewModel by activityViewModels()
 
     private val adapter = FoodListAdapter {
-        Log.d("Product:", it.toString())
         val bundle = bundleOf("product" to it)
         //val bundle = Bundle().putSerializable("product", it)
         findNavController().navigate(R.id.foodFragment, bundle)
