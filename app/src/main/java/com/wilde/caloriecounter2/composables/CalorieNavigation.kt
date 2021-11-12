@@ -1,10 +1,11 @@
 package com.wilde.caloriecounter2.composables
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Filter
-import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -13,8 +14,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.*
 import com.squareup.moshi.Moshi
+import com.wilde.caloriecounter2.BuildConfig
 import com.wilde.caloriecounter2.R
-import com.wilde.caloriecounter2.composables.other.SearchTopAppBar
+import com.wilde.caloriecounter2.composables.other.*
 import com.wilde.caloriecounter2.composables.screens.Food
 import com.wilde.caloriecounter2.composables.screens.FoodList
 import com.wilde.caloriecounter2.composables.screens.Meal
@@ -60,133 +62,70 @@ object CalorieNavigation2 {
             backStackEntry: NavBackStackEntry,
             actions: ((@Composable RowScope.() -> Unit)?) -> Unit
         ) {
-
-            actions {
-                val searchInternetOpen: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
-                val filterListOpen: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
-
-                /*searchInternetOpen = rememberSaveable (filterListOpen) { mutableStateOf(false) }
-                filterListOpen = rememberSaveable (searchInternetOpen) { mutableStateOf(false) }*/
-
-                IconButton(onClick = { searchInternetOpen.value = false }) {
-                    Icon(Icons.Filled.Save, null)
-                }
-
-                SearchTopAppBar(
-                    rememberVectorPainter(Icons.Filled.Filter),
-                    filterListOpen,
-                    onOpen = { searchInternetOpen.value = false }
-                ) {
-
-                }
-
-                SearchTopAppBar(
-                    painterResource(R.drawable.search_internet),
-                    searchInternetOpen,
-                    onOpen = { filterListOpen.value = false }
-                ) {
-                    if (it.isNotEmpty())
-                        nav.navigate("food_search/$it")
-                }
-
-//                var reqFoc by remember { mutableStateOf(false) }
+            Log.d("CalorieNavigation", this.title)
+//            actions {
+//                val searchInternetOpen: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
+//                val filterListOpen: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
 //
-//                var searchOpen by rememberSaveable { mutableStateOf(false) }
-//                if (searchOpen) {
+//                /*searchInternetOpen = rememberSaveable (filterListOpen) { mutableStateOf(false) }
+//                filterListOpen = rememberSaveable (searchInternetOpen) { mutableStateOf(false) }*/
 //
-//                    var searchText by rememberSaveable { mutableStateOf("") }
-//                    val focusRequester = remember { FocusRequester() }
+//                SearchTopAppBar(
+//                    rememberVectorPainter(Icons.Filled.FilterList),
+//                    filterListOpen,
+//                    onOpen = { searchInternetOpen.value = false }
+//                ) {
 //
-//                    //OutlinedTextField(value = , onValueChange = )
-//                    /*Layout(content = { *//*TODO*//* }) { measurables, constraints ->
-//                        measurables.find{ it. }
-//                        layout(constraints.maxWidth, constraints.maxHeight) {
-//
-//                        }
-//                    }*/
-//                    Row(
-//                        Modifier
-//                            .padding(4.dp)
-//                            .height(IntrinsicSize.Min)
-//                            .border(1.dp, Color.Black, RoundedCornerShape(4.dp))
-//                            .padding(8.dp)
-//                        ,
-//                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        val searchIcon = painterResource(R.drawable.search_internet)
-//                        Icon(
-//                            searchIcon,
-//                            stringResource(id = R.string.search_openfoodfacts_hint),
-//                            /*Modifier
-//                                .width(searchIcon.intrinsicSize.width.dp)
-//                                .height(searchIcon.intrinsicSize.height.dp)*/
-//                            //Modifier.fillMaxHeight()
-//                        )
-//                        with (LocalDensity.current) {
-//                            BasicTextField(
-//                                value = searchText,
-//                                onValueChange = { searchText = it },
-//                                Modifier
-//                                    .focusRequester(focusRequester)
-//                                    .weight(1f, false)
-//                                ,
-//                                keyboardOptions = KeyboardOptions(
-//                                    imeAction = ImeAction.Search,
-//                                ),
-//                                keyboardActions = KeyboardActions(
-//                                    onSearch = {
-//                                        if (searchText.isNotEmpty())
-//                                            nav.navigate("food_search/$searchText")
-//                                    }
-//                                ),
-//                                singleLine = true,
-//                                textStyle = LocalTextStyle.current.copy(fontSize = 18.dp.toSp())
-//                            )
-//                        }
-//                        Box(
-//                            Modifier.requiredSize(24.dp)
-//                        ) {
-//                            IconButton(
-//                                onClick = {
-//                                    if (searchText.isEmpty()) {
-//                                        searchOpen = false
-//                                    } else {
-//                                        searchText = ""
-//                                    }
-//                                },
-//                                Modifier.requiredSize(48.dp)
-//                            ) {
-//                                Icon(
-//                                    Icons.Filled.Close,
-//                                    stringResource(id = R.string.close),
-//                                    Modifier
-//                                        .width(Icons.Filled.Close.defaultWidth)
-//                                        .height(Icons.Filled.Close.defaultHeight)
-//                                )
-//                            }
-//                        }
-//                    }
-//
-//                    SideEffect {
-//                        if (reqFoc) {
-//                            focusRequester.requestFocus()
-//                            reqFoc = false
-//                        }
-//                    }
-//
-//                } else {
-//                    IconButton(onClick = {
-//                        searchOpen = true
-//                        reqFoc = true
-//                    }) {
-//                        Log.d("Navigation", "Search Alpha: ${LocalContentAlpha.current}")
-//                        Icon(
-//                            painterResource(id = R.drawable.search_internet),
-//                            stringResource(id = R.string.search_openfoodfacts_hint),
-//                        )
-//                    }
 //                }
+//
+//                SearchTopAppBar(
+//                    painterResource(R.drawable.search_internet),
+//                    searchInternetOpen,
+//                    onOpen = { filterListOpen.value = false }
+//                ) {
+//                    if (it.isNotEmpty())
+//                        nav.navigate("food_search/$it")
+//                }
+//            }
+
+            RunOnce {
+                actions {
+                    ActionsRow(actions = listOf(
+                        ActionSearchable(
+                            {
+                                Icon(
+                                    painterResource(id = R.drawable.search_internet),
+                                    stringResource(id = R.string.search_openfoodfacts_hint)
+                                )
+                            },
+                            stringResource(R.string.search_openfoodfacts_hint),
+                            Priority.IfSpace()
+                        ) {
+                            if (it.isNotEmpty())
+                                nav.navigate("food_search/$it")
+                        },
+                        ActionSearchable(
+                            { Icon(Icons.Filled.FilterList, null) },
+                            "Filter",
+                            Priority.AlwaysShow()
+                        ) {},
+                        ActionButton(
+                            { Icon(Icons.Filled.Save, "Save") },
+                            "Save",
+                            Priority.InMoreSettings
+                        ) {},
+                        ActionButton(
+                            { Icon(Icons.Filled.SaveAlt, "Save") },
+                            "Save2",
+                            Priority.InMoreSettings
+                        ) {},
+                        ActionButton(
+                            { Icon(Icons.Filled.SavedSearch, "Save") },
+                            "Save3",
+                            Priority.InMoreSettings
+                        ) {}
+                    ))
+                }
             }
 
 
@@ -216,6 +155,7 @@ object CalorieNavigation2 {
             backStackEntry: NavBackStackEntry,
             actions: ((@Composable RowScope.() -> Unit)?) -> Unit
         ) {
+            Log.d("CalorieNavigation", this.title)
             val foodViewModel: FoodViewModel2 = hiltViewModel()
 
             rememberSaveable {
@@ -230,15 +170,17 @@ object CalorieNavigation2 {
 
 
 
-            actions {
-                IconButton(onClick = {
-                    foodViewModel.save()
-                    nav.popBackStack("foodlist", false)
-                }) {
-                    Icon(
-                        Icons.Filled.Save,
-                        stringResource(id = R.string.save)
-                    )
+            RunOnce {
+                actions {
+                    IconButton(onClick = {
+                        foodViewModel.save()
+                        nav.popBackStack("foodlist", false)
+                    }) {
+                        Icon(
+                            Icons.Filled.Save,
+                            stringResource(id = R.string.save)
+                        )
+                    }
                 }
             }
 
@@ -261,6 +203,7 @@ object CalorieNavigation2 {
             backStackEntry: NavBackStackEntry,
             actions: ((@Composable RowScope.() -> Unit)?) -> Unit
         ) {
+            Log.d("CalorieNavigation", this.title)
             val mealListViewModel: MealListViewModel = hiltViewModel()
 
             MealList(mealListViewModel) {
@@ -288,6 +231,7 @@ object CalorieNavigation2 {
             backStackEntry: NavBackStackEntry,
             actions: ((@Composable RowScope.() -> Unit)?) -> Unit
         ) {
+            Log.d("CalorieNavigation", this.title)
             val mealViewModel: MealViewModel = hiltViewModel()
 
             val mealString = backStackEntry.arguments!!.getString("mealId")!!
@@ -317,6 +261,7 @@ object CalorieNavigation2 {
             backStackEntry: NavBackStackEntry,
             actions: ((@Composable RowScope.() -> Unit)?) -> Unit
         ) {
+            Log.d("CalorieNavigation", this.title)
             val searchViewModel: FoodSearchViewModel = hiltViewModel()
 
             val searchTerm = backStackEntry.arguments!!.getString("search_term")!!

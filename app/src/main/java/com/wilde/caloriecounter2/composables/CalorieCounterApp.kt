@@ -1,5 +1,6 @@
 package com.wilde.caloriecounter2.composables
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -13,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,12 +23,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
+import com.wilde.caloriecounter2.composables.other.RunOnce
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@ExperimentalComposeUiApi
-@ExperimentalMaterialApi // Added to use DrawState.targetValue
+//@ExperimentalComposeUiApi
+//@ExperimentalMaterialApi // Added to use DrawState.targetValue
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CalorieCounterApp() {
 
@@ -93,7 +94,6 @@ fun CalorieCounterApp() {
                     }
                 }) {
                     if (baseRoute) {
-                        Log.d("Navigation", "Nav Alpha: ${LocalContentAlpha.current}")
                         Icon(Icons.Filled.Menu, null)
                     } else {
                         Icon(Icons.Filled.ArrowBack, null)
@@ -101,16 +101,14 @@ fun CalorieCounterApp() {
                 }
             },
             actions = {
-                Log.d("Navigation", "Action Alpha: ${LocalContentAlpha.current}")
                 CompositionLocalProvider(LocalContentAlpha provides 0.87f) {
-                    Log.d("Navigation", "Action Alpha: ${LocalContentAlpha.current}")
                     actions.value?.invoke(this)
                 }
             }
         )
         ModalDrawer(
             drawerContent = {
-                //Log.d("CalorieCounterApp", "Drawer")
+                Log.d("CalorieCounterApp", "Drawer")
                 for(screen in calNav.screens) {
                     if (screen.baseRoute) {
                         Text(
@@ -131,7 +129,7 @@ fun CalorieCounterApp() {
             },
             drawerState = drawerState
         ) {
-            //Log.d("CalorieCounterApp", "Main")
+            Log.d("CalorieCounterApp", "Main")
             // Remember to avoid creating new callback every recomposition
             val callback = remember {
                 object : OnBackPressedCallback(false) {
@@ -161,17 +159,20 @@ fun CalorieCounterApp() {
                 }
             }
 
-            val eff = @Composable {
+            val drawerCloseCallbackEnabler = @Composable {
                 LaunchedEffect(key1 = drawerState.targetValue) {
                     // Enable callback when drawer is open or opening
                     callback.isEnabled = drawerState.targetValue == DrawerValue.Open
-                    //Log.d("CalorieCounterApp", "DrawerState")
+                    Log.d("CalorieCounterApp", "DrawerState")
                 }
             }
 
-            eff()
+            drawerCloseCallbackEnabler()
 
-            NavHost(navController = navController, startDestination = CalorieNavigation2.FoodList.route/*navScreens.foodlist.route*/) {
+            NavHost(
+                navController = navController,
+                startDestination = CalorieNavigation2.FoodList.route/*navScreens.foodlist.route*/
+            ) {
                 for(screen in calNav.screens) {
                     //val screen = screen.objectInstance!!
                     composable(
@@ -179,7 +180,7 @@ fun CalorieCounterApp() {
                         screen.arguments,
                         screen.deepLinks,
                     ) { backStackEntry ->
-                        //Log.d("CalorieCounterApp", "Compose: ${screen.route}")
+                        Log.d("CalorieCounterApp", "Compose: ${screen.route}")
                         /*DisposableEffect(key1 = true) {
                             Log.d("CalorieCounterApp", "NavScreenLaunch")
                             baseRoute = screen.baseRoute
@@ -189,15 +190,22 @@ fun CalorieCounterApp() {
                             onDispose {  }
                         }*/
 
-                        LaunchedEffect(key1 = true) {
-                            //Log.d("CalorieCounterApp", "Launch: ${screen.route}")
+//                        LaunchedEffect(key1 = true) {
+//                            //Log.d("CalorieCounterApp", "Launch: ${screen.route}")
+//                            Log.d("CalorieCounterApp", "Second")
+//                            baseRoute = screen.baseRoute
+//                            title = screen.title
+//                            actions.value = null
+//                        }
+
+                        RunOnce {
+                            Log.d("CalorieCounterApp", "Init Screen")
                             baseRoute = screen.baseRoute
                             title = screen.title
                             actions.value = null
+                            //Log.d("Operators", "${false || false && true && true}")
                         }
 
-                        //baseRoute = screen.baseRoute
-                        //title = screen.title
                         screen.Content(
                             navController,
                             backStackEntry,

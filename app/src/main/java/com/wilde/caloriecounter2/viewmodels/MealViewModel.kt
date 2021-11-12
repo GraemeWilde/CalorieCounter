@@ -102,7 +102,7 @@ class MealViewModel @Inject internal constructor() : ViewModel() {
                     it.foodId.value!!,
                     Quantity(it.quantity.measurement.value!!, it.quantity.type.value!!)
                 )
-            } ?: emptyList()
+            }
         )
     }
 

@@ -74,7 +74,9 @@ fun SearchTopAppBar(
                         value = searchText.value,
                         onValueChange = { searchText.value = it },
                         Modifier
-                            .focusRequester(focusRequester),
+                            .focusRequester(focusRequester)
+                            .weight(1f, false)
+                        ,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Search,
                         ),

@@ -42,8 +42,6 @@ private const val DEFAULT_HOME_SCREEN = R.id.journalFragment
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @ExperimentalComposeUiApi
-    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

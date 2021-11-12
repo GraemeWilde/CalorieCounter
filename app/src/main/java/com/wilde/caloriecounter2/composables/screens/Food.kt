@@ -196,6 +196,7 @@ fun RowScope.FoodField(
     )
 }
 
+/*
 fun MyLayout(
     modifier: Modifier = Modifier,
     content: MyLayoutScope.() -> Unit
@@ -213,4 +214,4 @@ class MyLayoutScope {
     ) {
         fields[label] = field
     }
-}
+}*/
