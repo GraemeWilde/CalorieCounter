@@ -11,10 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -43,20 +40,20 @@ sealed interface PriorityId {
 }
 
 
-interface Action {
+private interface Action {
     val icon: @Composable () -> Unit
     val title: StringLike
     val priority: Priority
 }
 
-class ActionButton(
+private class ActionButton(
     override val icon: @Composable () -> Unit,
     override val title: StringLike,
     override val priority: Priority,
     val onClick: () -> Unit
 ) : Action
 
-class ActionSearchable(
+private class ActionSearchable(
     override val icon: @Composable () -> Unit,
     override val title: StringLike,
     override val priority: Priority,
@@ -143,27 +140,30 @@ private class ActionsScopeImpl : ActionsScope {
     }
 }
 
-@Composable
-fun actions(
-    actions: @Composable ActionsScope.() -> Unit
-): List<Action> {
-
-    val aS = ActionsScopeImpl()
-
-    actions(aS)
-
-    return aS.actions
-}
+//@Composable
+//fun actions(
+//    actions: @Composable ActionsScope.() -> Unit
+//): List<Action> {
+//
+//    val aS = ActionsScopeImpl()
+//
+//    actions(aS)
+//
+//    return aS.actions
+//}
 
 @Composable
 fun ActionsRow(
-    actions: List<Action>,
     modifier: Modifier = Modifier,
-    expanded: MutableState<ActionSearchable?> = remember { mutableStateOf<ActionSearchable?>(null) }
+    actionScope: ActionsScope.() -> Unit
 ) {
     Log.d("ActionsRow", "Start")
 
+    val expanded: MutableState<ActionSearchable?> = remember { mutableStateOf<ActionSearchable?>(null) }
     val moreOpen = remember{ mutableStateOf(false) }
+    val actions by remember { derivedStateOf {
+        ActionsScopeImpl().apply(actionScope).actions
+    }}
 
     SubcomposeLayout() { constraints ->
 

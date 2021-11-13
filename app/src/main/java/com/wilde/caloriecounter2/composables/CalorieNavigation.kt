@@ -1,20 +1,16 @@
 package com.wilde.caloriecounter2.composables
 
 import android.util.Log
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.*
 import com.squareup.moshi.Moshi
-import com.wilde.caloriecounter2.BuildConfig
 import com.wilde.caloriecounter2.R
 import com.wilde.caloriecounter2.composables.other.*
 import com.wilde.caloriecounter2.composables.screens.Food
@@ -42,7 +38,7 @@ sealed interface CalorieNavigation2Interface {
     fun Content(
         nav: NavHostController,
         backStackEntry: NavBackStackEntry,
-        actions: ((@Composable RowScope.() -> Unit)?) -> Unit
+        actions: ((ActionsScope.() -> Unit)?) -> Unit
         //actions: MutableState<(@Composable RowScope.() -> Unit)?>
     )
 }
@@ -60,75 +56,46 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((@Composable RowScope.() -> Unit)?) -> Unit
+            actions: ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
-//            actions {
-//                val searchInternetOpen: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
-//                val filterListOpen: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
-//
-//                /*searchInternetOpen = rememberSaveable (filterListOpen) { mutableStateOf(false) }
-//                filterListOpen = rememberSaveable (searchInternetOpen) { mutableStateOf(false) }*/
-//
-//                SearchTopAppBar(
-//                    rememberVectorPainter(Icons.Filled.FilterList),
-//                    filterListOpen,
-//                    onOpen = { searchInternetOpen.value = false }
-//                ) {
-//
-//                }
-//
-//                SearchTopAppBar(
-//                    painterResource(R.drawable.search_internet),
-//                    searchInternetOpen,
-//                    onOpen = { filterListOpen.value = false }
-//                ) {
-//                    if (it.isNotEmpty())
-//                        nav.navigate("food_search/$it")
-//                }
-//            }
 
             RunOnce {
                 actions {
-                    val actionsList = com.wilde.caloriecounter2.composables.other.actions {
-                        actionSearchable(
-                            {
-                                Icon(
-                                    painterResource(id = R.drawable.search_internet),
-                                    stringResource(id = R.string.search_openfoodfacts_hint)
-                                )
-                            },
+                    actionSearchable(
+                        {
+                            Icon(
+                                painterResource(id = R.drawable.search_internet),
+                                stringResource(id = R.string.search_openfoodfacts_hint)
+                            )
+                        },
 
-                            StringLike.Resource(R.string.search_openfoodfacts_hint),
-                            Priority.IfSpace()
-                        ) {
-                            if (it.isNotEmpty())
-                                nav.navigate("food_search/$it")
-                        }
-                        actionSearchable(
-                            { Icon(Icons.Filled.FilterList, null) },
-                            StringLike.String("Filter"),
-                            Priority.AlwaysShow()
-                        ) {}
-                        actionButton(
-                            { Icon(Icons.Filled.Save, "Save") },
-                            StringLike.String("Save"),
-                            Priority.InMoreSettings
-                        ) {}
-                        actionButton(
-                            { Icon(Icons.Filled.SaveAlt, "Save") },
-                            StringLike.String("Save2"),
-                            Priority.InMoreSettings
-                        ) {}
-                        actionButton(
-                            { Icon(Icons.Filled.SavedSearch, "Save") },
-                            StringLike.String("Save3"),
-                            Priority.InMoreSettings
-                        ) {}
+                        StringLike.Resource(R.string.search_openfoodfacts_hint),
+                        Priority.IfSpace()
+                    ) {
+                        if (it.isNotEmpty())
+                            nav.navigate("food_search/$it")
                     }
-                    ActionsRow(
-                        actions = actionsList
-                    )
+                    actionSearchable(
+                        { Icon(Icons.Filled.FilterList, null) },
+                        StringLike.String("Filter"),
+                        Priority.AlwaysShow()
+                    ) {}
+                    actionButton(
+                        { Icon(Icons.Filled.Save, "Save") },
+                        StringLike.String("Save"),
+                        Priority.InMoreSettings
+                    ) {}
+                    actionButton(
+                        { Icon(Icons.Filled.SaveAlt, "Save") },
+                        StringLike.String("Save2"),
+                        Priority.InMoreSettings
+                    ) {}
+                    actionButton(
+                        { Icon(Icons.Filled.SavedSearch, "Save") },
+                        StringLike.String("Save3"),
+                        Priority.InMoreSettings
+                    ) {}
                 }
             }
 
@@ -157,7 +124,7 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((@Composable RowScope.() -> Unit)?) -> Unit
+            actions: ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
             val foodViewModel: FoodViewModel2 = hiltViewModel()
@@ -176,15 +143,28 @@ object CalorieNavigation2 {
 
             RunOnce {
                 actions {
-                    IconButton(onClick = {
+                    actionButton(
+                        {
+                            Icon(
+                                Icons.Filled.Save,
+                                stringResource(id = R.string.save)
+                            )
+                        },
+                        StringLike.Resource(R.string.save),
+                        Priority.AlwaysShow()
+                    ) {
                         foodViewModel.save()
                         nav.popBackStack("foodlist", false)
-                    }) {
-                        Icon(
-                            Icons.Filled.Save,
-                            stringResource(id = R.string.save)
-                        )
                     }
+//                    IconButton(onClick = {
+//                        foodViewModel.save()
+//                        nav.popBackStack("foodlist", false)
+//                    }) {
+//                        Icon(
+//                            Icons.Filled.Save,
+//                            stringResource(id = R.string.save)
+//                        )
+//                    }
                 }
             }
 
@@ -205,7 +185,7 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((@Composable RowScope.() -> Unit)?) -> Unit
+            actions: ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
             val mealListViewModel: MealListViewModel = hiltViewModel()
@@ -233,7 +213,7 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((@Composable RowScope.() -> Unit)?) -> Unit
+            actions: ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
             val mealViewModel: MealViewModel = hiltViewModel()
@@ -263,7 +243,7 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((@Composable RowScope.() -> Unit)?) -> Unit
+            actions: ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
             val searchViewModel: FoodSearchViewModel = hiltViewModel()

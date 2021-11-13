@@ -1,18 +1,18 @@
 package com.wilde.caloriecounter2.composables
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -23,7 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
-import com.wilde.caloriecounter2.composables.other.RunOnce
+import com.wilde.caloriecounter2.composables.other.*
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
@@ -41,7 +41,7 @@ fun CalorieCounterApp() {
 
     var title by remember{ mutableStateOf("Titlebar") }
     var baseRoute by remember{ mutableStateOf(true) }
-    val actions = remember{ mutableStateOf<(@Composable RowScope.() -> Unit)?>(null) }
+    val actions = remember{ mutableStateOf<(ActionsScope.() -> Unit)?>(null) }
 
 
     //val navCon2 by rememberUpdatedState(navController)
@@ -102,7 +102,9 @@ fun CalorieCounterApp() {
             },
             actions = {
                 CompositionLocalProvider(LocalContentAlpha provides 0.87f) {
-                    actions.value?.invoke(this)
+                    ActionsRow {
+                        actions.value?.invoke(this)
+                    }
                 }
             }
         )
@@ -208,9 +210,8 @@ fun CalorieCounterApp() {
 
                         screen.Content(
                             navController,
-                            backStackEntry,
-                            actions = { actions.value = it }
-                        )
+                            backStackEntry
+                        ) { actions.value = it }
                     }
                 }
                 /*for(screen in navScreens.destinations) {
