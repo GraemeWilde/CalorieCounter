@@ -45,20 +45,20 @@ sealed interface PriorityId {
 
 interface Action {
     val icon: @Composable () -> Unit
-    val title: String
+    val title: StringLike
     val priority: Priority
 }
 
 class ActionButton(
     override val icon: @Composable () -> Unit,
-    override val title: String,
+    override val title: StringLike,
     override val priority: Priority,
     val onClick: () -> Unit
 ) : Action
 
 class ActionSearchable(
     override val icon: @Composable () -> Unit,
-    override val title: String,
+    override val title: StringLike,
     override val priority: Priority,
     val onSearch: (String) -> Unit
 ) : Action
@@ -86,6 +86,74 @@ class ActionSearchable(
 //    }
 //}
 
+sealed interface StringLike {
+    @Composable
+    fun asString(): kotlin.String
+
+    class String(val value: kotlin.String) : StringLike {
+        @Composable
+        override fun asString(): kotlin.String {
+            return value
+        }
+    }
+
+    class Resource(val value: Int) : StringLike {
+        @Composable
+        override fun asString(): kotlin.String {
+            return stringResource(value)
+        }
+    }
+}
+
+interface ActionsScope {
+    fun actionButton(
+        icon: @Composable () -> Unit,
+        title: StringLike,
+        priority: Priority,
+        onClick: () -> Unit
+    )
+
+    fun actionSearchable(
+        icon: @Composable () -> Unit,
+        title: StringLike,
+        priority: Priority,
+        onSearch: (String) -> Unit
+    )
+}
+
+private class ActionsScopeImpl : ActionsScope {
+    var actions: MutableList<Action> = mutableListOf()
+
+    override fun actionButton(
+        icon: @Composable () -> Unit,
+        title: StringLike,
+        priority: Priority,
+        onClick: () -> Unit
+    ) {
+        actions.add(ActionButton(icon, title, priority, onClick))
+    }
+
+    override fun actionSearchable(
+        icon: @Composable () -> Unit,
+        title: StringLike,
+        priority: Priority,
+        onSearch: (String) -> Unit
+    ) {
+        actions.add(ActionSearchable(icon, title, priority, onSearch))
+    }
+}
+
+@Composable
+fun actions(
+    actions: @Composable ActionsScope.() -> Unit
+): List<Action> {
+
+    val aS = ActionsScopeImpl()
+
+    actions(aS)
+
+    return aS.actions
+}
 
 @Composable
 fun ActionsRow(
@@ -115,12 +183,12 @@ fun ActionsRow(
 
         var searchableExists = false
 
-        actions.mapIndexed { i: Int, action: Action ->
-            object {
-                val origKey = i
-                val value = action
-            }
-        }
+//        actions.mapIndexed { i: Int, action: Action ->
+//            object {
+//                val origKey = i
+//                val value = action
+//            }
+//        }
 
         actions.forEachIndexed { index, action ->
             if (action == expanded.value) {
@@ -411,7 +479,7 @@ fun ActionsRow(
                             }
                         }) {
                             actions[it].icon()
-                            Text(actions[it].title, maxLines = 1)
+                            Text(actions[it].title.asString(), maxLines = 1)
                         }
                     }
                 }

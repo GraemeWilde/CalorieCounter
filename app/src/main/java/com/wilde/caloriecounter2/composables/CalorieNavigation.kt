@@ -90,41 +90,45 @@ object CalorieNavigation2 {
 
             RunOnce {
                 actions {
-                    ActionsRow(actions = listOf(
-                        ActionSearchable(
+                    val actionsList = com.wilde.caloriecounter2.composables.other.actions {
+                        actionSearchable(
                             {
                                 Icon(
                                     painterResource(id = R.drawable.search_internet),
                                     stringResource(id = R.string.search_openfoodfacts_hint)
                                 )
                             },
-                            stringResource(R.string.search_openfoodfacts_hint),
+
+                            StringLike.Resource(R.string.search_openfoodfacts_hint),
                             Priority.IfSpace()
                         ) {
                             if (it.isNotEmpty())
                                 nav.navigate("food_search/$it")
-                        },
-                        ActionSearchable(
+                        }
+                        actionSearchable(
                             { Icon(Icons.Filled.FilterList, null) },
-                            "Filter",
+                            StringLike.String("Filter"),
                             Priority.AlwaysShow()
-                        ) {},
-                        ActionButton(
+                        ) {}
+                        actionButton(
                             { Icon(Icons.Filled.Save, "Save") },
-                            "Save",
-                            Priority.InMoreSettings
-                        ) {},
-                        ActionButton(
-                            { Icon(Icons.Filled.SaveAlt, "Save") },
-                            "Save2",
-                            Priority.InMoreSettings
-                        ) {},
-                        ActionButton(
-                            { Icon(Icons.Filled.SavedSearch, "Save") },
-                            "Save3",
+                            StringLike.String("Save"),
                             Priority.InMoreSettings
                         ) {}
-                    ))
+                        actionButton(
+                            { Icon(Icons.Filled.SaveAlt, "Save") },
+                            StringLike.String("Save2"),
+                            Priority.InMoreSettings
+                        ) {}
+                        actionButton(
+                            { Icon(Icons.Filled.SavedSearch, "Save") },
+                            StringLike.String("Save3"),
+                            Priority.InMoreSettings
+                        ) {}
+                    }
+                    ActionsRow(
+                        actions = actionsList
+                    )
                 }
             }
 
