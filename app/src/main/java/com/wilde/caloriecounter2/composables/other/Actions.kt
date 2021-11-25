@@ -259,6 +259,9 @@ fun ActionsRow(
                                 textStyle = LocalTextStyle.current.copy(fontSize = 18.dp.toSp())
                             )
                         }
+                        LaunchedEffect(expanded.value) {
+                            focusRequester.requestFocus()
+                        }
                         Box(
                             Modifier.size(24.dp)
                         ) {

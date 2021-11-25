@@ -1,6 +1,5 @@
 package com.wilde.caloriecounter2.data.meals
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.wilde.caloriecounter2.data.meals.entities.*
@@ -27,21 +26,44 @@ interface MealDao {
         }
     }
 
+    suspend fun updateMeals(vararg mealAndComponents: MealAndComponents) {
+        mealAndComponents.forEach { meal ->
+            updateMeal(meal.meal, meal.mealComponents)
+        }
+    }
+
 
     @Transaction
-    suspend fun insertMeal(meal: Meal, mealComponent: List<MealComponent>) {
+    suspend fun insertMeal(meal: Meal, mealComponents: List<MealComponent>) {
         val id = insertMealParents(meal)
 
-        val comps = mealComponent.map { component ->
+        val comps = mealComponents.map { component ->
             component.copy(mealId = id[0].toInt())
         }
 
         insertMealComponentsRefs(comps)
     }
 
+    @Transaction
+    suspend fun updateMeal(meal: Meal, mealComponents: List<MealComponent>) {
+        updateMealParents(meal)
+
+        mealComponents.forEach {
+            if (it.id != 0) {
+                updateMealComponentsRefs(it)
+            } else {
+                insertMealComponentsRefs(it)
+            }
+        }
+        updateMealComponentsRefs(mealComponents)
+    }
+
 
     @Insert
     suspend fun insertMealParents(vararg meals: Meal): List<Long>
+
+    @Update
+    suspend fun updateMealParents(vararg meals: Meal)
     /*
     @Insert
     suspend fun insertMealParents(mealParents: List<mealParent>): List<Long>
@@ -51,6 +73,15 @@ interface MealDao {
     */
     @Insert
     suspend fun insertMealComponentsRefs(mealComponentRefs: List<MealComponent>)
+
+    @Insert
+    suspend fun insertMealComponentsRefs(vararg mealComponentRefs: MealComponent)
+
+    @Update
+    suspend fun updateMealComponentsRefs(mealComponentRefs: List<MealComponent>)
+
+    @Update
+    suspend fun updateMealComponentsRefs(vararg mealComponentRefs: MealComponent)
     /*
 
     @Update

@@ -22,4 +22,12 @@ class MealRepository @Inject constructor(
     fun getMealsAndComponentsAndFoods(): LiveData<List<MealAndComponentsAndFoods>> {
         return mealDao.getMealsAndComponentsAndFoods()
     }
+
+    suspend fun insertMealAndComponents(mealAndComponents: MealAndComponents) {
+        mealDao.insertMeals(mealAndComponents)
+    }
+
+    suspend fun updateMealAndComponents(mealAndComponents: MealAndComponents) {
+        mealDao.updateMeals(mealAndComponents)
+    }
 }

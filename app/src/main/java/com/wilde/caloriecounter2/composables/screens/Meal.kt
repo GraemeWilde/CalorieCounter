@@ -1,27 +1,47 @@
 package com.wilde.caloriecounter2.composables.screens
 
+import android.util.Log
+import androidx.activity.addCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wilde.caloriecounter2.composables.other.EnumDropDown
+import com.wilde.caloriecounter2.composables.other.RunOnce
 import com.wilde.caloriecounter2.composables.other.scrollbarVertical
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.entities.*
+import com.wilde.caloriecounter2.viewmodels.FoodListViewModel
 import com.wilde.caloriecounter2.viewmodels.MealViewModel
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @Preview(device = Devices.PIXEL_4, showSystemUi = true)
@@ -46,31 +66,77 @@ fun MealViewPreview() {
             )
         )
     )
-    val viewModel = MealViewModel()
+    val viewModel: MealViewModel = hiltViewModel()
     viewModel.openMeal(meal)
     Meal(viewModel)
 }
 
 
 @Composable
-fun Meal(mealViewModel: MealViewModel = viewModel()) {
+fun Meal(
+    mealViewModel: MealViewModel = viewModel(),
+    //onAddComponent: () -> Unit
+) {
     /*val (colors, typography, shapes) = createMdcTheme(
         LocalContext.current,
         LocalLayoutDirection.current
     )*/
 
+    //MealViewComponent(mealViewModel, onAddComponent)
+
     var selectingFood by remember { mutableStateOf(false) }
 
-    if (selectingFood)
-        FoodList {
-            mealViewModel.addComponentAndFood(it)
-            //MealViewModel.ObservableMealComponentAndFood()
+//    val callback = remember {
+//
+//    }
+
+    val foodListViewModel: FoodListViewModel = hiltViewModel()
+
+    RunOnce {
+        foodListViewModel.getFoodsList()
+    }
+
+
+    if (selectingFood) {
+
+//        val backDispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
+//
+//        DisposableEffect(true) {
+//            val foodCallback = backDispatcher.addCallback {
+//                selectingFood = false
+//                this.isEnabled = false
+//            }
+//
+//            onDispose {
+//                foodCallback.remove()
+//            }
+//        }
+
+
+        Dialog(onDismissRequest = {
+            Log.d("Meal", "Dismiss")
             selectingFood = false
+        }) {
+            Log.d("Meal", "Dialog")
+
+            Column(
+                Modifier.fillMaxHeight(0.9f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Surface(shape = RoundedCornerShape(16.dp)) {
+                    FoodList(foodListViewModel) {
+                        mealViewModel.addComponentAndFood(it)
+                        //MealViewModel.ObservableMealComponentAndFood()
+                        Log.d("Meal", "Select Food")
+                        selectingFood = false
+                    }
+                }
+            }
         }
-    else
-        MealViewComponent(mealViewModel) {
-            selectingFood = true
-        }
+    } //else
+    MealViewComponent(mealViewModel) {
+        selectingFood = true
+    }
 }
 
 @Composable
@@ -82,6 +148,7 @@ fun MealViewComponent(viewModel: MealViewModel, onAddComponent: () -> Unit) {
             modifier = Modifier
                 .padding(8.dp)
         ) {
+            val foc = LocalFocusManager.current
             val mealName: String by viewModel.name.observeAsState(" ")
             TextField(
                 label = { Text("Meal Name") },
@@ -90,12 +157,17 @@ fun MealViewComponent(viewModel: MealViewModel, onAddComponent: () -> Unit) {
                     viewModel.name.value = it
                 },
                 modifier = Modifier.fillMaxWidth(),
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = {
+                    foc.moveFocus(FocusDirection.Next)
+                })
             )
 
-            val mealComponentsAndFoods =
-                remember { viewModel.observableMealComponentsAndFoods }
+//            val mealComponentsAndFoods =
+//                remember { viewModel.observableMealComponentsAndFoods }
 
-            ComponentsList(mealComponentsAndFoods, viewModel::removeComponentAndFood)
+            ComponentsList(viewModel.observableMealComponentsAndFoods, viewModel::removeComponentAndFood)
         }
         FloatingActionButton(
             onClick = onAddComponent,
@@ -110,7 +182,7 @@ fun MealViewComponent(viewModel: MealViewModel, onAddComponent: () -> Unit) {
 
 @Composable
 fun ComponentsList(
-    mealComponentsAndFoods: MutableList<MealViewModel.ObservableMealComponentAndFood>?,
+    mealComponentsAndFoods: SnapshotStateList<MealViewModel.ObservableMealComponentAndFood>?,
     onRemoveComponent: (component: MealViewModel.ObservableMealComponentAndFood) -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -119,7 +191,7 @@ fun ComponentsList(
         Modifier
             .verticalScroll(scrollState)
             //.scrollbarVertical(lazyListState)
-            .scrollbarVertical(scrollState = scrollState)
+            //.scrollbarVertical(scrollState = scrollState)
         ,
         //.scrollbarVertical(scrollState = scrollState)
     ) {
@@ -133,7 +205,14 @@ fun ComponentsList(
                             }*//*
                         ) {
                             */
+        var firstLaunch by remember { mutableStateOf(true) }
+        val noRecompFirstLaunch by rememberUpdatedState(firstLaunch)
+        val lastFocus = remember { FocusRequester() }
+
         mealComponentsAndFoods?.forEach { component ->
+            val focusRequester = remember { FocusRequester() }
+            val new by remember { mutableStateOf(!firstLaunch) }
+
             Card(
                 border = BorderStroke(1.dp, Color(0x66000000)),
                 elevation = 4.dp,
@@ -182,8 +261,10 @@ fun ComponentsList(
                         Modifier.padding(top = 4.dp)
                     ) {
                         val measurementString by component.quantity.measurementString
-                            .observeAsState("0")
+                            .observeAsState(" ")
 
+                        val foc = LocalFocusManager.current
+                        // Measurement Text Field
                         TextField(
                             label = { Text("Measurement") },
                             value = measurementString,
@@ -191,6 +272,12 @@ fun ComponentsList(
                             modifier = Modifier
                                 .padding(end = 4.dp)
                                 .weight(1f)
+                                .focusRequester(focusRequester),
+                            maxLines = 1,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                            keyboardActions = KeyboardActions(onNext = {
+                                foc.moveFocus(FocusDirection.Next)
+                            })
                         )
 
                         val quantityType by component.quantity.type.observeAsState()
@@ -209,6 +296,27 @@ fun ComponentsList(
                     }
                 }
             }
+
+            if (new) {
+//                @OptIn(ExperimentalComposeUiApi::class)
+//                val key = LocalSoftwareKeyboardController.current
+
+                LaunchedEffect(true) {
+                    focusRequester.requestFocus()
+//                    withContext(Dispatchers.IO) {
+//                        //@OptIn(ExperimentalComposeUiApi::class)
+//                        //key!!.show()
+//                        Thread.sleep(4000)
+//                        withContext(Dispatchers.Main) {
+//                            focusRequester.requestFocus()
+//                        }
+//                    }
+                }
+            }
+        }
+
+        RunOnce {
+            firstLaunch = false
         }
     }
 }

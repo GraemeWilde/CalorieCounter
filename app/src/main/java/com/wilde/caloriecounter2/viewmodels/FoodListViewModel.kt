@@ -20,7 +20,7 @@ class FoodListViewModel @Inject internal constructor(
         mutableFoods
     }
 
-    private fun getFoodsList() {
+    fun getFoodsList() {
         mutableFoods = foodRepository.getAllLive()
     }
 }

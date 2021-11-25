@@ -8,24 +8,50 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wilde.caloriecounter2.data.food.entities.Product
+import com.wilde.caloriecounter2.data.meals.MealRepository
 import com.wilde.caloriecounter2.data.meals.entities.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
-class MealViewModel @Inject internal constructor() : ViewModel() {
+class MealViewModel @Inject internal constructor(
+    private val mealRepository: MealRepository
+) : ViewModel() {
 
-    class ObservableMealComponentAndFood(mealComponentAndFood: MealComponentAndFood) {
+    class ObservableMealComponentAndFood(food: Product) {
 
-        class ObservableQuantity(quantity: Quantity) {
-            val type = MutableLiveData(quantity.type)
-            val measurement = MutableLiveData(quantity.measurement)
+        constructor(mealComponentAndFood: MealComponentAndFood) : this(mealComponentAndFood.food) {
+            id.value = mealComponentAndFood.mealComponent.id
+            quantity.fromQuantity(mealComponentAndFood.mealComponent.quantity)
+            food.value = mealComponentAndFood.food
+        }
+
+        class ObservableQuantity() {
+            constructor(quantity: Quantity) : this() {
+                type.value = quantity.type
+                measurement.value = quantity.measurement
+
+                measurementString.value = DecimalFormat("0.#").format(quantity.measurement)
+            }
+
+            val type = MutableLiveData(QuantityType.Ratio)
+            val measurement = MutableLiveData(0f)
 
             val measurementString = MutableLiveData(
-                DecimalFormat("0.#").format(quantity.measurement)
+                ""
+                //DecimalFormat("0.#").format("")
                 //quantity.measurement.toString()
             )
+
+            fun fromQuantity(quantity: Quantity) {
+                type.value = quantity.type
+                measurement.value = quantity.measurement
+                measurementString.value = DecimalFormat("0.#").format(quantity.measurement)
+            }
 
             fun measurementOnChange(newMeasurementString: String): Unit {
                 if (newMeasurementString.matches(Regex("^(?!$)\\d*(?:\\.\\d+)?"))) {
@@ -37,13 +63,13 @@ class MealViewModel @Inject internal constructor() : ViewModel() {
             }
         }
 
-        val id: MutableLiveData<Int> = MutableLiveData(mealComponentAndFood.mealComponent.id)
-        val mealId: MutableLiveData<Int> =
-            MutableLiveData(mealComponentAndFood.mealComponent.mealId)
-        val foodId: MutableLiveData<Int> =
-            MutableLiveData(mealComponentAndFood.mealComponent.foodId)
-        val quantity = ObservableQuantity(mealComponentAndFood.mealComponent.quantity)
-        val food: MutableLiveData<Product> = MutableLiveData(mealComponentAndFood.food)
+        val id: MutableLiveData<Int> = MutableLiveData(0)
+//        val mealId: MutableLiveData<Int> =
+//            MutableLiveData(mealComponentAndFood.mealComponent.mealId)
+//        val foodId: MutableLiveData<Int> =
+//            MutableLiveData(mealComponentAndFood.mealComponent.foodId)
+        val quantity = ObservableQuantity()
+        val food: MutableLiveData<Product> = MutableLiveData(food)
     }
 
     val id = MutableLiveData<Int>()
@@ -64,16 +90,24 @@ class MealViewModel @Inject internal constructor() : ViewModel() {
         }.toMutableStateList()
     }
 
+    fun save() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val saveMeal = toMealAndComponents()
+            Log.d("MealViewModel", "Save Started")
+
+            if (saveMeal.meal.id != 0) {
+                mealRepository.updateMealAndComponents(saveMeal)
+            } else {
+                mealRepository.insertMealAndComponents(saveMeal)
+            }
+            Log.d("MealViewModel", "Save Completed")
+        }
+    }
+
     fun addComponentAndFood(food: Product) {
         observableMealComponentsAndFoods.add(
             ObservableMealComponentAndFood(
-                MealComponentAndFood(
-                    MealComponent(
-                        mealId = this.id.value!!,
-                        quantity = Quantity(0f, QuantityType.Ratio)
-                    ),
-                    food
-                )
+                food
             )
         )
     }
@@ -98,8 +132,8 @@ class MealViewModel @Inject internal constructor() : ViewModel() {
             observableMealComponentsAndFoods.map {
                 MealComponent(
                     it.id.value!!,
-                    it.mealId.value!!,
-                    it.foodId.value!!,
+                    id.value!!,
+                    it.food.value!!.id,
                     Quantity(it.quantity.measurement.value!!, it.quantity.type.value!!)
                 )
             }

@@ -20,7 +20,7 @@ import com.wilde.caloriecounter2.composables.screens.MealList
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.entities.MealAndComponentsAndFoods
 import com.wilde.caloriecounter2.viewmodels.FoodSearchViewModel
-import com.wilde.caloriecounter2.viewmodels.FoodViewModel2
+import com.wilde.caloriecounter2.viewmodels.FoodViewModel
 import com.wilde.caloriecounter2.viewmodels.MealListViewModel
 import com.wilde.caloriecounter2.viewmodels.MealViewModel
 
@@ -38,7 +38,7 @@ sealed interface CalorieNavigation2Interface {
     fun Content(
         nav: NavHostController,
         backStackEntry: NavBackStackEntry,
-        actions: ((ActionsScope.() -> Unit)?) -> Unit
+        actions: @Composable ((ActionsScope.() -> Unit)?) -> Unit
         //actions: MutableState<(@Composable RowScope.() -> Unit)?>
     )
 }
@@ -56,11 +56,13 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((ActionsScope.() -> Unit)?) -> Unit
+            actions: @Composable ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
 
-            RunOnce {
+            // Has to be run once otherwise navigation transitions cause it to be run multiple times
+            // and sometimes the wrong screen action bar ends up showing
+            //RunOnce {
                 actions {
                     actionSearchable(
                         {
@@ -97,7 +99,7 @@ object CalorieNavigation2 {
                         Priority.InMoreSettings
                     ) {}
                 }
-            }
+            //}
 
 
             FoodList {
@@ -124,10 +126,10 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((ActionsScope.() -> Unit)?) -> Unit
+            actions: @Composable ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
-            val foodViewModel: FoodViewModel2 = hiltViewModel()
+            val foodViewModel: FoodViewModel = hiltViewModel()
 
             rememberSaveable {
                 val foodString = backStackEntry.arguments!!.getString("foodId")!!
@@ -141,32 +143,23 @@ object CalorieNavigation2 {
 
 
 
-            RunOnce {
-                actions {
-                    actionButton(
-                        {
-                            Icon(
-                                Icons.Filled.Save,
-                                stringResource(id = R.string.save)
-                            )
-                        },
-                        StringLike.Resource(R.string.save),
-                        Priority.AlwaysShow()
-                    ) {
-                        foodViewModel.save()
-                        nav.popBackStack("foodlist", false)
-                    }
-//                    IconButton(onClick = {
-//                        foodViewModel.save()
-//                        nav.popBackStack("foodlist", false)
-//                    }) {
-//                        Icon(
-//                            Icons.Filled.Save,
-//                            stringResource(id = R.string.save)
-//                        )
-//                    }
+            //RunOnce {
+            actions {
+                actionButton(
+                    {
+                        Icon(
+                            Icons.Filled.Save,
+                            stringResource(id = R.string.save)
+                        )
+                    },
+                    StringLike.Resource(R.string.save),
+                    Priority.AlwaysShow()
+                ) {
+                    foodViewModel.save()
+                    nav.popBackStack("foodlist", false)
                 }
             }
+            //}
 
             Food(foodViewModel)
         }
@@ -185,7 +178,7 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((ActionsScope.() -> Unit)?) -> Unit
+            actions: @Composable ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
             val mealListViewModel: MealListViewModel = hiltViewModel()
@@ -213,7 +206,7 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((ActionsScope.() -> Unit)?) -> Unit
+            actions: @Composable ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
             val mealViewModel: MealViewModel = hiltViewModel()
@@ -224,6 +217,23 @@ object CalorieNavigation2 {
             val meal = moshi.adapter(MealAndComponentsAndFoods::class.java).fromJson(mealString)!!
 
             mealViewModel.openMeal(meal)
+
+            actions {
+                actionButton(
+                    {
+                        Icon(
+                            Icons.Filled.Save,
+                            stringResource(id = R.string.save)
+                        )
+                    },
+                    StringLike.Resource(R.string.save),
+                    Priority.AlwaysShow()
+                ) {
+                    mealViewModel.save()
+                    nav.popBackStack()
+                    //nav.popBackStack("meallist", false)
+                }
+            }
 
             Meal(mealViewModel)
         }
@@ -243,7 +253,7 @@ object CalorieNavigation2 {
         override fun Content(
             nav: NavHostController,
             backStackEntry: NavBackStackEntry,
-            actions: ((ActionsScope.() -> Unit)?) -> Unit
+            actions: @Composable ((ActionsScope.() -> Unit)?) -> Unit
         ) {
             Log.d("CalorieNavigation", this.title)
             val searchViewModel: FoodSearchViewModel = hiltViewModel()
@@ -266,170 +276,3 @@ object CalorieNavigation2 {
 
     val screens = CalorieNavigation2Interface::class.sealedSubclasses.map { it.objectInstance!! }
 }
-
-
-
-//class CalorieNavigation {
-//    //class argument(val argumentName: String, val )
-//    class NavigationDestination(
-//        val route: String,
-//        val title: String,
-//        val argumentsRoute: String? = null,
-//        val arguments: List<NamedNavArgument> = emptyList(),
-//        val deepLinks: List<NavDeepLink> = emptyList(),
-//        val actions: (@Composable RowScope.(NavHostController) -> Unit)? = null,
-//        val baseRoute: Boolean = false,
-//        val content: @Composable NavHostController.(NavBackStackEntry, MutableState<(@Composable RowScope.() -> Unit)?>) -> Unit
-//    )
-//
-//    class Nav(val navigate: (route: String) -> Unit)
-//
-//    private val doSave = false
-//
-//    @ExperimentalComposeUiApi
-//    val foodlist = NavigationDestination(
-//        "foodlist",
-//        "Food List",
-//        baseRoute = true
-//    ) { backStackEntry, actions ->
-//        //val foodListViewModel: FoodListViewModel = hiltViewModel()
-//
-//        LaunchedEffect(key1 = true) {
-//            actions.value = {
-//                var searchOpen by remember { mutableStateOf(false) }
-//                if (searchOpen) {
-//
-//                    var searchText by remember { mutableStateOf("") }
-//
-//                    TextField(
-//                        value = searchText,
-//                        onValueChange = { searchText = it },
-//                        keyboardOptions = KeyboardOptions(
-//                            imeAction = ImeAction.Search
-//                        ),
-//                        keyboardActions = KeyboardActions(
-//                            onSearch = {
-//                                navigate("food_search/$searchText")
-//                            }
-//                        )
-//                    )
-//                } else {
-//                    IconButton(onClick = { searchOpen = true }) {
-//                        Icon(
-//                            painterResource(id = R.drawable.search_internet),
-//                            stringResource(id = R.string.search_openfoodfacts_hint)
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//
-//
-//        FoodList(/*foodListViewModel*/) {
-//            val moshi = Moshi.Builder().build()
-//            val jsonAdapter = moshi.adapter(Product::class.java)
-//            val food = jsonAdapter.toJson(it)
-//
-//            navigate("food/$food")
-//            //navigate("food/$food")
-//        }
-//    }
-//
-//    val food = NavigationDestination(
-//        "food",
-//        "Food",
-//        argumentsRoute = "{foodId}",
-//        arguments = listOf(navArgument("foodId") { type = NavType.StringType }),
-//    ) { backStackEntry, actions ->
-//        val foodViewModel: FoodViewModel2 = hiltViewModel()
-//
-//        val foodString = backStackEntry.arguments!!.getString("foodId")!!
-//
-//        val moshi = Moshi.Builder().build()
-//        val food = moshi.adapter(Product::class.java).fromJson(foodString)!!
-//
-//        foodViewModel.openProduct(food)
-//
-//        LaunchedEffect(key1 = true) {
-//            actions.value = {
-//                IconButton(onClick = {
-//                    foodViewModel.save()
-//                    popBackStack("foodlist", false)
-//                }) {
-//                    Icon(
-//                        Icons.Filled.Save,
-//                        stringResource(id = R.string.save)
-//                    )
-//                }
-//            }
-//        }
-//
-//        Food(foodViewModel)
-//    }
-//
-//    val meallist = NavigationDestination(
-//        "meallist",
-//        "Meal List",
-//        baseRoute = true
-//    ) { backStackEntry, actions ->
-//        val mealListViewModel: MealListViewModel = hiltViewModel()
-//
-//        MealList(mealListViewModel) {
-//            val moshi = Moshi.Builder().build()
-//            val jsonAdapter = moshi.adapter(MealAndComponentsAndFoods::class.java)
-//            val mealParam = jsonAdapter.toJson(it)
-//
-//            navigate("meal/$mealParam")
-//        }
-//    }
-//
-//    val meal = NavigationDestination(
-//        "meal",
-//        "Meal",
-//        argumentsRoute = "{mealId}",
-//        arguments = listOf(navArgument("mealId") { type = NavType.StringType })
-//    ) { backStackEntry, actions ->
-//        val mealViewModel: MealViewModel = hiltViewModel()
-//
-//        val mealString = backStackEntry.arguments!!.getString("mealId")!!
-//
-//        val moshi = Moshi.Builder().build()
-//        val meal = moshi.adapter(MealAndComponentsAndFoods::class.java).fromJson(mealString)!!
-//
-//        mealViewModel.openMeal(meal)
-//
-//        Meal(mealViewModel)
-//    }
-//
-//    val foodSearch = NavigationDestination(
-//        "food_search",
-//        "Food Search",
-//        argumentsRoute = "{search_term}",
-//        arguments = listOf(navArgument("search_term") { type = NavType.StringType }),
-//    ) { backStackEntry, actions ->
-//        val searchViewModel: FoodSearchViewModel = hiltViewModel()
-//
-//        val searchTerm = backStackEntry.arguments!!.getString("search_term")!!
-//
-//        if (searchTerm != searchViewModel.queryText.value) {
-//            searchViewModel.search(searchTerm)
-//        }
-//
-//        FoodList(searchViewModel) {
-//            val moshi = Moshi.Builder().build()
-//            val jsonAdapter = moshi.adapter(Product::class.java)
-//            val food = jsonAdapter.toJson(it)
-//
-//            navigate("food/$food")
-//        }
-//    }
-//
-//    @ExperimentalComposeUiApi
-//    val destinations = listOf(
-//        foodlist,
-//        meallist,
-//        food,
-//        meal,
-//        foodSearch,
-//    )
-//}

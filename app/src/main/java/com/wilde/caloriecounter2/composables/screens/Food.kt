@@ -1,21 +1,23 @@
 package com.wilde.caloriecounter2.composables.screens
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.insets.imePadding
-import com.wilde.caloriecounter2.viewmodels.FoodViewModel2
+import com.wilde.caloriecounter2.viewmodels.FoodViewModel
 
 @Preview
 @Composable
@@ -32,7 +34,7 @@ fun FoodView(foodViewModel: FoodViewModel2 = viewModel()) {
 }*/
 
 @Composable
-fun Food(foodViewModel: FoodViewModel2 = viewModel()) {
+fun Food(foodViewModel: FoodViewModel = viewModel()) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -186,13 +188,19 @@ fun RowScope.FoodField(
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
 ) {
+    val focusManager = LocalFocusManager.current
     TextField(
         value,
         onValueChange,
         modifier
             .padding(horizontal = 0.dp, vertical = 0.dp)
             .weight(1f),
-        label = label
+        label = label,
+        maxLines = 1,
+        keyboardActions = KeyboardActions(onNext = {
+            focusManager.moveFocus(FocusDirection.Next)
+        }),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
     )
 }
 
