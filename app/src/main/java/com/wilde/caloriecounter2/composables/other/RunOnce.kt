@@ -1,7 +1,8 @@
 package com.wilde.caloriecounter2.composables.other
 
 import android.annotation.SuppressLint
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.remember
 
 

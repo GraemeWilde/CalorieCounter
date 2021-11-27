@@ -1,8 +1,6 @@
 package com.wilde.caloriecounter2.viewmodels
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.MealRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

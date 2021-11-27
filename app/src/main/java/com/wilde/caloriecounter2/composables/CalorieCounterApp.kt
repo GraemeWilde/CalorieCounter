@@ -10,11 +10,13 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
 import com.wilde.caloriecounter2.composables.other.ActionsRow
@@ -25,7 +27,7 @@ import kotlinx.coroutines.launch
 
 //@ExperimentalComposeUiApi
 //@ExperimentalMaterialApi // Added to use DrawState.targetValue
-@OptIn(ExperimentalMaterialApi::class)
+//@OptIn(ExperimentalMaterialApi::class) // Added to use DrawState.targetValue
 @Composable
 fun CalorieCounterApp() {
 
@@ -59,9 +61,17 @@ fun CalorieCounterApp() {
         "No back dispatcher"
     }.onBackPressedDispatcher*/
 
+    val insets = LocalWindowInsets.current
+    val imeBottom = with(LocalDensity.current) { insets.ime.bottom.toDp() }
+
+    LaunchedEffect(imeBottom) {
+        Log.d("IME", imeBottom.toString())
+    }
+
     Column(
         Modifier
             .statusBarsPadding()
+            //.padding(bottom = 40.dp)
             .navigationBarsWithImePadding()
     ) {
         TopAppBar(
@@ -73,6 +83,7 @@ fun CalorieCounterApp() {
             navigationIcon = {
                 IconButton(onClick = {
                     if (baseRoute) {
+                        @OptIn(ExperimentalMaterialApi::class)
                         if (drawerState.targetValue == DrawerValue.Closed) {
                             drawerOpen()
                         } else {
@@ -162,6 +173,7 @@ fun CalorieCounterApp() {
 
             // Wrap in composable to limit recomposition scope (is this a good thing to do?)
             val drawerCloseCallbackEnabler = @Composable {
+                @OptIn(ExperimentalMaterialApi::class)
                 LaunchedEffect(key1 = drawerState.targetValue) {
                     // Enable callback when drawer is open or opening
                     callback.isEnabled = drawerState.targetValue == DrawerValue.Open

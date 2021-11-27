@@ -9,11 +9,14 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.wilde.caloriecounter2.data.food.FoodDao
 import com.wilde.caloriecounter2.data.food.entities.Product
-import com.wilde.caloriecounter2.data.meals.*
+import com.wilde.caloriecounter2.data.meals.MealDao
 import com.wilde.caloriecounter2.data.meals.entities.*
-import com.wilde.caloriecounter2.data.weight.WeightDao
 import com.wilde.caloriecounter2.data.weight.Weight
-import kotlinx.coroutines.*
+import com.wilde.caloriecounter2.data.weight.WeightDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 private const val LOGGER_TAG = "AppDatabase"

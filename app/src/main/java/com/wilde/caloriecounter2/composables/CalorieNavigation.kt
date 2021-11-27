@@ -1,10 +1,13 @@
 package com.wilde.caloriecounter2.composables
 
 import android.util.Log
-import androidx.compose.material.*
+import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.SaveAlt
+import androidx.compose.material.icons.filled.SavedSearch
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -12,7 +15,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.*
 import com.squareup.moshi.Moshi
 import com.wilde.caloriecounter2.R
-import com.wilde.caloriecounter2.composables.other.*
+import com.wilde.caloriecounter2.composables.other.ActionsScope
+import com.wilde.caloriecounter2.composables.other.Priority
+import com.wilde.caloriecounter2.composables.other.StringLike
 import com.wilde.caloriecounter2.composables.screens.Food
 import com.wilde.caloriecounter2.composables.screens.FoodList
 import com.wilde.caloriecounter2.composables.screens.Meal

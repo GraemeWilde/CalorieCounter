@@ -2,15 +2,16 @@ package com.wilde.caloriecounter2.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.wilde.caloriecounter2.composables.other.NumericField
 import com.wilde.caloriecounter2.data.food.FoodRepository
 import com.wilde.caloriecounter2.data.food.entities.Nutriments
 import com.wilde.caloriecounter2.data.food.entities.PerServing
 import com.wilde.caloriecounter2.data.food.entities.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG: String = "FoodViewModel2"

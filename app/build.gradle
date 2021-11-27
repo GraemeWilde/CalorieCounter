@@ -55,6 +55,16 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion "$compose_version"
     }
+
+//    productFlavors {
+//        create("dev") {
+//            versionNameSuffix = "-dev"
+//            applicationIdSuffix = ".dev"
+//        }
+//        create("prod") {
+//
+//        }
+//    }
 }
 
 dependencies {

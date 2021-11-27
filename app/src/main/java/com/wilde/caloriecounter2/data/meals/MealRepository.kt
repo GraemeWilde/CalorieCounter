@@ -1,8 +1,8 @@
 package com.wilde.caloriecounter2.data.meals
 
 import androidx.lifecycle.LiveData
-import com.wilde.caloriecounter2.data.meals.entities.MealAndComponents
 import com.wilde.caloriecounter2.data.meals.entities.Meal
+import com.wilde.caloriecounter2.data.meals.entities.MealAndComponents
 import com.wilde.caloriecounter2.data.meals.entities.MealAndComponentsAndFoods
 import javax.inject.Inject
 import javax.inject.Singleton

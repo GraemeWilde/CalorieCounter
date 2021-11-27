@@ -2,11 +2,10 @@ package com.wilde.caloriecounter2.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wilde.caloriecounter2.data.food.FoodRepository
-import com.wilde.caloriecounter2.data.food.response.FoodResponse
 import com.wilde.caloriecounter2.data.food.entities.Product
+import com.wilde.caloriecounter2.data.food.response.FoodResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

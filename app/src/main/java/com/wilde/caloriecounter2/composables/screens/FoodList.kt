@@ -18,10 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import com.wilde.caloriecounter2.composables.other.FlowRow
 import com.wilde.caloriecounter2.data.food.entities.Product
-import com.wilde.caloriecounter2.viewmodels.FoodListInterface
 import com.wilde.caloriecounter2.viewmodels.FoodListViewModel
 import com.wilde.caloriecounter2.viewmodels.FoodListViewModelClass
 
