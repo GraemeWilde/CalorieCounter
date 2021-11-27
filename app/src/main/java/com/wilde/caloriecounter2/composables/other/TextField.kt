@@ -25,6 +25,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * TextField replacement that adds a fix to handle the issue with the software keyboard appearing
+ * over the newly focused TextField. See [androidx.compose.material.TextField]
+ */
 @Composable
 fun TextField(
     value: String,
