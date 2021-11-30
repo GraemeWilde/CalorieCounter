@@ -78,7 +78,7 @@ object CalorieNavigation2 {
                         },
 
                         StringLike.Resource(R.string.search_openfoodfacts_hint),
-                        Priority.IfSpace()
+                        Priority.AlwaysShow()
                     ) {
                         if (it.isNotEmpty())
                             nav.navigate("food_search/$it")
@@ -86,23 +86,53 @@ object CalorieNavigation2 {
                     actionSearchable(
                         { Icon(Icons.Filled.FilterList, null) },
                         StringLike.String("Filter"),
-                        Priority.AlwaysShow()
+                        Priority.IfSpace()
                     ) {}
                     actionButton(
                         { Icon(Icons.Filled.Save, "Save") },
                         StringLike.String("Save"),
-                        Priority.InMoreSettings
+                        Priority.AlwaysShow()
                     ) {}
                     actionButton(
                         { Icon(Icons.Filled.SaveAlt, "Save") },
                         StringLike.String("Save2"),
-                        Priority.InMoreSettings
+                        Priority.AlwaysShow()
                     ) {}
                     actionButton(
                         { Icon(Icons.Filled.SavedSearch, "Save") },
                         StringLike.String("Save3"),
                         Priority.InMoreSettings
                     ) {}
+                    actionButton(
+                        { Icon(Icons.Filled.SavedSearch, "Save") },
+                        StringLike.String("Save4"),
+                        Priority.AlwaysShow()
+                    ) {}
+                    actionButton(
+                        { Icon(Icons.Filled.SavedSearch, "Save") },
+                        StringLike.String("Save5"),
+                        Priority.AlwaysShow()
+                    ) {}
+                    actionButton(
+                        { Icon(Icons.Filled.Save, "Save") },
+                        StringLike.String("Save6"),
+                        Priority.AlwaysShow()
+                    ) {}
+                    actionButton(
+                        { Icon(Icons.Filled.SaveAlt, "Save") },
+                        StringLike.String("Save7"),
+                        Priority.AlwaysShow()
+                    ) {}
+//                    actionButton(
+//                        { Icon(Icons.Filled.SavedSearch, "Save") },
+//                        StringLike.String("Save8"),
+//                        Priority.AlwaysShow()
+//                    ) {}
+//                    actionButton(
+//                        { Icon(Icons.Filled.SavedSearch, "Save") },
+//                        StringLike.String("Save9"),
+//                        Priority.AlwaysShow()
+//                    ) {}
                 }
             //}
 

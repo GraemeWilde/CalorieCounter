@@ -1,6 +1,5 @@
 package com.wilde.caloriecounter2.composables.other
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,16 +24,33 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.wilde.caloriecounter2.R
 
+/**
+ * An object to represent the precedence of an action bar item for an [ActionsRow]. This is used by
+ * the [ActionsRow] to determine which items will take up the space on the [ActionsRow] and which
+ * should be moved into the overflow menu.
+ */
 sealed interface Priority {
+    /**
+     * The [Priority] that specifies that the item should always be in the overflow menu.
+     */
     object InMoreSettings : Priority
-    class AlwaysShow(val priority: Int = 0): Priority
-    class ShowWhenNoExpanded(val priority: Int = 0): Priority
-    class IfSpace(val priority: Int = 0): Priority
-}
 
-sealed interface PriorityId {
-    object MoreSettingsButton : PriorityId
-    class Expanded(val hideOthers: Boolean = true) : PriorityId
+    /**
+     * The [Priority] that specifies that the item should always be shown on the action bar
+     */
+    class AlwaysShow(val priority: Int = 0): Priority
+
+    /**
+     * The [Priority] that specifies that the item should be shown when there is no expanded item
+     * (ex. no expanded search box)
+     */
+    class ShowWhenNoExpanded(val priority: Int = 0): Priority
+
+    /**
+     * The [Priority] that specifies that the item should be shown if there is space on the action
+     * bar
+     */
+    class IfSpace(val priority: Int = 0): Priority
 }
 
 
@@ -58,33 +74,16 @@ private class ActionSearchable(
     val onSearch: (String) -> Unit
 ) : Action
 
-
-//@Composable
-//fun ExpandedSearch() {
-//    with(LocalDensity.current) {
-//        BasicTextField(
-//            value = searchText.value,
-//            onValueChange = { searchText.value = it },
-//            Modifier
-//                .focusRequester(focusRequester)
-//                .weight(1f, false)
-//            ,
-//            keyboardOptions = KeyboardOptions(
-//                imeAction = ImeAction.Search,
-//            ),
-//            keyboardActions = KeyboardActions(
-//                onSearch = { onSearch(searchText.value) }
-//            ),
-//            singleLine = true,
-//            textStyle = LocalTextStyle.current.copy(fontSize = 18.dp.toSp())
-//        )
-//    }
-//}
-
+/**
+ * Used to set a title for an ActionBar item. Title can either be a string, or a string resource.
+ */
 sealed interface StringLike {
     @Composable
     fun asString(): kotlin.String
 
+    /**
+     * A string
+     */
     class String(val value: kotlin.String) : StringLike {
         @Composable
         override fun asString(): kotlin.String {
@@ -92,6 +91,9 @@ sealed interface StringLike {
         }
     }
 
+    /**
+     * A string resource
+     */
     class Resource(val value: Int) : StringLike {
         @Composable
         override fun asString(): kotlin.String {
@@ -100,7 +102,24 @@ sealed interface StringLike {
     }
 }
 
+/**
+ * Receiver scope for [ActionsRow], used to create the different types of action buttons that
+ * can be used in an [ActionsRow]
+ */
 interface ActionsScope {
+    /**
+     * DSL function to create an action bar button that will execute the provided callback when
+     * clicked
+     *
+     * @param icon A composable that will be shown as the icon in the actionbar/overflow menu
+     *
+     * @param title The title for the action button. Used when displayed in the overflow menu.
+     *
+     * @param priority The [Priority] is used to determine which buttons there is enough space for
+     * on the action bar, and which should be moved into the overflow menu
+     *
+     * @param onClick The callback to execute when the button is clicked
+     */
     fun actionButton(
         icon: @Composable () -> Unit,
         title: StringLike,
@@ -108,6 +127,22 @@ interface ActionsScope {
         onClick: () -> Unit
     )
 
+    /**
+     * DSL function to create an action bar button that will expand into a search textbox when
+     * clicked. After the user enters text and starts a search, the provided callback is executed.
+     *
+     * Note: There can only be one expanded item expanded at a time, and it always shows at the
+     * start of the action bar.
+     *
+     * @param icon A composable that will be shown as the icon in the actionbar/overflow menu
+     *
+     * @param title The title for the action button. Used when displayed in the overflow menu.
+     *
+     * @param priority The [Priority] is used to determine which buttons there is enough space for
+     * on the action bar, and which should be moved into the overflow menu
+     *
+     * @param onSearch The callback to execute when the a search is requested
+     */
     fun actionSearchable(
         icon: @Composable () -> Unit,
         title: StringLike,
@@ -116,6 +151,10 @@ interface ActionsScope {
     )
 }
 
+/**
+ * Implementation of the [ActionsScope] for the [ActionsRow]. Should only be used internally by
+ * [ActionsRow]
+ */
 private class ActionsScopeImpl : ActionsScope {
     var actions: MutableList<Action> = mutableListOf()
 
@@ -138,59 +177,35 @@ private class ActionsScopeImpl : ActionsScope {
     }
 }
 
-//@Composable
-//fun actions(
-//    actions: @Composable ActionsScope.() -> Unit
-//): List<Action> {
-//
-//    val aS = ActionsScopeImpl()
-//
-//    actions(aS)
-//
-//    return aS.actions
-//}
-
+/**
+ * Composable to create a responsive action bar that will dynamically change which items are shown
+ * on the action bar based on the amount of space available.
+ *
+ * @param buttons DSL callback where the buttons that should be on the action bar and in the
+ * overflow more menu are defined.
+ */
 @Composable
 fun ActionsRow(
-    modifier: Modifier = Modifier,
-    actionScope: ActionsScope.() -> Unit
+    buttons: ActionsScope.() -> Unit
 ) {
-    Log.d("ActionsRow", "Start")
-
     val expanded: MutableState<ActionSearchable?> = remember { mutableStateOf<ActionSearchable?>(null) }
     val moreOpen = remember{ mutableStateOf(false) }
     val actions by remember { derivedStateOf {
-        ActionsScopeImpl().apply(actionScope).actions
+        ActionsScopeImpl().apply(buttons).actions
     }}
 
     SubcomposeLayout() { constraints ->
-
-//        val inInMoreSettings = ArrayList<Action>(actions.size)
-//        val inAlwaysShow = ArrayList<Action>(actions.size)
-//        val inShowWhenNoExpanded = ArrayList<Action>(actions.size)
-//        val inIfSpace = ArrayList<Action>(actions.size)
-
 
         val inInMoreSettings = ArrayList<Int>(actions.size)
         val inAlwaysShow = ArrayList<Int>(actions.size)
         val inShowWhenNoExpanded = ArrayList<Int>(actions.size)
         val inIfSpace = ArrayList<Int>(actions.size)
 
-
-        //var expanded: ActionSearchable? = null
-
         var searchableExists = false
-
-//        actions.mapIndexed { i: Int, action: Action ->
-//            object {
-//                val origKey = i
-//                val value = action
-//            }
-//        }
 
         actions.forEachIndexed { index, action ->
             if (action == expanded.value) {
-                 searchableExists = true
+                searchableExists = true
             } else {
                 when (action.priority) {
                     is Priority.InMoreSettings -> inInMoreSettings.add(index)
@@ -245,8 +260,7 @@ fun ActionsRow(
                                 onValueChange = { searchText.value = it },
                                 Modifier
                                     .focusRequester(focusRequester)
-                                    .weight(1f, false)
-                                ,
+                                    .weight(1f, false),
                                 keyboardOptions = KeyboardOptions(
                                     imeAction = ImeAction.Search,
                                 ),
@@ -291,12 +305,13 @@ fun ActionsRow(
                     height = it.height
                 }
             }
-        } else { null }
+        } else {
+            null
+        }
 
 
         val placeables = ArrayList<Pair<Placeable, Int>>(actions.size)
         val inSettingsMeasurables = ArrayList<Pair<Measurable, Int>>(actions.size)
-        //val measurables = MutableList<Measurable?>(actions.size) { null }
         val size = inAlwaysShow.size + inShowWhenNoExpanded.size + inIfSpace.size
         var pos = -1
         var restInSettings = false
@@ -309,7 +324,8 @@ fun ActionsRow(
             ).iterator()
         } else {
             listOf(
-                inAlwaysShow.iterator()
+                inAlwaysShow.iterator(),
+                inIfSpace.iterator()
             ).iterator()
         }
 
@@ -320,26 +336,21 @@ fun ActionsRow(
         } else {
             listOf(
                 inShowWhenNoExpanded.iterator(),
-                inIfSpace.iterator(),
+                //inIfSpace.iterator(),
                 inInMoreSettings.iterator()
             ).iterator()
         }
-//            listOf(
-//            inAlwaysShow.iterator(),
-//            inShowWhenNoExpanded.iterator(),
-//            inIfSpace.iterator()
-//        ).iterator()
 
+        // List of all items in overflow menu
         val moreSettings = ArrayList<Int>(actions.size)
 
+        // Calculate which actions fit on action bar, and which must be pushed into overflow
         while (actionBarIterators.hasNext()) {
             val iterator = actionBarIterators.next()
             while (iterator.hasNext()) {
                 val curr = iterator.next()
                 val action = actions[curr]
                 ++pos
-
-                //Log.d("ActionsRow", curr.title)
 
                 if (!restInSettings) {
                     val measurable = subcompose(action.title) {
@@ -371,88 +382,37 @@ fun ActionsRow(
                         }
                     } else {
                         restInSettings = true
-                        //break@loop
                     }
                 }
                 if (restInSettings) {
-//                    val measurable = subcompose(action.title) {
-//                        Row {
-//                            action.icon()
-//                            Text(action.title)
-//                        }
-//                    }[0]
-//                    inSettingsMeasurables.add(Pair(measurable, curr))
                     moreSettings.add(curr)
                 }
             }
         }
 
-
+        // Populate actions that are for sure in overflow (because of configuration)
         while (settingsMenuIterators.hasNext()) {
             val iterator = settingsMenuIterators.next()
             while (iterator.hasNext()) {
                 restInSettings = true
 
                 val curr = iterator.next()
-//                val action = actions[curr]
-//
-//                val measurable = subcompose(action.title) {
-//
-//                    Row {
-//                        action.icon()
-//                        Text(action.title, maxLines = 1)
-//                    }
-//                }[0]
 
                 moreSettings.add(curr)
-
-                //inSettingsMeasurables.add(Pair(measurable, curr))
             }
         }
-
-
-
-//        if (inInMoreSettings.size != 0) {
-//            restInSettings = true
-//
-//            inInMoreSettings.forEach { curr ->
-//                val action = actions[curr]
-//                val measurable = subcompose(action.title) {
-//                    Row {
-//                        action.icon()
-//                        Text(action.title)
-//                    }
-//                }[0]
-//                inSettingsMeasurables.add(Pair(measurable, curr))
-//            }
-//        }
 
         // Sort action bar items back into order they were defined in
         placeables.sortBy {
             it.second
         }
-        // Sort action bar more menu items back into order they were defined in
+        // Sort overflow menu items back into order they were defined in
         inSettingsMeasurables.sortBy {
             it.second
         }
 
-        var moreMenuWidth = 0
-        inSettingsMeasurables.map {
-            moreMenuWidth += it.first.maxIntrinsicWidth(Int.MAX_VALUE)
-        }
 
-
-
-//        val place = subcompose("Settings") {
-//            IconButton(
-//                onClick = { /*TODO*/ },
-//                Modifier.layoutId(PriorityId.MoreSettingsButton)
-//            ) {
-//                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "More Actions")
-//            }
-//        }[0].measure(constraints)
-
-
+        // If there are overflow menu items
         if (restInSettings) {
             width += settingsMenu.width
 
@@ -461,6 +421,7 @@ fun ActionsRow(
             }
         }
 
+        // Create overflow menu items
         val moreSettingsMeasurable = subcompose("moreSettingsMenu") {
             Box(
                 Modifier.requiredSize(settingsMenu.width.toDp(), settingsMenu.height.toDp())
@@ -469,7 +430,7 @@ fun ActionsRow(
                     expanded = moreOpen.value,
                     onDismissRequest = { moreOpen.value = false },
 
-                ) {
+                    ) {
                     moreSettings.forEach {
                         val action = actions[it]
                         DropdownMenuItem(onClick = {
@@ -488,37 +449,20 @@ fun ActionsRow(
         }[0]?.measure(constraints)
 
 
-
-        //Log.d("ActionsRow", "Settings Size: ${moreSettingsMeasurable.size}")
-
-        //Log.d("ActionsRow", "PreLayout")
         layout(width, height) {
-            //Log.d("ActionsRow", "Layout: $width $height")
             var placeX = expandedMeasurable?.width ?: 0
 
-            if (expandedMeasurable != null) {
-                //Log.d("ActionsRow", "Expandable ${expandedMeasurable.width} ${expandedMeasurable.height}")
-                expandedMeasurable.placeRelative(0, (height - expandedMeasurable.height) / 2)
-            } /*else {
-                Log.d("ActionsRow", "No Expandable")
-            }*/
+            expandedMeasurable?.placeRelative(0, (height - expandedMeasurable.height) / 2)
 
             placeables.forEach {
-                //Log.d("ActionsRow", "placeable: ${it.width} ${it.height} $placeX ${(height - it.height) / 2}")
                 it.first.placeRelative(placeX, (height - it.first.height) / 2)
                 placeX += it.first.width
             }
             if (restInSettings) {
-                //Log.d("ActionsRow", "More Settings")
-                Log.d("ActionsRow", "setButton layout: $placeX ${settingsMenu.width} ${settingsMenu.height}")
                 settingsMenu.placeRelative(placeX, (height - settingsMenu.height) / 2)
             }
             if (moreOpen.value) {
-                Log.d("ActionsRow", "setMenu layout: $placeX ${settingsMenu.width} ${settingsMenu.height} ${moreSettingsMeasurable.measuredWidth} ${moreSettingsMeasurable.measuredHeight}")
-                Log.d("ActionsRow", "setMenu layout calc: ${placeX + settingsMenu.width - moreSettingsMeasurable.width} ${(height - settingsMenu.height) / 2 + settingsMenu.height}")
-                //moreSettingsMeasurable.placeRelative(placeX + settingsMenu.width - moreSettingsMeasurable.width, (height - settingsMenu.height) / 2 + settingsMenu.height)
                 moreSettingsMeasurable.placeRelative(placeX, (height - settingsMenu.height) / 2)
-                //moreSettingsMeasurable.
             }
         }
     }
