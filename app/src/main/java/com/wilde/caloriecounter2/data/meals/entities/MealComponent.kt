@@ -2,6 +2,7 @@ package com.wilde.caloriecounter2.data.meals.entities
 
 import androidx.room.*
 import com.squareup.moshi.JsonClass
+import com.wilde.caloriecounter2.data.other.quantity.Quantity
 
 @JsonClass( generateAdapter = true )
 @Entity(tableName = "meal_components",
@@ -13,7 +14,8 @@ import com.squareup.moshi.JsonClass
             entity = Meal::class,
             parentColumns = ["id"],
             childColumns = ["meal_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
         )
     ])
 data class MealComponent(

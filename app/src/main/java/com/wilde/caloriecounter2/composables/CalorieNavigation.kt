@@ -4,11 +4,9 @@ import android.util.Log
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.SaveAlt
-import androidx.compose.material.icons.filled.SavedSearch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -17,6 +15,7 @@ import com.squareup.moshi.Moshi
 import com.wilde.caloriecounter2.R
 import com.wilde.caloriecounter2.composables.other.ActionsScope
 import com.wilde.caloriecounter2.composables.other.Priority
+import com.wilde.caloriecounter2.composables.other.RunOnce
 import com.wilde.caloriecounter2.composables.other.StringLike
 import com.wilde.caloriecounter2.composables.screens.Food
 import com.wilde.caloriecounter2.composables.screens.FoodList
@@ -88,41 +87,41 @@ object CalorieNavigation2 {
                         StringLike.String("Filter"),
                         Priority.IfSpace()
                     ) {}
-                    actionButton(
-                        { Icon(Icons.Filled.Save, "Save") },
-                        StringLike.String("Save"),
-                        Priority.AlwaysShow()
-                    ) {}
-                    actionButton(
-                        { Icon(Icons.Filled.SaveAlt, "Save") },
-                        StringLike.String("Save2"),
-                        Priority.AlwaysShow()
-                    ) {}
-                    actionButton(
-                        { Icon(Icons.Filled.SavedSearch, "Save") },
-                        StringLike.String("Save3"),
-                        Priority.InMoreSettings
-                    ) {}
-                    actionButton(
-                        { Icon(Icons.Filled.SavedSearch, "Save") },
-                        StringLike.String("Save4"),
-                        Priority.AlwaysShow()
-                    ) {}
-                    actionButton(
-                        { Icon(Icons.Filled.SavedSearch, "Save") },
-                        StringLike.String("Save5"),
-                        Priority.AlwaysShow()
-                    ) {}
-                    actionButton(
-                        { Icon(Icons.Filled.Save, "Save") },
-                        StringLike.String("Save6"),
-                        Priority.AlwaysShow()
-                    ) {}
-                    actionButton(
-                        { Icon(Icons.Filled.SaveAlt, "Save") },
-                        StringLike.String("Save7"),
-                        Priority.AlwaysShow()
-                    ) {}
+//                    actionButton(
+//                        { Icon(Icons.Filled.Save, "Save") },
+//                        StringLike.String("Save"),
+//                        Priority.AlwaysShow()
+//                    ) {}
+//                    actionButton(
+//                        { Icon(Icons.Filled.SaveAlt, "Save") },
+//                        StringLike.String("Save2"),
+//                        Priority.AlwaysShow()
+//                    ) {}
+//                    actionButton(
+//                        { Icon(Icons.Filled.SavedSearch, "Save") },
+//                        StringLike.String("Save3"),
+//                        Priority.InMoreSettings
+//                    ) {}
+//                    actionButton(
+//                        { Icon(Icons.Filled.SavedSearch, "Save") },
+//                        StringLike.String("Save4"),
+//                        Priority.AlwaysShow()
+//                    ) {}
+//                    actionButton(
+//                        { Icon(Icons.Filled.SavedSearch, "Save") },
+//                        StringLike.String("Save5"),
+//                        Priority.AlwaysShow()
+//                    ) {}
+//                    actionButton(
+//                        { Icon(Icons.Filled.Save, "Save") },
+//                        StringLike.String("Save6"),
+//                        Priority.AlwaysShow()
+//                    ) {}
+//                    actionButton(
+//                        { Icon(Icons.Filled.SaveAlt, "Save") },
+//                        StringLike.String("Save7"),
+//                        Priority.AlwaysShow()
+//                    ) {}
 //                    actionButton(
 //                        { Icon(Icons.Filled.SavedSearch, "Save") },
 //                        StringLike.String("Save8"),
@@ -166,14 +165,13 @@ object CalorieNavigation2 {
             Log.d("CalorieNavigation", this.title)
             val foodViewModel: FoodViewModel = hiltViewModel()
 
-            rememberSaveable {
+            RunOnce {
                 val foodString = backStackEntry.arguments!!.getString("foodId")!!
 
                 val moshi = Moshi.Builder().build()
                 val food = moshi.adapter(Product::class.java).fromJson(foodString)!!
 
                 foodViewModel.openProduct(food)
-                0
             }
 
 
@@ -192,6 +190,18 @@ object CalorieNavigation2 {
                 ) {
                     foodViewModel.save()
                     nav.popBackStack("foodlist", false)
+                }
+                actionButton(
+                    {
+                        Icon(
+                            Icons.Filled.Print,
+                            "Print"
+                        )
+                    },
+                    StringLike.String("Print"),
+                    Priority.AlwaysShow()
+                ) {
+                    Log.d("Food", foodViewModel.product.toProduct().toString())
                 }
             }
             //}
@@ -218,7 +228,10 @@ object CalorieNavigation2 {
             Log.d("CalorieNavigation", this.title)
             val mealListViewModel: MealListViewModel = hiltViewModel()
 
-            MealList(mealListViewModel) {
+            MealList(
+                mealListViewModel,
+                { nav.navigate("meal/0") }
+            ) {
                 val moshi = Moshi.Builder().build()
                 val jsonAdapter = moshi.adapter(MealAndComponentsAndFoods::class.java)
                 val mealParam = jsonAdapter.toJson(it)
@@ -246,12 +259,20 @@ object CalorieNavigation2 {
             Log.d("CalorieNavigation", this.title)
             val mealViewModel: MealViewModel = hiltViewModel()
 
-            val mealString = backStackEntry.arguments!!.getString("mealId")!!
+            RunOnce {
+                val mealString = backStackEntry.arguments!!.getString("mealId")!!
 
-            val moshi = Moshi.Builder().build()
-            val meal = moshi.adapter(MealAndComponentsAndFoods::class.java).fromJson(mealString)!!
+                if (mealString.toIntOrNull() != 0) {
+                    val moshi = Moshi.Builder().build()
+                    val meal =
+                        moshi.adapter(MealAndComponentsAndFoods::class.java).fromJson(mealString)!!
 
-            mealViewModel.openMeal(meal)
+                    mealViewModel.openMeal(meal)
+                } else {
+                    mealViewModel.clear()
+                }
+
+            }
 
             actions {
                 actionButton(

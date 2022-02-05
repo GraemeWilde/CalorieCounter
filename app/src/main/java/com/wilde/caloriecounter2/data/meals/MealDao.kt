@@ -108,4 +108,7 @@ interface MealDao {
     @Transaction
     @Query("SELECT * FROM meals")
     fun getMealsAndComponentsAndFoods(): LiveData<List<MealAndComponentsAndFoods>>
+
+    @Delete
+    suspend fun deleteMeals(vararg meals: Meal)
 }

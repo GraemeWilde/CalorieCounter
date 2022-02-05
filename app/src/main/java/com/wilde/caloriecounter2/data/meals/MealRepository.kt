@@ -30,4 +30,8 @@ class MealRepository @Inject constructor(
     suspend fun updateMealAndComponents(mealAndComponents: MealAndComponents) {
         mealDao.updateMeals(mealAndComponents)
     }
+
+    suspend fun removeMeals(vararg meals: Meal) {
+        mealDao.deleteMeals(*meals)
+    }
 }

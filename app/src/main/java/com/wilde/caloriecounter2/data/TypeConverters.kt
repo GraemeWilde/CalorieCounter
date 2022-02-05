@@ -1,9 +1,11 @@
 package com.wilde.caloriecounter2.data
 
 import androidx.room.TypeConverter
-import com.wilde.caloriecounter2.data.meals.entities.QuantityTypeConverter
-import com.wilde.caloriecounter2.data.meals.entities.QuantityTypeConverterInterface
+import com.wilde.caloriecounter2.data.other.quantity.QuantityTypeConverter
+import com.wilde.caloriecounter2.data.other.quantity.QuantityTypeConverterInterface
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 
 class TypeConverters (
@@ -13,9 +15,9 @@ class TypeConverters (
 
     @TypeConverter
     fun localDateTimeToTimestamp(dateTime: LocalDateTime): Long =
-        dateTime.toEpochSecond(ZoneOffset.UTC)
+        dateTime.atZone(ZoneId.systemDefault()).toEpochSecond()
 
     @TypeConverter
     fun timestampToLocalDateTime(timestamp: Long): LocalDateTime =
-        LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC)
+        Instant.ofEpochSecond(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime()
 }

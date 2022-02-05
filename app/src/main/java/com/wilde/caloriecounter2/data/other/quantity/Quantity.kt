@@ -1,4 +1,4 @@
-package com.wilde.caloriecounter2.data.meals.entities
+package com.wilde.caloriecounter2.data.other.quantity
 
 import androidx.room.ColumnInfo
 import com.squareup.moshi.JsonClass

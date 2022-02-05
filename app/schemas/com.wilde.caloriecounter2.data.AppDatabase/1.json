@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0abc7a5ac855c1c07568f409df8e6565",
+    "identityHash": "ed933a39dda2f0dad2bbbcab84a7a67f",
     "entities": [
       {
         "tableName": "weight",
@@ -32,7 +32,7 @@
       },
       {
         "tableName": "products",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `brands` TEXT NOT NULL, `product_name` TEXT NOT NULL, `off_id` TEXT NOT NULL, `product_code` TEXT NOT NULL, `quantity` TEXT, `per_serving_serving_size` REAL, `per_serving_calories` REAL, `per_serving_fat` REAL, `per_serving_saturated_fat` REAL, `per_serving_trans_fat` REAL, `per_serving_cholesterol` REAL, `per_serving_sodium` REAL, `per_serving_carbohydrates` REAL, `per_serving_fibre` REAL, `per_serving_sugars` REAL, `per_serving_proteins` REAL, `per_100g_serving_size` REAL, `per_100g_calories` REAL, `per_100g_fat` REAL, `per_100g_saturated_fat` REAL, `per_100g_trans_fat` REAL, `per_100g_cholesterol` REAL, `per_100g_sodium` REAL, `per_100g_carbohydrates` REAL, `per_100g_fibre` REAL, `per_100g_sugars` REAL, `per_100g_proteins` REAL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `product_name` TEXT NOT NULL, `brands` TEXT NOT NULL, `off_id` TEXT NOT NULL, `product_code` TEXT NOT NULL, `quantity` TEXT, `per_serving_serving_size` REAL, `per_serving_calories` REAL, `per_serving_fat` REAL, `per_serving_saturated_fat` REAL, `per_serving_trans_fat` REAL, `per_serving_cholesterol` REAL, `per_serving_sodium` REAL, `per_serving_carbohydrates` REAL, `per_serving_fibre` REAL, `per_serving_sugars` REAL, `per_serving_proteins` REAL, `per_100g_serving_size` REAL, `per_100g_calories` REAL, `per_100g_fat` REAL, `per_100g_saturated_fat` REAL, `per_100g_trans_fat` REAL, `per_100g_cholesterol` REAL, `per_100g_sodium` REAL, `per_100g_carbohydrates` REAL, `per_100g_fibre` REAL, `per_100g_sugars` REAL, `per_100g_proteins` REAL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -41,14 +41,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "brands",
-            "columnName": "brands",
+            "fieldPath": "productName",
+            "columnName": "product_name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "productName",
-            "columnName": "product_name",
+            "fieldPath": "brands",
+            "columnName": "brands",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -65,7 +65,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "quantity",
+            "fieldPath": "packageSize",
             "columnName": "quantity",
             "affinity": "TEXT",
             "notNull": false
@@ -240,7 +240,7 @@
       },
       {
         "tableName": "meal_components",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `meal_id` INTEGER NOT NULL, `food_id` INTEGER NOT NULL, `measurement` REAL NOT NULL, `quantity_type` INTEGER NOT NULL, FOREIGN KEY(`meal_id`) REFERENCES `meals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `meal_id` INTEGER NOT NULL, `food_id` INTEGER NOT NULL, `measurement` REAL NOT NULL, `quantity_type` INTEGER NOT NULL, FOREIGN KEY(`meal_id`) REFERENCES `meals`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -293,7 +293,7 @@
           {
             "table": "meals",
             "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
+            "onUpdate": "CASCADE",
             "columns": [
               "meal_id"
             ],
@@ -307,7 +307,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0abc7a5ac855c1c07568f409df8e6565')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ed933a39dda2f0dad2bbbcab84a7a67f')"
     ]
   }
 }

@@ -107,7 +107,8 @@ fun CalorieCounterApp() {
                         actions.value?.invoke(this)
                     }
                 }
-            }
+            },
+            backgroundColor = MaterialTheme.colors.primary
         )
         ModalDrawer(
             drawerContent = {

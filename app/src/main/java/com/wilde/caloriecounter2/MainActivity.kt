@@ -52,7 +52,9 @@ private val darkColors = darkColors(
     background = black,
     onBackground = white,
     surface = Color(0xFF121212),
-    onSurface = white
+    onSurface = white,
+    error = Color(0xFFB00020), //0xFFf5a620
+    onError = white
 )
 
 private val lightColors = lightColors(
@@ -65,7 +67,9 @@ private val lightColors = lightColors(
     background = white,
     onBackground = black,
     surface = white,
-    onSurface = black
+    onSurface = black,
+    error = Color(0xFFB00020), //0xFFf5a620
+    onError = white
 )
 
 

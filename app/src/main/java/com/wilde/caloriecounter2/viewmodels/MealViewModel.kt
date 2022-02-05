@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModel
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.MealRepository
 import com.wilde.caloriecounter2.data.meals.entities.*
+import com.wilde.caloriecounter2.data.other.quantity.Quantity
+import com.wilde.caloriecounter2.data.other.quantity.QuantityType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -87,6 +89,13 @@ class MealViewModel @Inject internal constructor(
         observableMealComponentsAndFoods = mealAndComponentsAndFoods.mealComponentsAndFoods.map {
             ObservableMealComponentAndFood(it)
         }.toMutableStateList()
+    }
+
+    fun clear() {
+        id.value = 0
+        name.value = ""
+
+        observableMealComponentsAndFoods.clear()
     }
 
     fun save() {

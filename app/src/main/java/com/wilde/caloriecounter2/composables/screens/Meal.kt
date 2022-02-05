@@ -30,11 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.wilde.caloriecounter2.composables.other.DeleteButton
 import com.wilde.caloriecounter2.composables.other.EnumDropDown
 import com.wilde.caloriecounter2.composables.other.RunOnce
 import com.wilde.caloriecounter2.composables.other.TextField
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.entities.*
+import com.wilde.caloriecounter2.data.other.quantity.Quantity
+import com.wilde.caloriecounter2.data.other.quantity.QuantityType
 import com.wilde.caloriecounter2.viewmodels.FoodListViewModel
 import com.wilde.caloriecounter2.viewmodels.MealViewModel
 
@@ -122,7 +125,7 @@ fun Meal(
                     FoodList(foodListViewModel) {
                         mealViewModel.addComponentAndFood(it)
                         //MealViewModel.ObservableMealComponentAndFood()
-                        Log.d("Meal", "Select Food")
+                        Log.d("Meal", "Select Food: ${it.productName}")
                         selectingFood = false
                     }
                 }
@@ -137,7 +140,7 @@ fun Meal(
 @Composable
 fun MealViewComponent(viewModel: MealViewModel, onAddComponent: () -> Unit) {
     Box(
-        Modifier.fillMaxHeight()
+        Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -185,8 +188,8 @@ fun ComponentsList(
     Column(
         Modifier
             .verticalScroll(scrollState)
-            //.scrollbarVertical(lazyListState)
-            //.scrollbarVertical(scrollState = scrollState)
+        //.scrollbarVertical(lazyListState)
+        //.scrollbarVertical(scrollState = scrollState)
         ,
         //.scrollbarVertical(scrollState = scrollState)
     ) {
@@ -208,6 +211,8 @@ fun ComponentsList(
             val focusRequester = remember { FocusRequester() }
             val new by remember { mutableStateOf(!firstLaunch) }
 
+            Log.d("Meal", "${component.food.value!!.productName} - $new")
+
             Card(
                 border = BorderStroke(1.dp, Color(0x66000000)),
                 elevation = 4.dp,
@@ -219,7 +224,8 @@ fun ComponentsList(
                     Modifier.padding(8.dp)
                 ) {
                     Row(
-                        Modifier.height(IntrinsicSize.Min)
+                        Modifier.height(IntrinsicSize.Min),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(
                             Modifier.weight(1f)
@@ -230,27 +236,35 @@ fun ComponentsList(
                             )
                             Text(text = component.food.value!!.brands)
                         }
-
-                        // Remove this ComponentAndFood button
-                        IconButton(
-                            onClick = {
-                                onRemoveComponent(component)
-                            },
-                            Modifier.then(
-                                Modifier
-                                    //.fillMaxHeight()
-                                    //.aspectRatio(1f)
-                                    .size(42.dp)
-                            )
-                        ) {
-                            Icon(
-                                Icons.Filled.Delete,
-                                null,
-                                Modifier
-                                    .fillMaxHeight()
-                                    .aspectRatio(1f)
-                            )
+                        DeleteButton {
+                            onRemoveComponent(component)
                         }
+                        /*// Remove this ComponentAndFood button
+                        Card(
+                            border = BorderStroke(1.dp, Color(0x66000000)),
+                            elevation = 4.dp,
+                            backgroundColor = Color(0xFFB00020) //0xFF800000)
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    onRemoveComponent(component)
+                                },
+                                Modifier.then(
+                                    Modifier
+                                        //.fillMaxHeight()
+                                        //.aspectRatio(1f)
+                                        .size(42.dp)
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Filled.Delete,
+                                    null,
+                                    Modifier
+                                        .fillMaxHeight(0.9f)
+                                        .aspectRatio(1f)
+                                )
+                            }
+                        }*/
                     }
                     Row(
                         Modifier.padding(top = 4.dp)
