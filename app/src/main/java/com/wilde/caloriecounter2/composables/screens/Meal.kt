@@ -2,6 +2,8 @@ package com.wilde.caloriecounter2.composables.screens
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +23,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -28,8 +31,12 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.statusBarsPadding
 import com.wilde.caloriecounter2.composables.other.DeleteButton
 import com.wilde.caloriecounter2.composables.other.EnumDropDown
 import com.wilde.caloriecounter2.composables.other.RunOnce
@@ -111,24 +118,41 @@ fun Meal(
 //        }
 
 
+        Log.d("Meal", "Main System Bars ${LocalWindowInsets.current.systemBars.top}")
+
         Dialog(onDismissRequest = {
-            Log.d("Meal", "Dismiss")
-            selectingFood = false
-        }) {
+                Log.d("Meal", "Dismiss")
+                selectingFood = false
+            }
+        ) {
             Log.d("Meal", "Dialog")
 
-            Column(
-                Modifier.fillMaxHeight(0.9f),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Surface(shape = RoundedCornerShape(16.dp)) {
-                    FoodList(foodListViewModel) {
-                        mealViewModel.addComponentAndFood(it)
-                        //MealViewModel.ObservableMealComponentAndFood()
-                        Log.d("Meal", "Select Food: ${it.productName}")
+            Log.d("Meal", "Dialog System Bars ${LocalWindowInsets.current.systemBars.top}")
+
+            Box(
+                Modifier
+                    //.padding(top = with(LocalDensity.current) { LocalWindowInsets.current.systemBars.top.toDp() })
+                    //.padding(16.dp)
+                    .fillMaxSize()
+                    .clickable(interactionSource = MutableInteractionSource(), indication = null) {
                         selectingFood = false
+                    },
+                Alignment.Center
+            ) {
+//                Column(
+//                    Modifier.fillMaxWidth()
+//                    //Modifier.fillMaxHeight(0.9f),
+//                    //verticalArrangement = Arrangement.Center
+//                ) {
+                    Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+                        FoodList(foodListViewModel) {
+                            mealViewModel.addComponentAndFood(it)
+                            //MealViewModel.ObservableMealComponentAndFood()
+                            Log.d("Meal", "Select Food: ${it.productName}")
+                            selectingFood = false
+                        }
                     }
-                }
+                //}
             }
         }
     } //else

@@ -13,8 +13,8 @@ data class MealAndComponentsAndFoods(
 
     @Relation(
         entity = MealComponent::class,
-        parentColumn = "id",
-        entityColumn = "meal_id"
+        entityColumn = "meal_id",
+        parentColumn = "id"
     ) val mealComponentsAndFoods: List<MealComponentAndFood>
 ) {
     @Ignore

@@ -20,8 +20,8 @@ interface MealDao {
     suspend fun getMeal(id: Int): Meal?
 
     */
-    suspend fun insertMeals(vararg mealAndComponents: MealAndComponents) {
-        mealAndComponents.forEach { meal ->
+    suspend fun insertMeals(vararg mealAndComponents: MealAndComponents): List<Long> {
+        return mealAndComponents.map { meal ->
             insertMeal(meal.meal, meal.mealComponents)
         }
     }
@@ -34,7 +34,7 @@ interface MealDao {
 
 
     @Transaction
-    suspend fun insertMeal(meal: Meal, mealComponents: List<MealComponent>) {
+    suspend fun insertMeal(meal: Meal, mealComponents: List<MealComponent>): Long {
         val id = insertMealParents(meal)
 
         val comps = mealComponents.map { component ->
@@ -42,6 +42,8 @@ interface MealDao {
         }
 
         insertMealComponentsRefs(comps)
+
+        return id[0]
     }
 
     @Transaction

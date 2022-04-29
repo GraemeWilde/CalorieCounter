@@ -8,4 +8,5 @@ interface FoodListInterface {
     val foods: LiveData<List<Product>>
 }
 
+// Common base class for FoodListViewModel and FoodSearchViewModel
 abstract class FoodListViewModelClass: FoodListInterface, ViewModel()

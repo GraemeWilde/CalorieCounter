@@ -17,16 +17,10 @@ import com.wilde.caloriecounter2.composables.other.ActionsScope
 import com.wilde.caloriecounter2.composables.other.Priority
 import com.wilde.caloriecounter2.composables.other.RunOnce
 import com.wilde.caloriecounter2.composables.other.StringLike
-import com.wilde.caloriecounter2.composables.screens.Food
-import com.wilde.caloriecounter2.composables.screens.FoodList
-import com.wilde.caloriecounter2.composables.screens.Meal
-import com.wilde.caloriecounter2.composables.screens.MealList
+import com.wilde.caloriecounter2.composables.screens.*
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.entities.MealAndComponentsAndFoods
-import com.wilde.caloriecounter2.viewmodels.FoodSearchViewModel
-import com.wilde.caloriecounter2.viewmodels.FoodViewModel
-import com.wilde.caloriecounter2.viewmodels.MealListViewModel
-import com.wilde.caloriecounter2.viewmodels.MealViewModel
+import com.wilde.caloriecounter2.viewmodels.*
 
 
 sealed interface CalorieNavigation2Interface {
@@ -327,6 +321,58 @@ object CalorieNavigation2 {
 
                 nav.navigate("food/$food")
             }
+        }
+    }
+
+    @Suppress("UNUSED")
+    object Journal: CalorieNavigation2Interface {
+        override val route: String = "journal"
+        override val title: String = "Journal"
+        override val argumentsRoute: String? = null
+        override val arguments: List<NamedNavArgument> = emptyList()
+        override val deepLinks: List<NavDeepLink> = emptyList()
+        override val baseRoute: Boolean = true
+
+        @Composable
+        override fun Content(
+            nav: NavHostController,
+            backStackEntry: NavBackStackEntry,
+            actions: @Composable ((ActionsScope.() -> Unit)?) -> Unit
+        ) {
+            Journal(
+                hiltViewModel(),
+                { nav.navigate("journal_entry/0") }
+            )
+        }
+    }
+
+    @Suppress("UNUSED")
+    object JournalEntry: CalorieNavigation2Interface {
+        override val route: String = "journal_entry"
+        override val title: String = "Journal Entry"
+        override val argumentsRoute: String = "{journalId}"
+        override val arguments: List<NamedNavArgument> =
+            listOf(navArgument("journalId") { type = NavType.StringType })
+        override val deepLinks: List<NavDeepLink> = emptyList()
+        override val baseRoute: Boolean = false
+
+        @Composable
+        override fun Content(
+            nav: NavHostController,
+            backStackEntry: NavBackStackEntry,
+            actions: @Composable ((ActionsScope.() -> Unit)?) -> Unit
+        ) {
+            val journalEntryViewModel: JournalEntryViewModel = hiltViewModel()
+
+            RunOnce {
+                val journalId = backStackEntry.arguments!!.getString("journalId")!!
+
+                if (journalId.toIntOrNull() == 0) {
+                    journalEntryViewModel.clear()
+                }
+            }
+
+            JournalEntry(journalEntryViewModel)
         }
     }
 

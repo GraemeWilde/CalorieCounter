@@ -3,6 +3,7 @@ package com.wilde.caloriecounter2.di
 import android.content.Context
 import com.wilde.caloriecounter2.data.AppDatabase
 import com.wilde.caloriecounter2.data.food.FoodDao
+import com.wilde.caloriecounter2.data.journal.JournalDao
 import com.wilde.caloriecounter2.data.meals.MealDao
 import com.wilde.caloriecounter2.data.weight.WeightDao
 import dagger.Module
@@ -35,6 +36,11 @@ class DatabaseModule {
     @Provides
     fun provideMealDAO(appDatabase: AppDatabase): MealDao {
         return appDatabase.mealDAO()
+    }
+
+    @Provides
+    fun provideJournalDAO(appDatabase: AppDatabase): JournalDao {
+        return appDatabase.journalDAO()
     }
 
     /*@Provides
