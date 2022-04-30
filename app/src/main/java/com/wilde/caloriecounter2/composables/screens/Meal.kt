@@ -228,8 +228,8 @@ fun ComponentsList(
                         ) {
                             */
         var firstLaunch by remember { mutableStateOf(true) }
-        val noRecompFirstLaunch by rememberUpdatedState(firstLaunch)
-        val lastFocus = remember { FocusRequester() }
+//        val noRecompFirstLaunch by rememberUpdatedState(firstLaunch)
+//        val lastFocus = remember { FocusRequester() }
 
         mealComponentsAndFoods?.forEach { component ->
             val focusRequester = remember { FocusRequester() }

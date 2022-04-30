@@ -54,7 +54,6 @@ fun JournalEntry(
 @Composable
 fun DatePickerView(
     date: LocalDate,
-    onDateSelected: ((LocalDate) -> Unit)? = null,
     onAccept: (LocalDate) -> Unit,
 ) {
     val source = remember { MutableInteractionSource() }
@@ -63,7 +62,7 @@ fun DatePickerView(
 
     val datePicker = DatePickerDialog(
         context,
-        { datePicker: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
             onAccept(
                 LocalDate
                     .now()
@@ -96,7 +95,6 @@ fun DatePickerView(
 @Composable
 fun TimePickerView(
     time: LocalTime,
-    onTimeSelected: ((LocalTime) -> Unit)? = null,
     onAccept: (LocalTime) -> Unit,
 ) {
     val source = remember { MutableInteractionSource() }
@@ -105,7 +103,7 @@ fun TimePickerView(
 
     val timePicker = TimePickerDialog(
         context,
-        { timePicker: TimePicker, hour: Int, minute: Int ->
+        { _: TimePicker, hour: Int, minute: Int ->
             onAccept(
                 LocalTime.of(hour, minute)
             )

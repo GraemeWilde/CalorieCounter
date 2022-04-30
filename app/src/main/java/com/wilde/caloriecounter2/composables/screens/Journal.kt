@@ -27,8 +27,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-// For stickyHeader
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Journal(
     viewModel: JournalViewModel = viewModel(),
@@ -74,6 +72,8 @@ fun Journal(
 
         LazyColumn(Modifier.fillMaxSize()) {
             grouped.value.forEach { groupedByDate ->
+                // For stickyHeader
+                @OptIn(ExperimentalFoundationApi::class)
                 stickyHeader {
                     Box(
                         Modifier
