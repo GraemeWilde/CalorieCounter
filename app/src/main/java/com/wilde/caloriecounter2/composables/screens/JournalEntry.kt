@@ -26,8 +26,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.wilde.caloriecounter2.composables.other.DatePickerView
 import com.wilde.caloriecounter2.composables.other.RunOnce
 import com.wilde.caloriecounter2.composables.other.TextField
+import com.wilde.caloriecounter2.composables.other.TimePickerView
 import com.wilde.caloriecounter2.viewmodels.JournalEntryViewModel
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -48,83 +50,5 @@ fun JournalEntry(
             viewModel.observableJournalEntry!!.date.value = it.atDate(date.toLocalDate())
         }
 
-    }
-}
-
-@Composable
-fun DatePickerView(
-    date: LocalDate,
-    onAccept: (LocalDate) -> Unit,
-) {
-    val source = remember { MutableInteractionSource() }
-
-    val context = LocalContext.current
-
-    val datePicker = DatePickerDialog(
-        context,
-        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            onAccept(
-                LocalDate
-                    .now()
-                    .withMonth(month + 1)
-                    .withYear(year)
-                    .withDayOfMonth(dayOfMonth)
-            )
-        },
-        date.year,
-        date.monthValue - 1,
-        date.dayOfMonth
-    )
-
-    Box {
-        TextField(
-            label = { Text("Date") },
-            leadingIcon = { Icon(Icons.Filled.CalendarToday, null) },
-            value = date.format(DateTimeFormatter.ofPattern("yyyy MMM. dd")),
-            onValueChange = {},
-            readOnly = true,
-            interactionSource = source,
-            maxLines = 1
-        )
-        if (source.collectIsPressedAsState().value) {
-            datePicker.show()
-        }
-    }
-}
-
-@Composable
-fun TimePickerView(
-    time: LocalTime,
-    onAccept: (LocalTime) -> Unit,
-) {
-    val source = remember { MutableInteractionSource() }
-
-    val context = LocalContext.current
-
-    val timePicker = TimePickerDialog(
-        context,
-        { _: TimePicker, hour: Int, minute: Int ->
-            onAccept(
-                LocalTime.of(hour, minute)
-            )
-        },
-        time.hour,
-        time.minute,
-        true
-    )
-
-    Box {
-        TextField(
-            label = { Text("Time") },
-            leadingIcon = { Icon(Icons.Filled.Schedule, null) },
-            value = time.format(DateTimeFormatter.ofPattern("h:mm a")),
-            onValueChange = {},
-            readOnly = true,
-            interactionSource = source,
-            maxLines = 1
-        )
-        if (source.collectIsPressedAsState().value) {
-            timePicker.show()
-        }
     }
 }

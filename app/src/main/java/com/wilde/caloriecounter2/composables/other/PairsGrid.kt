@@ -212,11 +212,12 @@ fun PairsGrid(
                 }
             }
 
+            val width = Integer.min(Integer.max(meas.width, constraints.minWidth), constraints.maxWidth)
             val height = Integer.min(Integer.max(meas.height, constraints.minHeight), constraints.maxHeight)
 
             Log.d("PairsGrid", "height: $height")
 
-            return layout(meas.width, height) {
+            return layout(width, height) {
                 run {
                     var row = 0
                     var cumulativeHeight = 0
@@ -226,7 +227,6 @@ fun PairsGrid(
 //                        if (col == 0) {
 //                            row++
 //                        }
-
 
                         Log.d("PairsGrid", "RowHeights[$row]: ${meas.rowHeights[row]} - ${placeable.height} - ${(meas.rowHeights[row] - placeable.height) / 2}")
 

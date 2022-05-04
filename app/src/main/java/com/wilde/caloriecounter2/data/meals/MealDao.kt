@@ -113,4 +113,7 @@ interface MealDao {
 
     @Delete
     suspend fun deleteMeals(vararg meals: Meal)
+
+    @Delete
+    suspend fun deleteMeal(meal: Meal)
 }

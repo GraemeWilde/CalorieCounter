@@ -222,7 +222,7 @@ object CalorieNavigation2 {
             Log.d("CalorieNavigation", this.title)
             val mealListViewModel: MealListViewModel = hiltViewModel()
 
-            MealList(
+            MealListScreen(
                 mealListViewModel,
                 { nav.navigate("meal/0") }
             ) {
@@ -376,5 +376,7 @@ object CalorieNavigation2 {
         }
     }
 
-    val screens = CalorieNavigation2Interface::class.sealedSubclasses.map { it.objectInstance!! }
+    //val screens = CalorieNavigation2Interface::class.sealedSubclasses.map { it.objectInstance!! }
+
+    val screens = listOf(FoodList, Food, MealList, Meal, FoodSearch, Journal, JournalEntry)
 }

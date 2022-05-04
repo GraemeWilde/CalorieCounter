@@ -1,6 +1,7 @@
 package com.wilde.caloriecounter2.composables.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,12 +54,15 @@ fun FoodListContent(
     onSelect: ((selectedFood: Product) -> Unit)? = null
 ) {
     LazyColumn(
-        Modifier.fillMaxWidth()
+        Modifier
+            .fillMaxWidth()
+            .padding(8.dp, 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         if (foods != null) items(foods) { food ->
             Surface(
                 Modifier
-                    .padding(8.dp, 2.dp)
+                    //.padding(0.dp, 2.dp)
                     .then(if (onSelect != null) Modifier.clickable {
                         onSelect(food)
                     } else

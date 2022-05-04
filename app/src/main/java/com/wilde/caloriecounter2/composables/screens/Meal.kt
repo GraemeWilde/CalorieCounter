@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -37,9 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
-import com.wilde.caloriecounter2.composables.other.DeleteButton
-import com.wilde.caloriecounter2.composables.other.EnumDropDown
-import com.wilde.caloriecounter2.composables.other.RunOnce
+import com.wilde.caloriecounter2.composables.other.*
 import com.wilde.caloriecounter2.composables.other.TextField
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.entities.*
@@ -120,40 +119,35 @@ fun Meal(
 
         Log.d("Meal", "Main System Bars ${LocalWindowInsets.current.systemBars.top}")
 
-        Dialog(onDismissRequest = {
+        DialogFix(
+            onDismissRequest = {
                 Log.d("Meal", "Dismiss")
                 selectingFood = false
             }
         ) {
-            Log.d("Meal", "Dialog")
-
-            Log.d("Meal", "Dialog System Bars ${LocalWindowInsets.current.systemBars.top}")
-
-            Box(
-                Modifier
-                    //.padding(top = with(LocalDensity.current) { LocalWindowInsets.current.systemBars.top.toDp() })
-                    //.padding(16.dp)
-                    .fillMaxSize()
-                    .clickable(interactionSource = MutableInteractionSource(), indication = null) {
-                        selectingFood = false
-                    },
-                Alignment.Center
-            ) {
-//                Column(
-//                    Modifier.fillMaxWidth()
-//                    //Modifier.fillMaxHeight(0.9f),
-//                    //verticalArrangement = Arrangement.Center
-//                ) {
-                    Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
-                        FoodList(foodListViewModel) {
-                            mealViewModel.addComponentAndFood(it)
-                            //MealViewModel.ObservableMealComponentAndFood()
-                            Log.d("Meal", "Select Food: ${it.productName}")
-                            selectingFood = false
-                        }
-                    }
-                //}
+//            Log.d("Meal", "Dialog")
+//
+//            Log.d("Meal", "Dialog System Bars ${LocalWindowInsets.current.systemBars.top}")
+//
+//            Box(
+//                Modifier
+//                    //.padding(top = with(LocalDensity.current) { LocalWindowInsets.current.systemBars.top.toDp() })
+//                    //.padding(16.dp)
+//                    .fillMaxSize()
+//                    .clickable(interactionSource = MutableInteractionSource(), indication = null) {
+//                        selectingFood = false
+//                    },
+//                Alignment.Center
+//            ) {
+            Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+                FoodList(foodListViewModel) {
+                    mealViewModel.addComponentAndFood(it)
+                    //MealViewModel.ObservableMealComponentAndFood()
+                    Log.d("Meal", "Select Food: ${it.productName}")
+                    selectingFood = false
+                }
             }
+            //}
         }
     } //else
     MealViewComponent(mealViewModel) {
@@ -189,7 +183,10 @@ fun MealViewComponent(viewModel: MealViewModel, onAddComponent: () -> Unit) {
 //            val mealComponentsAndFoods =
 //                remember { viewModel.observableMealComponentsAndFoods }
 
-            ComponentsList(viewModel.observableMealComponentsAndFoods, viewModel::removeComponentAndFood)
+            ComponentsList(
+                viewModel.observableMealComponentsAndFoods,
+                viewModel::removeComponentAndFood
+            )
         }
         FloatingActionButton(
             onClick = onAddComponent,
@@ -211,10 +208,9 @@ fun ComponentsList(
 
     Column(
         Modifier
-            .verticalScroll(scrollState)
+            .verticalScroll(scrollState),
         //.scrollbarVertical(lazyListState)
         //.scrollbarVertical(scrollState = scrollState)
-        ,
         //.scrollbarVertical(scrollState = scrollState)
     ) {
         //

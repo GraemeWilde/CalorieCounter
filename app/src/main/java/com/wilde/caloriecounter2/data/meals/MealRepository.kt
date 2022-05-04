@@ -34,4 +34,8 @@ class MealRepository @Inject constructor(
     suspend fun removeMeals(vararg meals: Meal) {
         mealDao.deleteMeals(*meals)
     }
+
+    suspend fun removeMeal(meal: Meal) {
+        mealDao.deleteMeal(meal)
+    }
 }

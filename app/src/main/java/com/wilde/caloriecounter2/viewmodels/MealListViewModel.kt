@@ -25,4 +25,10 @@ class MealListViewModel @Inject internal constructor(
             mealRepository.removeMeals(*meals)
         }
     }
+
+    fun removeMeal(meal: Meal) {
+        viewModelScope.launch {
+            mealRepository.removeMeal(meal)
+        }
+    }
 }
