@@ -14,6 +14,10 @@ class JournalRepository @Inject constructor(
         return journalDao.getFullJournalEntries()
     }
 
+    fun getFullJournalEntry(id: Int): LiveData<FullJournalEntry> {
+        return journalDao.getFullJournalEntry(id)
+    }
+
     fun insertJournalEntry(journalEntry: JournalEntry): Long {
         return journalDao.insertEntries(journalEntry)[0]
     }

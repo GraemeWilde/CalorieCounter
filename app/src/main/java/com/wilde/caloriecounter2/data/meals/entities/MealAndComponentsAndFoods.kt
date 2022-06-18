@@ -1,11 +1,14 @@
 package com.wilde.caloriecounter2.data.meals.entities
 
+import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Ignore
 import androidx.room.Relation
 import com.squareup.moshi.JsonClass
 import com.wilde.caloriecounter2.data.other.quantity.QuantityType
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @JsonClass( generateAdapter = true )
 data class MealAndComponentsAndFoods(
     @Embedded
@@ -16,7 +19,7 @@ data class MealAndComponentsAndFoods(
         entityColumn = "meal_id",
         parentColumn = "id"
     ) val mealComponentsAndFoods: List<MealComponentAndFood>
-) {
+) : Parcelable {
     @Ignore
     val calorieSum: Float
     @Ignore
@@ -44,10 +47,10 @@ data class MealAndComponentsAndFoods(
                         }
                         QuantityType.Unit -> {
                             if (perServing.servingSize != null) {
-                                tCalorieSum += perServing.calories ?: 0f / perServing.servingSize * quantity.measurement
-                                tProteinsSum += perServing.proteins ?: 0f / perServing.servingSize * quantity.measurement
-                                tFatSum += perServing.fat ?: 0f / perServing.servingSize * quantity.measurement
-                                tCarbohydratesSum += perServing.carbohydrates ?: 0f / perServing.servingSize * quantity.measurement
+                                tCalorieSum += (perServing.calories ?: 0f) / perServing.servingSize * quantity.measurement
+                                tProteinsSum += (perServing.proteins ?: 0f) / perServing.servingSize * quantity.measurement
+                                tFatSum += (perServing.fat ?: 0f) / perServing.servingSize * quantity.measurement
+                                tCarbohydratesSum += (perServing.carbohydrates ?: 0f) / perServing.servingSize * quantity.measurement
                             }
                         }
                     }

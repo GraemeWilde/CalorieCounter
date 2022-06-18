@@ -65,8 +65,9 @@ fun FoodListContent(
                     //.padding(0.dp, 2.dp)
                     .then(if (onSelect != null) Modifier.clickable {
                         onSelect(food)
-                    } else
-                        Modifier),
+                    } else {
+                        Modifier
+                    }),
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(2.dp, foodListColors.foodBorderColor)
             ) {

@@ -1,9 +1,12 @@
 package com.wilde.caloriecounter2.data.meals.entities
 
+import android.os.Parcelable
 import androidx.room.*
 import com.squareup.moshi.JsonClass
 import com.wilde.caloriecounter2.data.other.quantity.Quantity
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @JsonClass( generateAdapter = true )
 @Entity(tableName = "meal_components",
     indices = [
@@ -31,4 +34,4 @@ data class MealComponent(
 
     @Embedded
     var quantity: Quantity
-)
+) : Parcelable

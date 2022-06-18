@@ -3,6 +3,7 @@ package com.wilde.caloriecounter2.composables.screens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wilde.caloriecounter2.composables.other.FlowRow
+import com.wilde.caloriecounter2.composables.other.SlideInFloatingActionButton
 import com.wilde.caloriecounter2.data.journal.entities.FullJournalEntry
 import com.wilde.caloriecounter2.data.journal.entities.JournalEntry
 import com.wilde.caloriecounter2.viewmodels.JournalViewModel
@@ -31,7 +33,7 @@ import java.time.format.FormatStyle
 fun Journal(
     viewModel: JournalViewModel = viewModel(),
     onAdd: () -> Unit,
-    onSelect: (() -> Unit)? = null //TODO
+    onSelect: ((FullJournalEntry) -> Unit)? = null //TODO
 ) {
 
     val entries = viewModel.entries.observeAsState()
@@ -85,7 +87,12 @@ fun Journal(
                 }
                 // groupedByDate.value is the list of entries for a date
                 items(groupedByDate.value) { entry ->
-                    FlowRow(paddingBetween = 4.dp) {
+                    FlowRow(
+                        paddingBetween = 4.dp,
+                        modifier = Modifier.clickable {
+                            onSelect?.invoke(entry)
+                        }
+                    ) {
                         Text(entry.journalEntry.date.toLocalTime().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
                         if (entry.mealAndComponentsAndFoods != null) {
                             Text(entry.mealAndComponentsAndFoods.meal.name)
@@ -106,13 +113,14 @@ fun Journal(
             }
         }
 
-        FloatingActionButton(
-            onClick = onAdd,
-            Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(Icons.Filled.Add, null)
-        }
+        SlideInFloatingActionButton(onAdd)
+//        FloatingActionButton(
+//            onClick = onAdd,
+//            Modifier
+//                .align(Alignment.BottomEnd)
+//                .padding(16.dp)
+//        ) {
+//            Icon(Icons.Filled.Add, null)
+//        }
     }
 }

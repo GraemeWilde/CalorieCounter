@@ -35,7 +35,9 @@ fun <T : Enum<T>> EnumDropDown(
         onExpandedChange = {
             expanded = !expanded
         },
-        modifier = Modifier.width(IntrinsicSize.Min).then(modifier)
+        modifier = Modifier
+            .width(IntrinsicSize.Min)
+            .then(modifier)
     ) {
         TextField(
             value = selectedEnum.name,
@@ -69,4 +71,14 @@ fun <T : Enum<T>> EnumDropDown(
             }
         }
     }
+}
+
+@Composable
+inline fun <reified T : Enum<T>> EnumDropDown(
+    selectedEnum: T,
+    modifier: Modifier = Modifier,
+    noinline label: @Composable (() -> Unit)? = null,
+    noinline onSelectedChange: (select: T) -> Unit
+) {
+    EnumDropDown(clazz = T::class.java, selectedEnum = selectedEnum, onSelectedChange = onSelectedChange, label = label, modifier = modifier)
 }

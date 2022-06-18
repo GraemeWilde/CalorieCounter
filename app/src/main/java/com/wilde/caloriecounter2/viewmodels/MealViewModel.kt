@@ -42,35 +42,66 @@ class MealViewModel @Inject internal constructor(
         val food: MutableLiveData<Product> = MutableLiveData(food)
     }
 
-    val id = MutableLiveData<Int>()
-    val name = MutableLiveData<String>()
+    class ObservableMeal(mealAndComponentsAndFoods: MealAndComponentsAndFoods? = null) {
+        val id: Int = mealAndComponentsAndFoods?.meal?.id ?: 0
+        val name: MutableLiveData<String> = MutableLiveData<String>(mealAndComponentsAndFoods?.meal?.name ?: "")
 
+        val removeList: MutableList<Int> = mutableListOf()
 
-    var observableMealComponentsAndFoods: SnapshotStateList<ObservableMealComponentAndFood> = mutableStateListOf()
+        var observableMealComponentsAndFoods: SnapshotStateList<ObservableMealComponentAndFood> =
+            mealAndComponentsAndFoods?.mealComponentsAndFoods?.map {
+                ObservableMealComponentAndFood(it)
+            }?.toMutableStateList() ?: mutableStateListOf()
+
+        fun toMealAndComponentsAndFoods(): MealAndComponents {
+            return MealAndComponents(
+                Meal(
+                    id,
+                    name.value!!
+                ),
+                observableMealComponentsAndFoods.map {
+                    MealComponent(
+                        it.id.value!!,
+                        id,
+                        it.food.value!!.id,
+                        Quantity(it.quantity.measurement.value!!, it.quantity.type.value!!)
+                    )
+                }
+            )
+        }
+    }
+
+    var observableMeal: ObservableMeal = ObservableMeal()
+
+//    val id = MutableLiveData<Int>()
+//    val name = MutableLiveData<String>()
+//
+//
+//    var observableMealComponentsAndFoods: SnapshotStateList<ObservableMealComponentAndFood> = mutableStateListOf()
 
     /*var observableMealComponentsAndFoods: MutableLiveData<MutableList<ObservableMealComponentAndFood>> =
         MutableLiveData<MutableList<ObservableMealComponentAndFood>>(mutableListOf())*/
 
     fun openMeal(mealAndComponentsAndFoods: MealAndComponentsAndFoods) {
-        id.value = mealAndComponentsAndFoods.meal.id
-        name.value = mealAndComponentsAndFoods.meal.name
-
-        observableMealComponentsAndFoods = mealAndComponentsAndFoods.mealComponentsAndFoods.map {
-            ObservableMealComponentAndFood(it)
-        }.toMutableStateList()
+        observableMeal = ObservableMeal(mealAndComponentsAndFoods)
     }
 
     fun clear() {
-        id.value = 0
-        name.value = ""
-
-        observableMealComponentsAndFoods.clear()
+        observableMeal = ObservableMeal()
     }
 
     fun save() {
+        val saveMeal = toMealAndComponents()
+        val removeList = observableMeal.removeList
+
         CoroutineScope(Dispatchers.IO).launch {
-            val saveMeal = toMealAndComponents()
             Log.d("MealViewModel", "Save Started")
+
+            Log.d("MealViewModel", "RemoveList: ${removeList.toString()}")
+
+            val res = mealRepository.deleteMealComponentsByIds(*removeList.toIntArray())
+
+            Log.d("MealViewModel", "Results: ${res.toString()}")
 
             if (saveMeal.meal.id != 0) {
                 mealRepository.updateMealAndComponents(saveMeal)
@@ -82,7 +113,7 @@ class MealViewModel @Inject internal constructor(
     }
 
     fun addComponentAndFood(food: Product) {
-        observableMealComponentsAndFoods.add(
+        observableMeal.observableMealComponentsAndFoods.add(
             ObservableMealComponentAndFood(
                 food
             )
@@ -90,31 +121,21 @@ class MealViewModel @Inject internal constructor(
     }
 
     fun addComponentAndFood(observableMealComponentAndFood: ObservableMealComponentAndFood) {
-        observableMealComponentsAndFoods.add(observableMealComponentAndFood)
+        observableMeal.observableMealComponentsAndFoods.add(observableMealComponentAndFood)
     }
 
     fun removeComponentAndFood(observableMealComponentAndFood: ObservableMealComponentAndFood) {
-        observableMealComponentsAndFoods.remove(observableMealComponentAndFood)
+        if (observableMealComponentAndFood.id.value!! != 0) {
+            this.observableMeal.removeList.add(observableMealComponentAndFood.id.value!!)
+        }
+        observableMeal.observableMealComponentsAndFoods.remove(observableMealComponentAndFood)
         /*if (observableMealComponentsAndFoods.value?.remove(observableMealComponentAndFood) == true)
             observableMealComponentsAndFoods.value = observableMealComponentsAndFoods.value*/
     }
 
 
     fun toMealAndComponents(): MealAndComponents {
-        return MealAndComponents(
-            Meal(
-                id.value!!,
-                name.value!!
-            ),
-            observableMealComponentsAndFoods.map {
-                MealComponent(
-                    it.id.value!!,
-                    id.value!!,
-                    it.food.value!!.id,
-                    Quantity(it.quantity.measurement.value!!, it.quantity.type.value!!)
-                )
-            }
-        )
+        return observableMeal.toMealAndComponentsAndFoods()
     }
 
     override fun onCleared() {

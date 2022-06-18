@@ -1,5 +1,6 @@
 package com.wilde.caloriecounter2.data.journal.entities
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -8,8 +9,10 @@ import com.squareup.moshi.JsonClass
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.meals.entities.Meal
 import com.wilde.caloriecounter2.data.other.quantity.Quantity
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
+@Parcelize
 @JsonClass(generateAdapter = true)
 @Entity(tableName = "journal_entries")
 data class JournalEntry constructor(
@@ -28,7 +31,7 @@ data class JournalEntry constructor(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Int = 0,
-) {
+): Parcelable {
     init {
         assert((foodId != null) != (mealId != null))
     }

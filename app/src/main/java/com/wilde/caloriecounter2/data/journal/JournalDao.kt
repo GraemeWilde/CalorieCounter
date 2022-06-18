@@ -14,6 +14,10 @@ interface JournalDao {
     @Query("SELECT * FROM journal_entries ORDER BY date DESC")
     fun getFullJournalEntries(): LiveData<List<FullJournalEntry>>
 
+    @Transaction
+    @Query("SELECT * FROM journal_entries WHERE id = :id")
+    fun getFullJournalEntry(id: Int): LiveData<FullJournalEntry>
+
 //    @Query("SELECT * FROM journal_entries")
 //    fun getJournalEntries(): LiveData<List<JournalEntry>>
 

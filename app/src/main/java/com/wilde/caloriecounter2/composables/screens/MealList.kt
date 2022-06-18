@@ -17,10 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.wilde.caloriecounter2.composables.other.DeleteButton
-import com.wilde.caloriecounter2.composables.other.PairsGrid
-import com.wilde.caloriecounter2.composables.other.VerticalAlignment
-import com.wilde.caloriecounter2.composables.other.fillMaxWidth
+import com.wilde.caloriecounter2.composables.other.*
 import com.wilde.caloriecounter2.data.meals.entities.MealAndComponentsAndFoods
 import com.wilde.caloriecounter2.viewmodels.MealListViewModel
 
@@ -37,21 +34,23 @@ fun MealListScreen(
 
         MealList(
             mealListViewModel = mealListViewModel,
-            onSelect
-        ) { mealListVM, meal ->
-            DeleteButton {
-                mealListVM.removeMeal(meal.meal)     //removeMeals(meal.meal)
-            }
-        }
+            { mealListVM, meal ->
+                DeleteButton {
+                    mealListVM.removeMeals(meal.meal)     //removeMeals(meal.meal)
+                }
+            },
+            onSelect = onSelect
+        )
 
-        FloatingActionButton(
-            onClick = onAdd,
-            Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(Icons.Filled.Add, null)
-        }
+        SlideInFloatingActionButton(onAdd)
+//        FloatingActionButton(
+//            onClick = onAdd,
+//            Modifier
+//                .align(Alignment.BottomEnd)
+//                .padding(16.dp)
+//        ) {
+//            Icon(Icons.Filled.Add, null)
+//        }
     }
 }
 
@@ -59,14 +58,17 @@ fun MealListScreen(
 @Composable
 fun MealList(
     mealListViewModel: MealListViewModel,
-    onSelect: ((MealAndComponentsAndFoods) -> Unit)?,
-    rightExtra: @Composable ((mealListViewModel: MealListViewModel, meal: MealAndComponentsAndFoods) -> Unit)? = null
+    rightExtra: @Composable ((mealListViewModel: MealListViewModel, meal: MealAndComponentsAndFoods) -> Unit)? = null,
+    contentPaddingBottom: Boolean = true,
+    onSelect: ((MealAndComponentsAndFoods) -> Unit)?
 ) {
     val meals = mealListViewModel.mealsList.observeAsState()
 
     LazyColumn(
         Modifier.padding(8.dp),
-        contentPadding = PaddingValues(bottom = 100.dp),
+        // Add content padding to allow over scrolling so that the floating action button doesnt
+        // cover the last entry, removable for journalEntry meal selection
+        contentPadding = PaddingValues(bottom = if (contentPaddingBottom) 100.dp else 0.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         meals.value?.let {
@@ -76,16 +78,17 @@ fun MealList(
                     elevation = 4.dp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        //.padding(vertical = 4.dp)
+                        .clickable {
+                            onSelect?.invoke(meal)
+                        }
+                    ,
                 ) {
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                onSelect?.invoke(meal)
-                            }
                             .padding(8.dp)
                             .height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(Modifier.weight(1f)) {
@@ -97,7 +100,9 @@ fun MealList(
 
                             with(LocalDensity.current) {
                                 PairsGrid(
-                                    Modifier.fillMaxWidth().weight(1f),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f),
                                     { col, _ ->
                                         if (col % 2 == 1) {
                                             16.dp.roundToPx()
@@ -140,7 +145,7 @@ fun MealList(
                                 }
                             }
                         }
-                        //rightExtra?.invoke(mealListViewModel, meal)
+                        rightExtra?.invoke(mealListViewModel, meal)
                     }
                 }
             }

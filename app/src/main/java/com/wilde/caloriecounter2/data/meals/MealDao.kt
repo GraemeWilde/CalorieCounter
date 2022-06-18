@@ -116,4 +116,7 @@ interface MealDao {
 
     @Delete
     suspend fun deleteMeal(meal: Meal)
+
+    @Query("DELETE FROM meal_components WHERE id IN(:mealComponentRefs)")
+    suspend fun deleteMealComponentsByIds(vararg mealComponentRefs: Int): Int
 }

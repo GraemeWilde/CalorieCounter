@@ -2,8 +2,6 @@ package com.wilde.caloriecounter2.composables.screens
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,33 +9,24 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.statusBarsPadding
 import com.wilde.caloriecounter2.composables.other.*
 import com.wilde.caloriecounter2.composables.other.TextField
 import com.wilde.caloriecounter2.data.food.entities.Product
@@ -46,6 +35,7 @@ import com.wilde.caloriecounter2.data.other.quantity.Quantity
 import com.wilde.caloriecounter2.data.other.quantity.QuantityType
 import com.wilde.caloriecounter2.viewmodels.FoodListViewModel
 import com.wilde.caloriecounter2.viewmodels.MealViewModel
+import kotlinx.coroutines.android.awaitFrame
 
 
 @Preview(device = Devices.PIXEL_4, showSystemUi = true)
@@ -72,12 +62,12 @@ fun MealViewPreview() {
     )
     val viewModel: MealViewModel = hiltViewModel()
     viewModel.openMeal(meal)
-    Meal(viewModel)
+    MealScreen(viewModel)
 }
 
 
 @Composable
-fun Meal(
+fun MealScreen(
     mealViewModel: MealViewModel = viewModel(),
     //onAddComponent: () -> Unit
 ) {
@@ -103,20 +93,6 @@ fun Meal(
 
     if (selectingFood) {
 
-//        val backDispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
-//
-//        DisposableEffect(true) {
-//            val foodCallback = backDispatcher.addCallback {
-//                selectingFood = false
-//                this.isEnabled = false
-//            }
-//
-//            onDispose {
-//                foodCallback.remove()
-//            }
-//        }
-
-
         Log.d("Meal", "Main System Bars ${LocalWindowInsets.current.systemBars.top}")
 
         DialogFix(
@@ -125,20 +101,6 @@ fun Meal(
                 selectingFood = false
             }
         ) {
-//            Log.d("Meal", "Dialog")
-//
-//            Log.d("Meal", "Dialog System Bars ${LocalWindowInsets.current.systemBars.top}")
-//
-//            Box(
-//                Modifier
-//                    //.padding(top = with(LocalDensity.current) { LocalWindowInsets.current.systemBars.top.toDp() })
-//                    //.padding(16.dp)
-//                    .fillMaxSize()
-//                    .clickable(interactionSource = MutableInteractionSource(), indication = null) {
-//                        selectingFood = false
-//                    },
-//                Alignment.Center
-//            ) {
             Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
                 FoodList(foodListViewModel) {
                     mealViewModel.addComponentAndFood(it)
@@ -147,55 +109,67 @@ fun Meal(
                     selectingFood = false
                 }
             }
-            //}
         }
-    } //else
-    MealViewComponent(mealViewModel) {
-        selectingFood = true
+    }
+
+    Box(
+        Modifier.fillMaxSize()
+    ) {
+        Meal(mealViewModel)
+
+        SlideInFloatingActionButton { selectingFood = true }
+//        val state = remember {
+//            MutableTransitionState(false).apply {
+//                targetState = true
+//            }
+//        }
+//        AnimatedVisibility(
+//            visibleState = state,
+//            enter = slideInVertically(tween(500)) { it },
+//            exit = slideOutVertically(tween(500)) { it },
+//            modifier = Modifier
+//                .align(Alignment.BottomEnd)
+//                .padding(16.dp)
+//        ) {
+//            FloatingActionButton(
+//                onClick = { selectingFood = true },
+//            ) {
+//                Icon(Icons.Filled.Add, null)
+//            }
+//        }
     }
 }
 
 @Composable
-fun MealViewComponent(viewModel: MealViewModel, onAddComponent: () -> Unit) {
-    Box(
-        Modifier.fillMaxSize()
+fun Meal(viewModel: MealViewModel) {
+
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .padding(8.dp)
-        ) {
-            val foc = LocalFocusManager.current
-            val mealName: String by viewModel.name.observeAsState(" ")
-            TextField(
-                label = { Text("Meal Name") },
-                value = mealName,
-                onValueChange = {
-                    viewModel.name.value = it
-                },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = {
-                    foc.moveFocus(FocusDirection.Next)
-                })
-            )
+        val foc = LocalFocusManager.current
+        val mealName: String by viewModel.observableMeal.name.observeAsState(" ")
+        TextField(
+            label = { Text("Meal Name") },
+            value = mealName,
+            onValueChange = {
+                viewModel.observableMeal.name.value = it
+            },
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = {
+                foc.moveFocus(FocusDirection.Next)
+            })
+        )
 
 //            val mealComponentsAndFoods =
 //                remember { viewModel.observableMealComponentsAndFoods }
 
-            ComponentsList(
-                viewModel.observableMealComponentsAndFoods,
-                viewModel::removeComponentAndFood
-            )
-        }
-        FloatingActionButton(
-            onClick = onAddComponent,
-            Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(Icons.Filled.Add, null)
-        }
+        ComponentsList(
+            viewModel.observableMeal.observableMealComponentsAndFoods,
+            viewModel::removeComponentAndFood
+        )
     }
 }
 
@@ -313,7 +287,7 @@ fun ComponentsList(
 
                         EnumDropDown(
                             label = { Text("Measure Type") },
-                            clazz = QuantityType::class.java,
+                            //clazz = QuantityType::class.java,
                             selectedEnum = quantityType!!,
                             onSelectedChange = {
                                 component.quantity.type.value = it
@@ -329,8 +303,12 @@ fun ComponentsList(
             if (new) {
 //                @OptIn(ExperimentalComposeUiApi::class)
 //                val key = LocalSoftwareKeyboardController.current
+                /*LocalView.current.viewTreeObserver.addOnWindowFocusChangeListener {
+                    focusRequester.requestFocus()
+                }*/
 
                 LaunchedEffect(true) {
+                    awaitFrame()
                     focusRequester.requestFocus()
 //                    withContext(Dispatchers.IO) {
 //                        //@OptIn(ExperimentalComposeUiApi::class)

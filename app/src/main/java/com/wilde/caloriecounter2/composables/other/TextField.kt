@@ -21,9 +21,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import com.google.accompanist.insets.LocalWindowInsets
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.android.awaitFrame
+import kotlin.random.Random
 
 /**
  * TextField replacement that adds a fix to handle the issue with the software keyboard appearing
@@ -59,6 +59,8 @@ fun TextField(
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val ime = LocalWindowInsets.current.ime
 
+    val id = remember { Random.nextInt(100000) }
+
     @OptIn(ExperimentalFoundationApi::class)
     androidx.compose.material.TextField(
         value = value,
@@ -67,25 +69,48 @@ fun TextField(
             .focusRequester(focusRequester)
             .bringIntoViewRequester(bringIntoViewRequester)
             .onFocusEvent {
-                if (it.isFocused) {
-                    //Log.d("IME", "Focus Test")
+                if (it.isFocused && ime.isVisible) {
+                    coroutineScope.launch { bringIntoViewRequester.bringIntoView() }
+                    /*//Log.d("IME", "Focus Test")
                     if (job.value == null) {
+                        Log.d("CustomTextField", "New Job + ${ if (job.value != null) "running" else "not running"} + ${coroutineScope.isActive}")
                         job.value = coroutineScope.launch {
+
+                            Log.d("CustomTextField", "Launched + $id")
                             //Log.d("IME", "Focus Launch")
                             //delay(100)
-                            var count = 0
-                            while (!ime.isVisible && count < 20 || ime.animationInProgress) {
+
+                            *//*var count = 0
+                            while (!ime.isVisible && count < 30 || ime.animationInProgress) {
                                 count++
                                 delay(100)
+                            }*//*
+
+                            var count = 0
+                            while ((ime.animationInProgress || !ime.isVisible) && count < 20) {
+                                delay(100)
+                                yield()
+                                awaitFrame()
+                                //bringIntoViewRequester.bringIntoView()
+                                count++
                             }
+
                             if (ime.isVisible) {
+                                Log.d("CustomTextField", "IME visible $count")
                                 bringIntoViewRequester.bringIntoView()
-                                Log.d("IME", "Visible - $count")
+                                delay(100)
+                                awaitFrame()
+                                bringIntoViewRequester.bringIntoView()
+                                delay(300)
+                                awaitFrame()
+                                bringIntoViewRequester.bringIntoView()
+                                //Log.d("IME", "Visible - $count")
                             }
                             delay(300)
+                            Log.d("CustomTextField", "End + $id")
                             job.value = null
                         }
-                    }
+                    }*/
                 }
             }.then(modifier)
         ,

@@ -35,8 +35,8 @@ fun Modifier.fillMaxSize(lessWidth: Dp? = null, lessHeight: Dp? = null): Modifie
         val newConstraints = constraints.copy(
             maxWidth = lessWidth?.let { constraints.maxWidth - lessWidth.roundToPx() } ?: constraints.maxWidth,
             minWidth = lessWidth?.let { constraints.maxWidth - lessWidth.roundToPx() } ?: constraints.minWidth,
-            maxHeight = lessHeight?.let { constraints.maxHeight - lessHeight.roundToPx() } ?: constraints.maxWidth,
-            minHeight = lessHeight?.let { constraints.maxHeight - lessHeight.roundToPx() } ?: constraints.minWidth
+            maxHeight = lessHeight?.let { constraints.maxHeight - lessHeight.roundToPx() } ?: constraints.maxHeight,
+            minHeight = lessHeight?.let { constraints.maxHeight - lessHeight.roundToPx() } ?: constraints.minHeight
         )
 
         val placeable = measurable.measure(newConstraints)
@@ -51,6 +51,7 @@ fun Modifier.fillMaxSize(lessWidth: Dp? = null, lessHeight: Dp? = null): Modifie
 // TODO Remove workaround once they fix it
 fun DialogFix(
     onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Dialog(
@@ -59,7 +60,7 @@ fun DialogFix(
             usePlatformDefaultWidth = false
         )
     ) {
-        Box(Modifier.fillMaxWidth(64.dp)) {
+        Box(Modifier.fillMaxWidth(64.dp).then(modifier)) {
             content()
         }
     }

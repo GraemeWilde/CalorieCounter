@@ -1,6 +1,7 @@
 package com.wilde.caloriecounter2.viewmodels.helper
 
 import androidx.lifecycle.MutableLiveData
+import com.wilde.caloriecounter2.composables.other.Quantity
 import com.wilde.caloriecounter2.data.other.quantity.Quantity
 import com.wilde.caloriecounter2.data.other.quantity.QuantityType
 import java.text.DecimalFormat
@@ -26,6 +27,17 @@ class ObservableQuantity() {
         type.value = quantity.type
         measurement.value = quantity.measurement
         measurementString.value = DecimalFormat("0.#").format(quantity.measurement)
+    }
+
+    fun toQuantity(): Quantity? {
+        val meas = measurement.value
+        val typ = type.value
+
+        return if (meas != null && typ != null) {
+            Quantity(meas, typ)
+        } else {
+            null
+        }
     }
 
     fun measurementOnChange(newMeasurementString: String): Unit {

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 
 
 @SuppressLint("RememberReturnType")
@@ -62,4 +63,14 @@ inline fun RunOnce(
     calculation: @DisallowComposableCalls () -> Unit
 ) = remember (*keys) {
     calculation()
+}
+
+
+
+@SuppressLint("RememberReturnType")
+@Composable
+inline fun RunOnceSaveable(crossinline calculation: @DisallowComposableCalls () -> Unit) = rememberSaveable {
+    calculation()
+
+    true
 }

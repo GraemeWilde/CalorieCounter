@@ -1,9 +1,11 @@
 package com.wilde.caloriecounter2.data.meals
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.wilde.caloriecounter2.data.meals.entities.Meal
 import com.wilde.caloriecounter2.data.meals.entities.MealAndComponents
 import com.wilde.caloriecounter2.data.meals.entities.MealAndComponentsAndFoods
+import com.wilde.caloriecounter2.data.meals.entities.MealComponent
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,5 +39,9 @@ class MealRepository @Inject constructor(
 
     suspend fun removeMeal(meal: Meal) {
         mealDao.deleteMeal(meal)
+    }
+
+    suspend fun deleteMealComponentsByIds(vararg mealComponents: Int): Int {
+        return mealDao.deleteMealComponentsByIds(*mealComponents)
     }
 }

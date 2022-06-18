@@ -198,6 +198,16 @@ fun PairsGrid(
 
             val meas = measurements(measures, constraints.maxWidth, paddingBetween)
 
+            // Width and Height for layout
+            val width = Integer.min(Integer.max(meas.width, constraints.minWidth), constraints.maxWidth)
+            val height = Integer.min(Integer.max(meas.height, constraints.minHeight), constraints.maxHeight)
+
+            val extra = width - meas.width
+            val spread = if (extra > 0) {
+                (extra / (meas.columnCount - 1)).toInt()
+            } else 0
+            //val unused = extra - spread * meas.columnCount
+
             val placeOffsets: List<Int> = run {
                 var cumulativeOffset = 0
                 meas.colWidths.mapIndexed { index, it ->
@@ -206,14 +216,26 @@ fun PairsGrid(
                         0
                     } else {
                         Log.d("PairsGrid", "placeOffset[$index]: ${meas.colWidths[index - 1]}")
-                        cumulativeOffset += meas.colWidths[index - 1] + if (paddingBetween == null) 0 else paddingBetween(index - 1, meas.columnCount) /*.takeUnless { index == meas.columnCount - 1 } ?: 0)*/
+                        cumulativeOffset += meas.colWidths[index - 1]
+                        cumulativeOffset += if (paddingBetween == null) {
+                            0
+                        } else {
+                            paddingBetween(index - 1, meas.columnCount)
+                        }
+                        cumulativeOffset += spread
+
+//                        if (extra > 0) {
+//                            if (meas.columnCount % 2 == 0 && index == meas.columnCount / 2) {
+//                                cumulativeOffset += extra
+//                            } else if (meas.columnCount % 2 != 0 && index == ) {
+//                                cumulativeOffset +=
+//                            }
+//                        }
+
                         cumulativeOffset
                     }
                 }
             }
-
-            val width = Integer.min(Integer.max(meas.width, constraints.minWidth), constraints.maxWidth)
-            val height = Integer.min(Integer.max(meas.height, constraints.minHeight), constraints.maxHeight)
 
             Log.d("PairsGrid", "height: $height")
 
