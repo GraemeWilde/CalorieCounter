@@ -1,6 +1,10 @@
 package com.wilde.caloriecounter2.data.other.quantity
 
 enum class QuantityType {
-    Ratio,
-    Unit
+    Servings,
+    GmL {
+        override fun toString(): String {
+            return "G/mL"
+        }
+    }
 }

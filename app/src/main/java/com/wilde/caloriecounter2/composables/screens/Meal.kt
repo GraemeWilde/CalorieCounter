@@ -50,7 +50,7 @@ fun MealViewPreview() {
                 MealComponent(
                     quantity = Quantity(
                         1f,
-                        QuantityType.Ratio
+                        QuantityType.Servings
                     )
                 ),
                 Product(

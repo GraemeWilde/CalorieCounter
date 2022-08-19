@@ -39,13 +39,13 @@ data class MealAndComponentsAndFoods(
             it.food.nutriments?.perServing?.let { perServing ->
                 it.mealComponent.quantity.let { quantity ->
                     when (quantity.type) {
-                        QuantityType.Ratio -> {
+                        QuantityType.Servings -> {
                             tCalorieSum += quantity.measurement * (perServing.calories ?: 0f)
                             tProteinsSum += quantity.measurement * (perServing.proteins ?: 0f)
                             tFatSum += quantity.measurement * (perServing.fat ?: 0f)
                             tCarbohydratesSum += quantity.measurement * (perServing.carbohydrates ?: 0f)
                         }
-                        QuantityType.Unit -> {
+                        QuantityType.GmL -> {
                             if (perServing.servingSize != null) {
                                 tCalorieSum += (perServing.calories ?: 0f) / perServing.servingSize * quantity.measurement
                                 tProteinsSum += (perServing.proteins ?: 0f) / perServing.servingSize * quantity.measurement

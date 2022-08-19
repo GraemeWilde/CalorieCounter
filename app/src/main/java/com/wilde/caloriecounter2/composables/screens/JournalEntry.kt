@@ -23,6 +23,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,6 +61,12 @@ class TempFoodMealHolder private constructor(
     constructor(meal: MealAndComponentsAndFoods) : this(null, meal)
 }
 
+private enum class SelectDialog {
+    None,
+    FoodMeal,
+    Quantity
+}
+
 @Preview
 @Composable
 fun JournalEntry(
@@ -67,10 +74,64 @@ fun JournalEntry(
 ) {
     var selectFoodMeal by rememberSaveable { mutableStateOf(false) }
 
+    var dialog by rememberSaveable { mutableStateOf(SelectDialog.None) }
+
     val foodListViewModel: FoodListViewModel = hiltViewModel()
     val mealListViewModel: MealListViewModel = hiltViewModel()
     RunOnce {
         foodListViewModel.getFoodsList()
+    }
+
+    if (dialog != SelectDialog.None) {
+        DialogFix(
+            onDismissRequest = {
+                dialog = SelectDialog.None
+            }
+        ) {
+            RunOnceSaveable {
+                viewModel.tempQuantity = ObservableQuantity()
+            }
+
+            Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.8f)) {
+                JournalPanel("Pick Food or Meal:") {
+                    var foodTab by rememberSaveable { mutableStateOf(true) }
+                    // Select Food or Meal
+                    TabRow(
+                        selectedTabIndex = if (foodTab) 0 else 1,
+                        Modifier.shadow(4.dp)
+                    ) {
+                        CustomTab(selected = foodTab, onClick = { foodTab = true }) {
+                            Text("Foods")
+                        }
+                        CustomTab(selected = !foodTab, onClick = { foodTab = false }) {
+                            Text("Meals")
+                        }
+                    }
+                    if (foodTab) {
+                        FoodList(foodListViewModel) {
+                            viewModel.selectFood(it)
+                            //viewModel.tempFoodMealHolder = TempFoodMealHolder(it)
+                            Log.d("JournalEntry", "Select Food: ${it.productName}")
+                            dialog = SelectDialog.None
+                            //selectFoodMeal = false
+                        }
+                    } else {
+                        MealList(
+                            mealListViewModel = mealListViewModel,
+                            contentPaddingBottom = false,
+                        ) {
+                            viewModel.selectMeal(it)
+                            //viewModel.tempFoodMealHolder = TempFoodMealHolder(it)
+                            Log.d("JournalEntry", "Select Meal: ${it.meal.name}")
+                            dialog = SelectDialog.None
+                            //selectFoodMeal = false
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // Food / Meal selection Dialog
@@ -141,7 +202,7 @@ fun JournalEntry(
                             val measurementString by viewModel.tempQuantity!!.measurementString.observeAsState(
                                 " "
                             )
-                            val quantityType by viewModel.tempQuantity!!.type.observeAsState(QuantityType.Ratio)
+                            val quantityType by viewModel.tempQuantity!!.type.observeAsState(QuantityType.Servings)
 
                             QuantityField(
                                 measurementString = measurementString,
@@ -211,7 +272,8 @@ fun JournalEntry(
             else -> {
                 Button(
                     onClick = {
-                        selectFoodMeal = true
+                        //selectFoodMeal = true
+                        dialog = SelectDialog.FoodMeal
                     }
                 ) {
                     Text("Select Food")
@@ -220,8 +282,38 @@ fun JournalEntry(
         }
         if (food != null || meal != null) {
             val measurement by viewModel.observableJournalEntry.quantity.measurementString.observeAsState(" ")
-            val type by viewModel.observableJournalEntry.quantity.type.observeAsState()
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            val type by viewModel.observableJournalEntry.quantity.type.observeAsState(QuantityType.Servings)
+
+            if (viewModel.tempQuantity == null) {
+                viewModel.tempQuantity = ObservableQuantity(viewModel.observableJournalEntry.quantity)
+            }
+
+            val measurementString by viewModel.tempQuantity!!.measurementString.observeAsState(" ")
+            val quantityType by viewModel.tempQuantity!!.type.observeAsState(QuantityType.Servings)
+
+            QuantityField2(
+                measurement = measurement,
+                type = type,
+                measurementString = measurementString,
+                onMeasurementChange = { Log.d("Quan", "$it"); viewModel.tempQuantity!!.measurementOnChange(it) },
+                quantityType = quantityType,
+                onQuantityTypeChange = { viewModel.tempQuantity!!.type.value = it },
+                onCancel = { it(false) },
+                onSave = {
+                    val quant = viewModel.tempQuantity?.toQuantity()
+                    //val foodMeal = viewModel.tempFoodMealHolder
+
+                    if (quant != null) {
+                        viewModel.observableJournalEntry.quantity.fromQuantity(quant)
+
+                        // Close Dialog
+                        //selectFoodMeal = false
+                        it(false)
+                    }
+                }
+            )
+
+            /*Row(verticalAlignment = Alignment.CenterVertically) {
                 TextField(
                     label = { Text("Measurement") },
                     value = measurement,
@@ -233,7 +325,7 @@ fun JournalEntry(
                 } else {
                     Text("g/ml")
                 }
-            }
+            }*/
         }
     }
 }
@@ -347,11 +439,91 @@ private fun QuantityField(
             Button(onCancel) {
                 Text("Cancel")
             }
-            Button(
-                onSave
-            ) {
+            Button(onSave) {
                 Text("Ok")
             }
+        }
+    }
+}
+
+@Composable
+private fun QuantityField2(
+    measurement: String,
+    type: QuantityType,
+
+    measurementString: String,
+    onMeasurementChange: (String) -> Unit,
+
+    quantityType: QuantityType,
+    onQuantityTypeChange: (QuantityType) -> Unit,
+
+    focusRequester: FocusRequester? = null,
+
+    onCancel: ((dialogOpen: Boolean)->Unit) -> Unit,
+    onSave: ((dialogOpen: Boolean)->Unit) -> Unit,
+) {
+    var dialogOpen by rememberSaveable { mutableStateOf(false) }
+
+    if (dialogOpen) {
+        DialogFix(
+            onDismissRequest = {
+                dialogOpen = false
+            }
+        ) {
+            Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier
+                .fillMaxWidth()
+            ) {
+                JournalPanel("Enter Quantity:") {
+                    QuantityField(
+                        measurementString = measurementString,
+                        onMeasurementChange = onMeasurementChange,
+                        quantityType = quantityType,
+                        onQuantityTypeChange = onQuantityTypeChange,
+                        focusRequester = focusRequester,
+                        onCancel = {
+                            Log.d("Quan", "OnCancel QF2")
+                            onCancel {
+                                Log.d("Quan", "OnCancel QF2.Inside")
+                                dialogOpen = it
+                            }
+                       },
+                        onSave = {
+                            Log.d("Quan", "OnSave QF2")
+                            onSave {
+                                Log.d("Quan", "OnSave QF2.Inside")
+                                dialogOpen = it
+                            }
+                        },
+                    )
+                }
+            }
+        }
+    }
+
+    /*Text(
+        text = "$measurement ${
+            if (type == QuantityType.Ratio)
+                "Servings"
+            else
+                "g/ml"
+        }",
+        Modifier.defaultMinSize(TextFieldDefaults.MinWidth, TextFieldDefaults.MinHeight).clickable { dialogOpen = true }
+    )*/
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable { dialogOpen = true }
+    ) {
+        TextField(
+            label = { Text("Measurement") },
+            value = measurement,
+            onValueChange = { onMeasurementChange(it) },
+            //readOnly = true,
+            modifier = Modifier.widthIn(10.dp, Dp.Unspecified)//.defaultMinSize(0.dp)
+        )
+        if (type == QuantityType.Servings) {
+            Text("Servings")
+        } else {
+            Text("g/ml")
         }
     }
 }

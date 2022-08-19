@@ -98,14 +98,14 @@ abstract class AppDatabase : RoomDatabase() {
                                                     foodId = foodsIds[2].toInt(),
                                                     quantity = Quantity(
                                                         1f,
-                                                        QuantityType.Ratio
+                                                        QuantityType.Servings
                                                     )
                                                 ),
                                                 MealComponent(
                                                     foodId = foodsIds[1].toInt(),
                                                     quantity = Quantity(
                                                         1f,
-                                                        QuantityType.Ratio
+                                                        QuantityType.Servings
                                                     )
                                                 )
                                                 /*Product()
@@ -116,70 +116,70 @@ abstract class AppDatabase : RoomDatabase() {
                                     inst.journalDAO().insertEntries(
                                         JournalEntry(
                                             LocalDateTime.now(),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(355f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(26).plusMinutes(39),
-                                            Quantity(2f, QuantityType.Unit),
+                                            Quantity(300f, QuantityType.GmL),
                                             null,
                                             mealIds[0].toInt()
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(49).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(355f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(43).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(41).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(355f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(27).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),JournalEntry(
                                             LocalDateTime.now().minusHours(52).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(710f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(18).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(1f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),JournalEntry(
                                             LocalDateTime.now().minusHours(7).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(355f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(93).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(1f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),JournalEntry(
                                             LocalDateTime.now().minusHours(92).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(710f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(91).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),
@@ -187,64 +187,64 @@ abstract class AppDatabase : RoomDatabase() {
 
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(100).plusMinutes(39),
-                                            Quantity(2f, QuantityType.Unit),
+                                            Quantity(150f, QuantityType.GmL),
                                             null,
                                             mealIds[0].toInt()
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(105).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(500f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(108).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(1f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(110).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(355f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(120).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),JournalEntry(
                                             LocalDateTime.now().minusHours(124).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(710f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(132).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),JournalEntry(
                                             LocalDateTime.now().minusHours(1000).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(500f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(150).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(1f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),JournalEntry(
                                             LocalDateTime.now().minusHours(220).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(355f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(225).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),
@@ -253,64 +253,64 @@ abstract class AppDatabase : RoomDatabase() {
 
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(1006).plusMinutes(39),
-                                            Quantity(2f, QuantityType.Unit),
+                                            Quantity(300f, QuantityType.GmL),
                                             null,
                                             mealIds[0].toInt()
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(1009).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(355f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(1011).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(1013).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(355f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(1014).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),JournalEntry(
                                             LocalDateTime.now().minusHours(1028).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(710f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(1030).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),JournalEntry(
                                             LocalDateTime.now().minusHours(1035).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(355f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(1103).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),JournalEntry(
                                             LocalDateTime.now().minusHours(1114).plusMinutes(15),
-                                            Quantity(1f, QuantityType.Unit),
+                                            Quantity(710f, QuantityType.GmL),
                                             foodsIds[0].toInt(),
                                             null
                                         ),
                                         JournalEntry(
                                             LocalDateTime.now().minusHours(1120).plusMinutes(24),
-                                            Quantity(2f, QuantityType.Ratio),
+                                            Quantity(2f, QuantityType.Servings),
                                             null,
                                             mealIds[0].toInt()
                                         ),

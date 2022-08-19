@@ -40,7 +40,7 @@ fun <T : Enum<T>> EnumDropDown(
             .then(modifier)
     ) {
         TextField(
-            value = selectedEnum.name,
+            value = selectedEnum.toString(),
             label = label,
             onValueChange = { },
             modifier = Modifier.fillMaxWidth(),
@@ -66,7 +66,7 @@ fun <T : Enum<T>> EnumDropDown(
                     onSelectedChange(it)
                     expanded = false
                 }) {
-                    Text(it.name)
+                    Text(it.toString())
                 }
             }
         }
