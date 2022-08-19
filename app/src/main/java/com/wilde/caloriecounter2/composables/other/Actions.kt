@@ -446,7 +446,7 @@ fun ActionsRow(
                     }
                 }
             }
-        }[0]?.measure(constraints)
+        }[0].measure(constraints)
 
 
         layout(width, height) {

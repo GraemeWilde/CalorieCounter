@@ -1,21 +1,22 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        kotlin_version =  "1.6.10"
+        kotlin_version =  "1.7.0"
         nav_version = '2.4.2'
-        room_version = "2.4.2"
-        hiltVersion = '2.41'
+        room_version = "2.4.3"
+        hiltVersion = '2.42'
         //hiltViewModelVersion = '1.0.0-alpha03'
         //assistedInjectVersion = '0.7.0'
         coroutinesVersion = '1.6.0'
         retrofit_version = '2.9.0'
         moshi_kotlin_version = '1.13.0'
-        androidx_lifecycle_version = '2.4.1'
+        androidx_lifecycle_version = '2.5.1'
 
-        compose_version = '1.2.0-alpha07'
+        compose_version = '1.2.1'
+        compose_compiler_version = '1.2.0'
         //compose_viewmodel_version = '2.4.0-beta01'
-        compose_navigation = '2.4.2'
-        compose_activity_version = '1.4.0'
+        compose_navigation = '2.5.1'
+        compose_activity_version = '1.5.1'
         compose_navigation_hilt = '1.0.0'
 
         window_insets_version = '0.19.0'
@@ -34,7 +35,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
