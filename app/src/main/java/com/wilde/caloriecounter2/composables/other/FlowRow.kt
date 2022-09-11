@@ -1,6 +1,5 @@
 package com.wilde.caloriecounter2.composables.other
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.*
@@ -11,7 +10,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun FlowRow(
     modifier: Modifier = Modifier,
-    paddingBetween: Dp = 0.dp,
+    paddingBetweenHorizontal: Dp = 0.dp,
+    paddingBetweenVertical: Dp = 0.dp,
     content: @Composable () -> Unit
 ) {
 
@@ -43,17 +43,19 @@ fun FlowRow(
                         }
                         placeable.width + xPosition < constraints.maxWidth -> {
                             xPosition += placeable.width
-                            lastY = placeable.height
+                            if (placeable.height > lastY) {
+                                lastY = placeable.height
+                            }
                         }
                         else -> {
-                            yPosition += lastY
+                            yPosition += lastY + paddingBetweenVertical.roundToPx()
                             xPosition = placeable.width
                             lastY = placeable.height
                         }
                     }
 
                     if (xPosition > width) width = xPosition
-                    if (xPosition > 0) xPosition += paddingBetween.roundToPx()
+                    if (xPosition > 0) xPosition += paddingBetweenHorizontal.roundToPx()
                 }
                 height = yPosition + lastY
             }
@@ -76,16 +78,18 @@ fun FlowRow(
                         placeable.width + xPosition < constraints.maxWidth -> {
                             placeable.placeRelative(xPosition, yPosition)
                             xPosition += placeable.width
-                            lastY = placeable.height
+                            if (placeable.height > lastY) {
+                                lastY = placeable.height
+                            }
                         }
                         else -> {
-                            yPosition += lastY
+                            yPosition += lastY + paddingBetweenVertical.roundToPx()
                             placeable.placeRelative(0, yPosition)
                             xPosition = placeable.width
                             lastY = placeable.height
                         }
                     }
-                    if (xPosition > 0) xPosition += paddingBetween.roundToPx()
+                    if (xPosition > 0) xPosition += paddingBetweenHorizontal.roundToPx()
                 }
             }
         }
@@ -117,17 +121,19 @@ fun FlowRow(
                     }
                     placeable.width + xPosition < width -> {
                         xPosition += placeable.width
-                        lastY = placeable.height
+                        if (placeable.height > lastY) {
+                            lastY = placeable.height
+                        }
                     }
                     else -> {
-                        yPosition += lastY
+                        yPosition += lastY + paddingBetweenVertical.roundToPx()
                         xPosition = placeable.width
                         lastY = placeable.height
                     }
                 }
 
                 if (xPosition > containerWidth) containerWidth = xPosition
-                if (xPosition > 0) xPosition += paddingBetween.roundToPx()
+                if (xPosition > 0) xPosition += paddingBetweenHorizontal.roundToPx()
             }
 
             return yPosition + lastY

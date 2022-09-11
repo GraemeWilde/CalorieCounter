@@ -20,20 +20,22 @@ import androidx.compose.ui.Modifier
  * @param onSelectedChange the callback that is triggered when a new enum is selected
  */
 @Composable
-fun <T : Enum<T>> EnumDropDown(
+fun <T : Enum<T>> EnumDropDownField(
     clazz: Class<T>,
     selectedEnum: T,
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
     onSelectedChange: (select: T) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     @OptIn(ExperimentalMaterialApi::class)
     ExposedDropdownMenuBox(
-        expanded = expanded,
+        expanded = expanded && enabled,
         onExpandedChange = {
-            expanded = !expanded
+            if (enabled)
+                expanded = !expanded
         },
         modifier = Modifier
             .width(IntrinsicSize.Min)
@@ -55,10 +57,11 @@ fun <T : Enum<T>> EnumDropDown(
                 )
             },
             readOnly = true,
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
+            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            enabled = enabled
         )
         ExposedDropdownMenu(
-            expanded = expanded,
+            expanded = expanded && enabled,
             onDismissRequest = { expanded = false },
         ) {
             clazz.enumConstants!!.forEach {
@@ -73,12 +76,23 @@ fun <T : Enum<T>> EnumDropDown(
     }
 }
 
+
+/**
+ * Exposed Dropdown field that displays selectable values from a passed in enum class. This one
+ * figures out the class of the enum itself and inlines to the overload.
+ *
+ * @param selectedEnum the selected value to be shown
+ * @param modifier a [Modifier] for this EnumDropDown
+ * @param labal a label for this EnumDropDown
+ * @param onSelectedChange the callback that is triggered when a new enum is selected
+ */
 @Composable
-inline fun <reified T : Enum<T>> EnumDropDown(
+inline fun <reified T : Enum<T>> EnumDropDownField(
     selectedEnum: T,
     modifier: Modifier = Modifier,
     noinline label: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
     noinline onSelectedChange: (select: T) -> Unit
 ) {
-    EnumDropDown(clazz = T::class.java, selectedEnum = selectedEnum, onSelectedChange = onSelectedChange, label = label, modifier = modifier)
+    EnumDropDownField(clazz = T::class.java, selectedEnum = selectedEnum, onSelectedChange = onSelectedChange, label = label, modifier = modifier, enabled = enabled)
 }

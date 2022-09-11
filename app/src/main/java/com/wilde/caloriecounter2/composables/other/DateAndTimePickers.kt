@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import java.time.LocalDate
 import java.time.LocalTime
@@ -22,7 +23,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun DatePickerView(
     date: LocalDate,
-    onAccept: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier,
+    onAccept: (LocalDate) -> Unit
 ) {
     val source = remember { MutableInteractionSource() }
 
@@ -44,7 +46,7 @@ fun DatePickerView(
         date.dayOfMonth
     )
 
-    Box {
+    //Box {
         TextField(
             label = { Text("Date") },
             leadingIcon = { Icon(Icons.Filled.CalendarToday, null) },
@@ -52,18 +54,20 @@ fun DatePickerView(
             onValueChange = {},
             readOnly = true,
             interactionSource = source,
-            maxLines = 1
+            maxLines = 1,
+            modifier = modifier
         )
         if (source.collectIsPressedAsState().value) {
             datePicker.show()
         }
-    }
+    //}
 }
 
 @Composable
 fun TimePickerView(
     time: LocalTime,
-    onAccept: (LocalTime) -> Unit,
+    modifier: Modifier = Modifier,
+    onAccept: (LocalTime) -> Unit
 ) {
     val source = remember { MutableInteractionSource() }
 
@@ -81,7 +85,7 @@ fun TimePickerView(
         true
     )
 
-    Box {
+    //Box {
         TextField(
             label = { Text("Time") },
             leadingIcon = { Icon(Icons.Filled.Schedule, null) },
@@ -89,10 +93,11 @@ fun TimePickerView(
             onValueChange = {},
             readOnly = true,
             interactionSource = source,
-            maxLines = 1
+            maxLines = 1,
+            modifier = modifier
         )
         if (source.collectIsPressedAsState().value) {
             timePicker.show()
         }
-    }
+    //}
 }

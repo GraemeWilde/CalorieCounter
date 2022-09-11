@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.insets.LocalWindowInsets
 import com.wilde.caloriecounter2.composables.other.*
 import com.wilde.caloriecounter2.composables.other.TextField
 import com.wilde.caloriecounter2.data.food.entities.Product
@@ -93,8 +93,6 @@ fun MealScreen(
 
     if (selectingFood) {
 
-        Log.d("Meal", "Main System Bars ${LocalWindowInsets.current.systemBars.top}")
-
         DialogFix(
             onDismissRequest = {
                 Log.d("Meal", "Dismiss")
@@ -148,20 +146,31 @@ fun Meal(viewModel: MealViewModel) {
             .padding(8.dp)
     ) {
         val foc = LocalFocusManager.current
-        val mealName: String by viewModel.observableMeal.name.observeAsState(" ")
+        val mealName: String by viewModel.observableMeal.name.distinctUntilChanged().observeAsState(" ")
+        val titleFocusRequester = remember { FocusRequester() }
+
         TextField(
             label = { Text("Meal Name") },
             value = mealName,
             onValueChange = {
                 viewModel.observableMeal.name.value = it
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(titleFocusRequester),
             maxLines = 1,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = {
                 foc.moveFocus(FocusDirection.Next)
             })
         )
+
+        if (viewModel.observableMeal.new) {
+            LaunchedEffect(true) {
+                titleFocusRequester.requestFocus()
+                viewModel.observableMeal.new = false
+            }
+        }
 
 //            val mealComponentsAndFoods =
 //                remember { viewModel.observableMealComponentsAndFoods }
@@ -230,9 +239,8 @@ fun ComponentsList(
                             )
                             Text(text = component.food.value!!.brands)
                         }
-                        DeleteButton {
-                            onRemoveComponent(component)
-                        }
+                        val onRem = remember { { onRemoveComponent(component) } }
+                        DeleteButton(onRem)
                         /*// Remove this ComponentAndFood button
                         Card(
                             border = BorderStroke(1.dp, Color(0x66000000)),
@@ -260,43 +268,55 @@ fun ComponentsList(
                             }
                         }*/
                     }
-                    Row(
-                        Modifier.padding(top = 4.dp)
-                    ) {
-                        val measurementString by component.quantity.measurementString
-                            .observeAsState(" ")
 
-                        val foc = LocalFocusManager.current
-                        // Measurement Text Field
-                        TextField(
-                            label = { Text("Measurement") },
-                            value = measurementString,
-                            onValueChange = component.quantity::measurementOnChange,
-                            modifier = Modifier
-                                .padding(end = 4.dp)
-                                .weight(1f)
-                                .focusRequester(focusRequester),
-                            maxLines = 1,
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                            keyboardActions = KeyboardActions(onNext = {
-                                foc.moveFocus(FocusDirection.Next)
-                            })
-                        )
+                    val measurementString by component.quantity.measurementString.observeAsState(" ")
+                    val quantityType by component.quantity.type.observeAsState(QuantityType.Servings)
 
-                        val quantityType by component.quantity.type.observeAsState()
+                    QuantityField(
+                        stringValue = measurementString,
+                        quantityType = quantityType,
+                        onQuantityValueChange = component.quantity::measurementOnChange,
+                        onQuantityTypeChange = { component.quantity.type.value = it },
+                        focusRequester = focusRequester
+                    )
 
-                        EnumDropDown(
-                            label = { Text("Measure Type") },
-                            //clazz = QuantityType::class.java,
-                            selectedEnum = quantityType!!,
-                            onSelectedChange = {
-                                component.quantity.type.value = it
-                            },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 4.dp)
-                        )
-                    }
+//                    Row(
+//                        Modifier.padding(top = 0.dp)
+//                    ) {
+//                        val measurementString by component.quantity.measurementString
+//                            .observeAsState(" ")
+//
+//                        val foc = LocalFocusManager.current
+//                        // Measurement Text Field
+//                        TextField(
+//                            label = { Text("Measurement") },
+//                            value = measurementString,
+//                            onValueChange = component.quantity::measurementOnChange,
+//                            modifier = Modifier
+//                                .padding(end = 4.dp)
+//                                .weight(1f)
+//                                .focusRequester(focusRequester),
+//                            maxLines = 1,
+//                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+//                            keyboardActions = KeyboardActions(onNext = {
+//                                foc.moveFocus(FocusDirection.Next)
+//                            })
+//                        )
+//
+//                        val quantityType by component.quantity.type.observeAsState()
+//
+//                        EnumDropDown(
+//                            label = { Text("Measure Type") },
+//                            //clazz = QuantityType::class.java,
+//                            selectedEnum = quantityType!!,
+//                            onSelectedChange = {
+//                                component.quantity.type.value = it
+//                            },
+//                            modifier = Modifier
+//                                .weight(1f)
+//                                .padding(start = 4.dp)
+//                        )
+//                    }
                 }
             }
 
@@ -325,6 +345,13 @@ fun ComponentsList(
         RunOnce {
             firstLaunch = false
         }
+    }
+}
+
+@Composable
+fun ComponentDeleteButton(component: MealViewModel.ObservableMealComponentAndFood, onDelete: (component: MealViewModel.ObservableMealComponentAndFood) -> Unit) {
+    DeleteButton {
+        onDelete(component)
     }
 }
 

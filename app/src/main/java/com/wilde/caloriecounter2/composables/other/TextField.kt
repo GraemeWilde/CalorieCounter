@@ -3,6 +3,9 @@ package com.wilde.caloriecounter2.composables.other
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.ZeroCornerSize
@@ -14,13 +17,12 @@ import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+//import androidx.compose.ui.focus.FocusRequester
+//import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
-import com.google.accompanist.insets.LocalWindowInsets
 import kotlinx.coroutines.*
 import kotlinx.coroutines.android.awaitFrame
 import kotlin.random.Random
@@ -52,12 +54,14 @@ fun TextField(
         MaterialTheme.shapes.small.copy(bottomEnd = ZeroCornerSize, bottomStart = ZeroCornerSize),
     colors: TextFieldColors = TextFieldDefaults.textFieldColors()
 ) {
-    val focusRequester = remember { FocusRequester() }
+    //val focusRequester = remember { FocusRequester() }
     val coroutineScope = rememberCoroutineScope()
-    val job: MutableState<Job?> = remember { mutableStateOf(null) }
+
     @OptIn(ExperimentalFoundationApi::class)
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
-    val ime = LocalWindowInsets.current.ime
+
+    @OptIn(ExperimentalLayoutApi::class)
+    val imeIsVisible = WindowInsets.isImeVisible
 
     val id = remember { Random.nextInt(100000) }
 
@@ -66,51 +70,11 @@ fun TextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier
-            .focusRequester(focusRequester)
+            //.focusRequester(focusRequester)
             .bringIntoViewRequester(bringIntoViewRequester)
             .onFocusEvent {
-                if (it.isFocused && ime.isVisible) {
+                if (it.isFocused && imeIsVisible) {
                     coroutineScope.launch { bringIntoViewRequester.bringIntoView() }
-                    /*//Log.d("IME", "Focus Test")
-                    if (job.value == null) {
-                        Log.d("CustomTextField", "New Job + ${ if (job.value != null) "running" else "not running"} + ${coroutineScope.isActive}")
-                        job.value = coroutineScope.launch {
-
-                            Log.d("CustomTextField", "Launched + $id")
-                            //Log.d("IME", "Focus Launch")
-                            //delay(100)
-
-                            *//*var count = 0
-                            while (!ime.isVisible && count < 30 || ime.animationInProgress) {
-                                count++
-                                delay(100)
-                            }*//*
-
-                            var count = 0
-                            while ((ime.animationInProgress || !ime.isVisible) && count < 20) {
-                                delay(100)
-                                yield()
-                                awaitFrame()
-                                //bringIntoViewRequester.bringIntoView()
-                                count++
-                            }
-
-                            if (ime.isVisible) {
-                                Log.d("CustomTextField", "IME visible $count")
-                                bringIntoViewRequester.bringIntoView()
-                                delay(100)
-                                awaitFrame()
-                                bringIntoViewRequester.bringIntoView()
-                                delay(300)
-                                awaitFrame()
-                                bringIntoViewRequester.bringIntoView()
-                                //Log.d("IME", "Visible - $count")
-                            }
-                            delay(300)
-                            Log.d("CustomTextField", "End + $id")
-                            job.value = null
-                        }
-                    }*/
                 }
             }.then(modifier)
         ,

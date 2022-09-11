@@ -1,7 +1,6 @@
 package com.wilde.caloriecounter2.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.wilde.caloriecounter2.composables.screens.TempFoodMealHolder
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.journal.JournalRepository
 import com.wilde.caloriecounter2.data.journal.entities.FullJournalEntry
@@ -40,10 +39,8 @@ class JournalEntryViewModel @Inject internal constructor(
             ObservableQuantity()
         }
 
-        //val foodId = MutableStateFlow<Int?>(fullJournalEntry?.journalEntry?.foodId)
         val food: MutableStateFlow<Product?> = MutableStateFlow(fullJournalEntry?.food)
 
-        //val mealId = MutableStateFlow<Int?>(fullJournalEntry?.journalEntry?.mealId)
         val meal: MutableStateFlow<MealAndComponentsAndFoods?> = MutableStateFlow(fullJournalEntry?.mealAndComponentsAndFoods)
 
         val id = MutableStateFlow<Int>(fullJournalEntry?.journalEntry?.id ?: 0)
@@ -55,7 +52,7 @@ class JournalEntryViewModel @Inject internal constructor(
                     Quantity(quantity.measurement.value!!, quantity.type.value!!),
                     food.id,
                     null,
-                    0
+                    id.value
                 )
             } ?: meal.value?.let { meal ->
                 JournalEntry(
@@ -63,20 +60,13 @@ class JournalEntryViewModel @Inject internal constructor(
                     Quantity(quantity.measurement.value!!, quantity.type.value!!),
                     null,
                     meal.meal.id,
-                    0
+                    id.value
                 )
             } ?: throw MissingJournalFoodAndMealException()
         }
     }
 
     var observableJournalEntry: ObservableJournalEntry = ObservableJournalEntry()
-
-    var tempQuantity: ObservableQuantity? = null
-    var tempFoodMealHolder: TempFoodMealHolder? = null
-
-//    fun openJournalEntry(journalEntry: JournalEntry) {
-//        observableJournalEntry = ObservableJournalEntry(journalEntry)
-//    }
 
     fun setFood(food: Product) {
         observableJournalEntry.food.value = food
@@ -89,17 +79,7 @@ class JournalEntryViewModel @Inject internal constructor(
     }
 
     fun openJournalEntry(fullJournalEntry: FullJournalEntry) {
-        //openJournalEntry(fullJournalEntry.journalEntry)
         observableJournalEntry = ObservableJournalEntry(fullJournalEntry)
-    }
-
-    fun openJournalEntry(id: Int) {
-        val entry = journalRepository.getFullJournalEntry(id)
-
-
-        entry.value?.let {
-            openJournalEntry(it)
-        }
     }
 
     fun selectFood(product: Product) {
@@ -114,10 +94,25 @@ class JournalEntryViewModel @Inject internal constructor(
 
     // TODO Deal with exception from toJournalEntry
     fun save() {
-        val newJournalEntry = observableJournalEntry.toJournalEntry()
+        val saveJournalEntry = observableJournalEntry.toJournalEntry()
 
         CoroutineScope(Dispatchers.IO).launch {
-            journalRepository.insertJournalEntry(newJournalEntry)
+
+            if (saveJournalEntry.id != 0) {
+                journalRepository.updateJournalEntry(saveJournalEntry)
+            } else {
+                journalRepository.insertJournalEntry(saveJournalEntry)
+            }
+        }
+    }
+
+    fun delete() {
+        if (observableJournalEntry.id.value != 0) {
+            val deleteJournalEntry = observableJournalEntry.toJournalEntry()
+
+            CoroutineScope(Dispatchers.IO).launch {
+                journalRepository.deleteJournalEntry(deleteJournalEntry)
+            }
         }
     }
 

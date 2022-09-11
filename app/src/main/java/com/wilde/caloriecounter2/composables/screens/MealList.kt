@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -15,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wilde.caloriecounter2.composables.other.*
@@ -34,23 +33,20 @@ fun MealListScreen(
 
         MealList(
             mealListViewModel = mealListViewModel,
-            { mealListVM, meal ->
+            rightExtra = { mealListVM, meal ->
                 DeleteButton {
                     mealListVM.removeMeals(meal.meal)     //removeMeals(meal.meal)
                 }
             },
-            onSelect = onSelect
+            onSelect = onSelect,
+
+            // 56 (size of floating add button) 16 (button bottom padding)
+            // 8 (lazylist content padding)
+            // Todo: Read floating button default size from somewhere
+            endSpacerHeight = (56 + 16 * 2 - 8 * 2).dp
         )
 
         SlideInFloatingActionButton(onAdd)
-//        FloatingActionButton(
-//            onClick = onAdd,
-//            Modifier
-//                .align(Alignment.BottomEnd)
-//                .padding(16.dp)
-//        ) {
-//            Icon(Icons.Filled.Add, null)
-//        }
     }
 }
 
@@ -59,95 +55,144 @@ fun MealListScreen(
 fun MealList(
     mealListViewModel: MealListViewModel,
     rightExtra: @Composable ((mealListViewModel: MealListViewModel, meal: MealAndComponentsAndFoods) -> Unit)? = null,
-    contentPaddingBottom: Boolean = true,
+    contentPadding: PaddingValues = PaddingValues(8.dp, 8.dp),
+    endSpacerHeight: Dp = 0.dp,
     onSelect: ((MealAndComponentsAndFoods) -> Unit)?
 ) {
     val meals = mealListViewModel.mealsList.observeAsState()
-
+    
     LazyColumn(
-        Modifier.padding(8.dp),
-        // Add content padding to allow over scrolling so that the floating action button doesnt
-        // cover the last entry, removable for journalEntry meal selection
-        contentPadding = PaddingValues(bottom = if (contentPaddingBottom) 100.dp else 0.dp),
+        Modifier.padding(0.dp),
+        contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         meals.value?.let {
-            items(it) { meal ->
-                Card(
-                    border = BorderStroke(1.dp, MaterialTheme.colors.onBackground.copy(0.4f)),
-                    elevation = 4.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onSelect?.invoke(meal)
-                        }
-                    ,
-                ) {
-                    Row(
+            items(
+                items = it,
+                key = { meal ->
+                    meal.meal.id
+                }
+            ) { meal ->
+                MealCard(
+                    meal = meal,
+                    onSelect = if (onSelect != null) { { onSelect.invoke(meal) } } else null,
+                    rightExtra = if (rightExtra != null) { { rightExtra(mealListViewModel, meal) } } else null
+                )
+            }
+            // Add a bottom padding item (to allow overscroll past a floating button)
+            if (endSpacerHeight > 0.dp) {
+                item {
+                    Box(
                         Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
-                            .height(IntrinsicSize.Min),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .height(endSpacerHeight),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(
-                                meal.meal.name,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            //FlowRow(Modifier.weight(1f), paddingBetween = 8.dp) {
-
-                            with(LocalDensity.current) {
-                                PairsGrid(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    { col, _ ->
-                                        if (col % 2 == 1) {
-                                            16.dp.roundToPx()
-                                        } else {
-                                            0
-                                        }
-                                    },
-                                    { column, _, _, _ ->
-                                        if (column % 2 == 1) {
-                                            VerticalAlignment.End
-                                        } else {
-                                            VerticalAlignment.Start
-                                        }
-                                    }
-                                ) {
-                                    Text("Calories:")
-                                    Text(
-                                        meal.calorieSum.toString(),
-                                        Modifier.width(72.dp),
-                                        textAlign = TextAlign.End
-                                    )
-                                    Text("Proteins:")
-                                    Text(
-                                        meal.proteinsSum.toString(),
-                                        Modifier.width(72.dp),
-                                        textAlign = TextAlign.End
-                                    )
-                                    Text("Fat:")
-                                    Text(
-                                        meal.fatSum.toString(),
-                                        Modifier.width(72.dp),
-                                        textAlign = TextAlign.End
-                                    )
-                                    Text("Carbs:")
-                                    Text(
-                                        meal.carbohydratesSum.toString(),
-                                        Modifier.width(72.dp),
-                                        textAlign = TextAlign.End
-                                    )
-                                }
-                            }
-                        }
-                        rightExtra?.invoke(mealListViewModel, meal)
+                        Text("End of Meal List")
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun MealCard(
+    meal: MealAndComponentsAndFoods,
+    modifier: Modifier = Modifier,
+    onSelect: (() -> Unit)? = null,
+    showLabel: Boolean = false,
+    rightExtra: (@Composable () -> Unit)? = null
+) {
+    Card(
+        border = BorderStroke(1.dp, MaterialTheme.colors.onBackground.copy(0.4f)),
+        elevation = 0.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
+
+            // If onSelect is not null, add a clickable that calls it
+            .then(
+                other = onSelect?.let {
+                    Modifier.clickable(onClick = it)
+                } ?: Modifier
+            )
+        ,
+    ) {
+        Column(
+            Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            if (showLabel) {
+                Text(
+                    "Meal",
+                    modifier = Modifier.padding(start = 0.dp, bottom = 0.dp),
+                    style = MaterialTheme.typography.caption,
+                    color = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+                )
+            }
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        meal.meal.name,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    //FlowRow(Modifier.weight(1f), paddingBetween = 8.dp) {
+
+                    with(LocalDensity.current) {
+                        PairsGrid(
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            { col, _ ->
+                                if (col % 2 == 1) {
+                                    8.dp.roundToPx()
+                                } else {
+                                    0
+                                }
+                            },
+                            { column, _, _, _ ->
+                                if (column % 2 == 1) {
+                                    HorizontalAlignment.End
+                                } else {
+                                    HorizontalAlignment.Start
+                                }
+                            }
+                        ) {
+                            Text("Calories:")
+                            Text(
+                                meal.calorieSum.toString(),
+                                Modifier.width(72.dp),
+                                textAlign = TextAlign.End
+                            )
+                            Text("Proteins:")
+                            Text(
+                                meal.proteinsSum.toString(),
+                                Modifier.width(72.dp),
+                                textAlign = TextAlign.End
+                            )
+                            Text("Fat:")
+                            Text(
+                                meal.fatSum.toString(),
+                                Modifier.width(72.dp),
+                                textAlign = TextAlign.End
+                            )
+                            Text("Carbs:")
+                            Text(
+                                meal.carbohydratesSum.toString(),
+                                Modifier.width(72.dp),
+                                textAlign = TextAlign.End
+                            )
+                        }
+                    }
+                }
+                // If right extra is not null, run it
+                rightExtra?.invoke()
             }
         }
     }

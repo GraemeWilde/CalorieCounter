@@ -113,7 +113,7 @@ abstract class AppDatabase : RoomDatabase() {
                                             )
                                         )
                                     )
-                                    inst.journalDAO().insertEntries(
+                                    inst.journalDAO().insertJournalEntries(
                                         JournalEntry(
                                             LocalDateTime.now(),
                                             Quantity(355f, QuantityType.GmL),

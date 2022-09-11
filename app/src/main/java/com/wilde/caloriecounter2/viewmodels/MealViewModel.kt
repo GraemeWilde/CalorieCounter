@@ -53,6 +53,9 @@ class MealViewModel @Inject internal constructor(
                 ObservableMealComponentAndFood(it)
             }?.toMutableStateList() ?: mutableStateListOf()
 
+        // If null meal, then this is a new meal
+        var new = mealAndComponentsAndFoods == null
+
         fun toMealAndComponentsAndFoods(): MealAndComponents {
             return MealAndComponents(
                 Meal(
@@ -72,6 +75,8 @@ class MealViewModel @Inject internal constructor(
     }
 
     var observableMeal: ObservableMeal = ObservableMeal()
+
+    var new: Boolean = true
 
 //    val id = MutableLiveData<Int>()
 //    val name = MutableLiveData<String>()

@@ -6,7 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -14,7 +14,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.*
 import com.squareup.moshi.Moshi
 import com.wilde.caloriecounter2.R
-import com.wilde.caloriecounter2.composables.other.*
+import com.wilde.caloriecounter2.composables.other.ActionsScope
+import com.wilde.caloriecounter2.composables.other.Priority
+import com.wilde.caloriecounter2.composables.other.RunOnceSaveable
+import com.wilde.caloriecounter2.composables.other.StringLike
 import com.wilde.caloriecounter2.composables.screens.*
 import com.wilde.caloriecounter2.data.food.entities.Product
 import com.wilde.caloriecounter2.data.journal.entities.FullJournalEntry
@@ -289,13 +292,15 @@ object CalorieNavigation2 {
             Log.d("CalorieNavigation", this.title)
             val mealViewModel: MealViewModel = hiltViewModel()
 
-            RunOnce {
+            RunOnceSaveable {
                 val mealArg = backStackEntry.arguments!!.getString("mealId") ?: "0"
 
                 if (mealArg != "0") {
+                    // Parse argument into a MealAndComponentsAndFoods then open it
                     val meal = mealArg.parse<MealAndComponentsAndFoods>()
                     mealViewModel.openMeal(meal)
                 } else {
+                    // If arg is "0" create new
                     mealViewModel.clear()
                 }
                 /*val mealString = backStackEntry.arguments!!.getString("mealId")!!
@@ -423,7 +428,7 @@ object CalorieNavigation2 {
         ) {
             val journalEntryViewModel: JournalEntryViewModel = hiltViewModel()
 
-            RunOnce {
+            RunOnceSaveable {
                 val journalArg = backStackEntry.arguments!!.getString("journalId")!!
 
                 if (journalArg == "0") {

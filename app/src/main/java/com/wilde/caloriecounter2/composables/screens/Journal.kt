@@ -2,18 +2,16 @@ package com.wilde.caloriecounter2.composables.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wilde.caloriecounter2.composables.other.FlowRow
 import com.wilde.caloriecounter2.composables.other.SlideInFloatingActionButton
 import com.wilde.caloriecounter2.data.journal.entities.FullJournalEntry
-import com.wilde.caloriecounter2.data.journal.entities.JournalEntry
 import com.wilde.caloriecounter2.viewmodels.JournalViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -36,7 +33,7 @@ fun Journal(
     onSelect: ((FullJournalEntry) -> Unit)? = null //TODO
 ) {
 
-    val entries = viewModel.entries.observeAsState()
+    val entries = viewModel.entries.collectAsState(initial = emptyList())
 
     Box(Modifier.fillMaxSize()) {
 //        Column {
@@ -51,25 +48,30 @@ fun Journal(
 //        }
 
         val grouped = produceState<Map<LocalDate, List<FullJournalEntry>>>(initialValue = emptyMap(), entries.value) {
-            value = entries.value?.let { entries ->
-                var tempGroup: MutableList<FullJournalEntry> = mutableListOf()
-                var lastDate: LocalDate = entries.first().journalEntry.date.toLocalDate()
-                val groupedEntries: MutableMap<LocalDate, List<FullJournalEntry>> = mutableMapOf()
+            value = entries.value.let { entries ->
+                if (entries.isNotEmpty()) {
+                    var tempGroup: MutableList<FullJournalEntry> = mutableListOf()
+                    var lastDate: LocalDate = entries.first().journalEntry.date.toLocalDate()
+                    val groupedEntries: MutableMap<LocalDate, List<FullJournalEntry>> =
+                        mutableMapOf()
 
-                entries.forEach {
-                    val date = it.journalEntry.date.toLocalDate()
-                    if (date != lastDate) {
-                        groupedEntries[lastDate] = tempGroup
-                        lastDate = date
-                        tempGroup = mutableListOf()
+                    entries.forEach {
+                        val date = it.journalEntry.date.toLocalDate()
+                        if (date != lastDate) {
+                            groupedEntries[lastDate] = tempGroup
+                            lastDate = date
+                            tempGroup = mutableListOf()
+                        }
+
+                        tempGroup.add(it)
                     }
+                    groupedEntries[lastDate] = tempGroup
 
-                    tempGroup.add(it)
+                    groupedEntries
+                } else {
+                    emptyMap()
                 }
-                groupedEntries[lastDate] = tempGroup
-
-                groupedEntries
-            } ?: emptyMap<LocalDate, List<FullJournalEntry>>()
+            }
         }
 
         LazyColumn(Modifier.fillMaxSize()) {
@@ -88,7 +90,7 @@ fun Journal(
                 // groupedByDate.value is the list of entries for a date
                 items(groupedByDate.value) { entry ->
                     FlowRow(
-                        paddingBetween = 4.dp,
+                        paddingBetweenHorizontal = 4.dp,
                         modifier = Modifier.clickable {
                             onSelect?.invoke(entry)
                         }

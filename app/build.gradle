@@ -109,7 +109,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$androidx_lifecycle_version"
 
     // Adds modifiers for status bar and keyboard paddings
-    implementation "com.google.accompanist:accompanist-insets:$window_insets_version"
+    //implementation "com.google.accompanist:accompanist-insets:$window_insets_version"
 
     // Compose Navigation
     implementation "androidx.navigation:navigation-compose:$compose_navigation"

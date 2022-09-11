@@ -1,7 +1,6 @@
 package com.wilde.caloriecounter2.composables.screens
 
 import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,8 +19,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -30,42 +31,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wilde.caloriecounter2.composables.other.*
 import com.wilde.caloriecounter2.composables.other.TextField
-import com.wilde.caloriecounter2.data.food.entities.Product
-import com.wilde.caloriecounter2.data.meals.entities.MealAndComponentsAndFoods
 import com.wilde.caloriecounter2.data.other.quantity.QuantityType
+import com.wilde.caloriecounter2.other.Macros
 import com.wilde.caloriecounter2.viewmodels.FoodListViewModel
 import com.wilde.caloriecounter2.viewmodels.JournalEntryViewModel
 import com.wilde.caloriecounter2.viewmodels.MealListViewModel
-import com.wilde.caloriecounter2.viewmodels.helper.ObservableQuantity
+import kotlinx.coroutines.android.awaitFrame
 import java.time.LocalDateTime
-
-enum class FoodOrMeal {
-    Food,
-    Meal
-}
-
-class TempFoodMealHolder private constructor(
-    val food: Product? = null,
-    val meal: MealAndComponentsAndFoods? = null
-) {
-    val type: FoodOrMeal
-
-    init {
-        assert((food == null).xor(meal == null))
-        type =
-            if (food != null) FoodOrMeal.Food
-            else FoodOrMeal.Meal
-    }
-
-    constructor(food: Product) : this(food, null)
-    constructor(meal: MealAndComponentsAndFoods) : this(null, meal)
-}
-
-private enum class SelectDialog {
-    None,
-    FoodMeal,
-    Quantity
-}
 
 @Preview
 @Composable
@@ -74,30 +46,27 @@ fun JournalEntry(
 ) {
     var selectFoodMeal by rememberSaveable { mutableStateOf(false) }
 
-    var dialog by rememberSaveable { mutableStateOf(SelectDialog.None) }
-
     val foodListViewModel: FoodListViewModel = hiltViewModel()
     val mealListViewModel: MealListViewModel = hiltViewModel()
     RunOnce {
+        // Load food list
         foodListViewModel.getFoodsList()
     }
 
-    if (dialog != SelectDialog.None) {
+    // Dialog to select a food or meal
+    if (selectFoodMeal) {
         DialogFix(
             onDismissRequest = {
-                dialog = SelectDialog.None
+                selectFoodMeal = false
             }
         ) {
-            RunOnceSaveable {
-                viewModel.tempQuantity = ObservableQuantity()
-            }
-
             Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f)) {
                 JournalPanel("Pick Food or Meal:") {
                     var foodTab by rememberSaveable { mutableStateOf(true) }
-                    // Select Food or Meal
+
+                    // Tabs for Food or Meal selection
                     TabRow(
                         selectedTabIndex = if (foodTab) 0 else 1,
                         Modifier.shadow(4.dp)
@@ -109,24 +78,23 @@ fun JournalEntry(
                             Text("Meals")
                         }
                     }
+
+                    // Show food tab if foodTab = true, otherwise show meal tab
                     if (foodTab) {
                         FoodList(foodListViewModel) {
                             viewModel.selectFood(it)
-                            //viewModel.tempFoodMealHolder = TempFoodMealHolder(it)
                             Log.d("JournalEntry", "Select Food: ${it.productName}")
-                            dialog = SelectDialog.None
-                            //selectFoodMeal = false
+                            selectFoodMeal = false
                         }
                     } else {
                         MealList(
                             mealListViewModel = mealListViewModel,
-                            contentPaddingBottom = false,
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
                         ) {
+                            viewModel.observableJournalEntry.quantity.type.value = QuantityType.Servings
                             viewModel.selectMeal(it)
-                            //viewModel.tempFoodMealHolder = TempFoodMealHolder(it)
                             Log.d("JournalEntry", "Select Meal: ${it.meal.name}")
-                            dialog = SelectDialog.None
-                            //selectFoodMeal = false
+                            selectFoodMeal = false
                         }
                     }
                 }
@@ -134,146 +102,50 @@ fun JournalEntry(
         }
     }
 
-    // Food / Meal selection Dialog
-    if (selectFoodMeal) {
-        DialogFix(
-            onDismissRequest = {
-                selectFoodMeal = false
-            },
-            modifier = Modifier.fillMaxHeight(0.8f)
-        ) {
+    var firstLaunch by remember { mutableStateOf(true) }
 
-            // Which food tab we are on
-            var foodTab by rememberSaveable { mutableStateOf(true) }
-            var step1 by rememberSaveable { mutableStateOf(true) }
-
-            RunOnceSaveable {
-                viewModel.tempQuantity = ObservableQuantity()
-            }
-
-            Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
-                Column {
-                    JournalPanel("Pick Food:", onTitleClick = { step1 = true }) {
-
-                        // Make content animate into visibility when panel title is clicked, hide when other titel is clicked
-                        AnimatedVisibility(visible = step1) {
-                            Column {
-
-                                // Select Food or Meal
-                                TabRow(
-                                    selectedTabIndex = if (foodTab) 0 else 1,
-                                    Modifier.shadow(4.dp)
-                                ) {
-                                    CustomTab(selected = foodTab, onClick = { foodTab = true }) {
-                                        Text("Foods")
-                                    }
-                                    CustomTab(selected = !foodTab, onClick = { foodTab = false }) {
-                                        Text("Meals")
-                                    }
-                                }
-                                if (foodTab) {
-                                    FoodList(foodListViewModel) {
-                                        //viewModel.selectFood(it)
-                                        viewModel.tempFoodMealHolder = TempFoodMealHolder(it)
-                                        Log.d("JournalEntry", "Select Food: ${it.productName}")
-                                        step1 = false
-                                        //selectFoodMeal = false
-                                    }
-                                } else {
-                                    MealList(
-                                        mealListViewModel = mealListViewModel,
-                                        contentPaddingBottom = false,
-                                    ) {
-                                        //viewModel.selectMeal(it)
-                                        viewModel.tempFoodMealHolder = TempFoodMealHolder(it)
-                                        Log.d("JournalEntry", "Select Meal: ${it.meal.name}")
-                                        step1 = false
-                                        //selectFoodMeal = false
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                    JournalPanel("Enter Quantity:", onTitleClick = { step1 = false }) {
-
-                        // Make content animate into visibility when panel title is clicked, hide when other titel is clicked
-                        AnimatedVisibility(visible = !step1) {
-                            val measurementString by viewModel.tempQuantity!!.measurementString.observeAsState(
-                                " "
-                            )
-                            val quantityType by viewModel.tempQuantity!!.type.observeAsState(QuantityType.Servings)
-
-                            QuantityField(
-                                measurementString = measurementString,
-                                onMeasurementChange = viewModel.tempQuantity!!::measurementOnChange,
-                                quantityType = quantityType,
-                                onQuantityTypeChange = { viewModel.tempQuantity!!.type.value = it },
-                                onCancel = { selectFoodMeal = false },
-                                onSave = {
-                                    val quant = viewModel.tempQuantity?.toQuantity()
-                                    val foodMeal = viewModel.tempFoodMealHolder
-
-                                    if (quant != null && foodMeal != null) {
-                                        if (foodMeal.type == FoodOrMeal.Food) {
-                                            viewModel.observableJournalEntry.food.value = foodMeal.food
-                                        } else {
-                                            viewModel.observableJournalEntry.meal.value = foodMeal.meal
-                                        }
-
-                                        viewModel.observableJournalEntry.quantity.fromQuantity(quant)
-
-                                        // Close Dialog
-                                        selectFoodMeal = false
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    Column {
+    Column(
+        Modifier.padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         val date: LocalDateTime by viewModel.observableJournalEntry.date.collectAsState()
 
-        DatePickerView(date.toLocalDate()) {
+        DatePickerView(
+            date.toLocalDate(),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             viewModel.observableJournalEntry.date.value = it.atTime(date.toLocalTime())
         }
 
-        TimePickerView(date.toLocalTime()) {
+        TimePickerView(
+            date.toLocalTime(),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             viewModel.observableJournalEntry.date.value = it.atDate(date.toLocalDate())
         }
-
-//        val foodId by viewModel.observableJournalEntry!!.foodId.collectAsState()
-//        val mealId by viewModel.observableJournalEntry!!.mealId.collectAsState()
 
         val food by viewModel.observableJournalEntry.food.collectAsState()
         val meal by viewModel.observableJournalEntry.meal.collectAsState()
 
         when {
             food != null -> {
-                TextField(
-                    label = { Text("Food Name") },
-                    value = food?.productName ?: "Error",
-                    onValueChange = {},
-                    readOnly = true
+                FoodCard(
+                    food = food!!,
+                    onSelect = { selectFoodMeal = true },
+                    showLabel = true
                 )
             }
             meal != null -> {
-                TextField(
-                    label = { Text("Meal Name") },
-                    value = meal?.meal?.name ?: "Error",
-                    onValueChange = {},
-                    readOnly = true
+                MealCard(
+                    meal = meal!!,
+                    onSelect = { selectFoodMeal = true },
+                    showLabel = true
                 )
             }
             else -> {
                 Button(
                     onClick = {
-                        //selectFoodMeal = true
-                        dialog = SelectDialog.FoodMeal
+                        selectFoodMeal = true
                     }
                 ) {
                     Text("Select Food")
@@ -281,37 +153,35 @@ fun JournalEntry(
             }
         }
         if (food != null || meal != null) {
-            val measurement by viewModel.observableJournalEntry.quantity.measurementString.observeAsState(" ")
+            val measurementString by viewModel.observableJournalEntry.quantity.measurementString.observeAsState(" ")
             val type by viewModel.observableJournalEntry.quantity.type.observeAsState(QuantityType.Servings)
 
-            if (viewModel.tempQuantity == null) {
-                viewModel.tempQuantity = ObservableQuantity(viewModel.observableJournalEntry.quantity)
+            val focusRequester = remember { FocusRequester() }
+            val new by remember { mutableStateOf(!firstLaunch) }
+
+            QuantityField(
+                stringValue = measurementString,
+                quantityType = type,
+                enabledQuantityType = meal == null,
+                onQuantityValueChange = viewModel.observableJournalEntry.quantity::measurementOnChange,
+                onQuantityTypeChange = { viewModel.observableJournalEntry.quantity.type.value = it },
+                focusRequester = focusRequester,
+            )
+//            { stringValue, quantityTypeValue ->
+//                viewModel.observableJournalEntry.quantity.measurementOnChange(
+//                    stringValue
+//                )
+//                viewModel.observableJournalEntry.quantity.type.value =
+//                    quantityTypeValue
+//            }
+
+            if (new) {
+                LaunchedEffect(true) {
+                    awaitFrame()
+                    focusRequester.requestFocus()
+                }
             }
 
-            val measurementString by viewModel.tempQuantity!!.measurementString.observeAsState(" ")
-            val quantityType by viewModel.tempQuantity!!.type.observeAsState(QuantityType.Servings)
-
-            QuantityField2(
-                measurement = measurement,
-                type = type,
-                measurementString = measurementString,
-                onMeasurementChange = { Log.d("Quan", "$it"); viewModel.tempQuantity!!.measurementOnChange(it) },
-                quantityType = quantityType,
-                onQuantityTypeChange = { viewModel.tempQuantity!!.type.value = it },
-                onCancel = { it(false) },
-                onSave = {
-                    val quant = viewModel.tempQuantity?.toQuantity()
-                    //val foodMeal = viewModel.tempFoodMealHolder
-
-                    if (quant != null) {
-                        viewModel.observableJournalEntry.quantity.fromQuantity(quant)
-
-                        // Close Dialog
-                        //selectFoodMeal = false
-                        it(false)
-                    }
-                }
-            )
 
             /*Row(verticalAlignment = Alignment.CenterVertically) {
                 TextField(
@@ -326,10 +196,73 @@ fun JournalEntry(
                     Text("g/ml")
                 }
             }*/
+            val measurementValue by viewModel.observableJournalEntry.quantity.measurement.observeAsState()
+
+            val macros: Macros? = food?.let { product ->
+                product.nutriments?.perServing?.let {
+                    Macros(it.calories ?: 0f, it.proteins ?: 0f, it.fat ?: 0f, it.carbohydrates ?: 0f, measurementValue!!, type, it.servingSize)
+                }
+            } ?: meal?.let { meal ->
+                Macros(meal.calorieSum, meal.proteinsSum, meal.fatSum, meal.carbohydratesSum, measurementValue!!, type)
+            }
+
+            with(LocalDensity.current) {
+                PairsGrid(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 0.dp)
+                        .weight(1f),
+                    paddingBetween = { col, _ ->
+                        if (col % 2 == 1) {
+                            8.dp.roundToPx()
+                        } else {
+                            0
+                        }
+                    },
+                    horizontalAlignment = { column, _, _, _ ->
+                        if (column % 2 == 1) {
+                            HorizontalAlignment.End
+                        } else {
+                            HorizontalAlignment.Start
+                        }
+                    }
+                ) {
+                    Text("Calories:")
+                    Text(
+                        macros?.calorieSum?.toString() ?: "N/A",
+                        Modifier.width(72.dp),
+                        textAlign = TextAlign.End
+                    )
+                    Text("Proteins:")
+                    Text(
+                        macros?.proteinsSum?.toString() ?: "N/A",
+                        Modifier.width(72.dp),
+                        textAlign = TextAlign.End
+                    )
+                    Text("Fat:")
+                    Text(
+                        macros?.fatSum?.toString() ?: "N/A",
+                        Modifier.width(72.dp),
+                        textAlign = TextAlign.End
+                    )
+                    Text("Carbs:")
+                    Text(
+                        macros?.carbohydratesSum?.toString() ?: "N/A",
+                        Modifier.width(72.dp),
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
         }
+    }
+    RunOnceSaveable {
+        firstLaunch = false
     }
 }
 
+/**
+ * CustomTab to give tabs a consistent look
+ */
 @Composable
 private fun CustomTab(
     selected: Boolean,
@@ -423,7 +356,7 @@ private fun QuantityField(
                 })
             )
 
-            EnumDropDown(
+            EnumDropDownField(
                 label = { Text("Measure Type") },
                 //clazz = QuantityType::class.java,
                 selectedEnum = quantityType,

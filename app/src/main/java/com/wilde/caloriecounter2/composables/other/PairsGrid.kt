@@ -2,14 +2,11 @@ package com.wilde.caloriecounter2.composables.other
 
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 
-enum class VerticalAlignment {
+enum class HorizontalAlignment {
     Start,
     End,
     Center
@@ -19,7 +16,7 @@ enum class VerticalAlignment {
 fun PairsGrid(
     modifier: Modifier = Modifier,
     paddingBetween: ((column: Int, columnCount: Int) -> Int)? = null,
-    verticalAlignment: ((column: Int, columnCount: Int, row: Int, rowCount: Int) -> VerticalAlignment)? = null,
+    horizontalAlignment: ((column: Int, columnCount: Int, row: Int, rowCount: Int) -> HorizontalAlignment)? = null,
     content: @Composable () -> Unit
 ) {
     data class Dimension(val width: Int, val height: Int)
@@ -208,21 +205,26 @@ fun PairsGrid(
             } else 0
             //val unused = extra - spread * meas.columnCount
 
+            val colWidths = meas.colWidths.map {
+                it + extra / meas.columnCount
+            }
+
             val placeOffsets: List<Int> = run {
                 var cumulativeOffset = 0
-                meas.colWidths.mapIndexed { index, it ->
+
+                colWidths.indices.map { index ->
                     if (index == 0) {
                         Log.d("PairsGrid", "placeOffset[$index]: 0")
                         0
                     } else {
-                        Log.d("PairsGrid", "placeOffset[$index]: ${meas.colWidths[index - 1]}")
-                        cumulativeOffset += meas.colWidths[index - 1]
+                        Log.d("PairsGrid", "placeOffset[$index]: ${colWidths[index - 1]}")
+                        cumulativeOffset += colWidths[index - 1]
                         cumulativeOffset += if (paddingBetween == null) {
                             0
                         } else {
                             paddingBetween(index - 1, meas.columnCount)
                         }
-                        cumulativeOffset += spread
+                        //cumulativeOffset += spread
 
 //                        if (extra > 0) {
 //                            if (meas.columnCount % 2 == 0 && index == meas.columnCount / 2) {
@@ -252,16 +254,15 @@ fun PairsGrid(
 
                         Log.d("PairsGrid", "RowHeights[$row]: ${meas.rowHeights[row]} - ${placeable.height} - ${(meas.rowHeights[row] - placeable.height) / 2}")
 
-                        val vAlign = if (verticalAlignment != null) {
-                            verticalAlignment(col, meas.columnCount, row, meas.rowHeights.size)
+                        val vAlign = if (horizontalAlignment != null) {
+                            horizontalAlignment(col, meas.columnCount, row, meas.rowHeights.size)
                         } else {
-                            VerticalAlignment.Start
+                            HorizontalAlignment.Start
                         }
-
                         val x = when(vAlign) {
-                            VerticalAlignment.Start -> placeOffsets[col]
-                            VerticalAlignment.Center -> (meas.colWidths[col] - placeable.width) / 2 + placeOffsets[col]
-                            VerticalAlignment.End -> meas.colWidths[col] - placeable.width + placeOffsets[col]
+                            HorizontalAlignment.Start -> placeOffsets[col]
+                            HorizontalAlignment.Center -> (colWidths[col] - placeable.width) / 2 + placeOffsets[col]
+                            HorizontalAlignment.End -> colWidths[col] - placeable.width + placeOffsets[col]
                         }
 
                         placeable.placeRelative(x, cumulativeHeight + (meas.rowHeights[row] - placeable.height) / 2)

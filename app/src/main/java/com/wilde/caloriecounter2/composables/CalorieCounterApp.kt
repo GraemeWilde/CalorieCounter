@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -16,9 +19,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.statusBarsPadding
 import com.wilde.caloriecounter2.composables.other.ActionsRow
 import com.wilde.caloriecounter2.composables.other.ActionsScope
 import com.wilde.caloriecounter2.composables.other.RunOnce
@@ -55,24 +55,14 @@ fun CalorieCounterApp() {
         }
     }
 
-
-
-    val backDispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher/*) {
-        "No back dispatcher"
-    }.onBackPressedDispatcher*/
-
-    val insets = LocalWindowInsets.current
-    val imeBottom = with(LocalDensity.current) { insets.ime.bottom.toDp() }
-
-    LaunchedEffect(imeBottom) {
-        Log.d("IME", imeBottom.toString())
-    }
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
 
     Column(
         Modifier
             .statusBarsPadding()
             //.padding(bottom = 40.dp)
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding()
+            .imePadding()
     ) {
         TopAppBar(
             { Text(
@@ -90,7 +80,6 @@ fun CalorieCounterApp() {
                             drawerClose()
                         }
                     } else {
-                        //navController.popBackStack()
                         backDispatcher.onBackPressed()
                     }
                 }) {
